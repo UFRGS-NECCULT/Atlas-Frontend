@@ -1,0 +1,20 @@
+version: '3.7'
+services:
+  app:
+    container_name: rockfeller-frontend-dev
+    env_file: ./.env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=development
+
+networks:
+  default:
+    external:
+      name: rockfeller-network
