@@ -1,7 +1,10 @@
 import React from "react";
 
-function App() {
-  return <h1>Atlas - OBEC</h1>;
-}
+import "./assets/styles/global.css";
+import Routes from "routes";
+
+const App = () => {
+  return <Routes />;
+};
 
 export default App;
