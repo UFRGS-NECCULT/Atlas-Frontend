@@ -12,6 +12,11 @@
   src: url('../fonts/Lato-Regular.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'Bookman';
+  src: url('../fonts/Bookman_Old_Style.ttf') format('truetype');
+}
+
 * {
   margin: 0;
   padding: 0;
