@@ -82,3 +82,32 @@ export const Button = styled.div`
   justify-content: center;
   align-items: center;
 `;
+
+export const Text = styled.p`
+  color: #aaa;
+  text-align: justify;
+  font-weight: 500;
+`;
+
+export const ChartContainer = styled.div`
+  flex: 1 1 auto;
+  padding: 15px;
+`;
+
+export const ViewOptions = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  button {
+    width: 120px;
+    height: 17px;
+    border-radius: 10px;
+    background-color: #6dbfc9;
+    color: #fff;
+    line-height: 12px;
+
+    border: none;
+    cursor: pointer;
+  }
+`;
