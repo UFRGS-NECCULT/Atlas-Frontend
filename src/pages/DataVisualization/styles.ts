@@ -89,9 +89,15 @@ export const Text = styled.p`
   font-weight: 500;
 `;
 
+interface ChartContainerProps {
+  direction?: "column" | "row";
+}
 export const ChartContainer = styled.div`
   flex: 1 1 auto;
   padding: 15px;
+
+  display: flex;
+  flex-direction: ${(props: ChartContainerProps) => props.direction || "column"};
 `;
 
 export const ViewOptions = styled.div`

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
-import { HierarchyNode, HierarchyRectangularNode } from "d3";
 
 interface IProps {
   data?: {
@@ -114,7 +113,6 @@ const Treemap: React.FC<IProps> = ({ data }) => {
   }, [d3Container]);
 
   return <svg ref={d3Container} width={"100%"} height={"100%"} />;
-  //
 };
 
 export default Treemap;

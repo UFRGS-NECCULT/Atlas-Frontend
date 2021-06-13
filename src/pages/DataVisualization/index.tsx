@@ -18,6 +18,7 @@ import BarChart from "components/Charts/BarChart";
 import { getData } from "services/api";
 import BrazilMap from "components/Charts/BrazilMap";
 import Treemap from "components/Charts/Treemap";
+import TreemapLegend from "components/Charts/Treemap/Legend";
 // import BrazilMap from "components/Charts/BrazilMap";
 // import BarChart from "components/Charts/BarChart";
 
@@ -115,7 +116,10 @@ const DataVisualization = () => {
             </ChartContainer>
           </Box>
           <Box id={"box-5"} title="Treemap - Setores Culturais Criativos">
-            <Treemap data={treemapData} />
+            <ChartContainer direction="row">
+              <Treemap data={treemapData} />
+              <TreemapLegend data={treemapData} />
+            </ChartContainer>
           </Box>
         </Viewboxes>
       </Container>
