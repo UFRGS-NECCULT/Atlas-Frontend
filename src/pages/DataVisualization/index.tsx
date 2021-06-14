@@ -19,6 +19,7 @@ import { getData } from "services/api";
 import BrazilMap from "components/Charts/BrazilMap";
 import Treemap from "components/Charts/Treemap";
 import TreemapLegend from "components/Charts/Treemap/Legend";
+import LineChart from "components/Charts/LineChart";
 // import BrazilMap from "components/Charts/BrazilMap";
 // import BarChart from "components/Charts/BarChart";
 
@@ -98,7 +99,9 @@ const DataVisualization = () => {
             <BrazilMap data={mapData} />
           </Box>
           <Box id={"box-2"} title="Dados">
-            salve
+            <ChartContainer>
+              <LineChart data={data} />
+            </ChartContainer>
           </Box>
           <Box id={"box-3"} title="Descrição da variável">
             <Text>
