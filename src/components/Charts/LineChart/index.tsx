@@ -58,6 +58,7 @@ const LineChart: React.FC<IProps> = ({ data }) => {
 
       // Make the lines
       const uniqueIDs = new Set(data.map((d) => d.ID));
+      const palette = d3.scaleOrdinal(d3.schemeCategory10); // A color for each id
       uniqueIDs.forEach((id) => {
         const line = d3
           .line<Data>()
@@ -68,7 +69,7 @@ const LineChart: React.FC<IProps> = ({ data }) => {
           .append("path")
           .datum(data.filter((d) => d.ID == id))
           .attr("fill", "none")
-          .attr("stroke", "blue")
+          .attr("stroke", d => palette(id.toString()))
           .attr("stroke-width", 2)
           .attr("transform", `translate(${marginLeft}, ${marginTop})`)
           .attr("d", line);
