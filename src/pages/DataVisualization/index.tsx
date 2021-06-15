@@ -25,7 +25,7 @@ import LineChart from "components/Charts/LineChart";
 
 const DataVisualization = () => {
   const [toggle, setToggle] = useState(true);
-  const [data, setData] = useState<{ Ano: number; Valor: number }[]>([]);
+  const [data, setData] = useState<{ Ano: number; Valor: number; ID: number }[]>([]);
   const [mapData, setMapData] = useState<{ idUF: number; idRegiao: string; Valor: number }[]>([
     { idUF: 11, idRegiao: "Norte", Valor: 812 },
     { idUF: 12, idRegiao: "Norte", Valor: 215 },
