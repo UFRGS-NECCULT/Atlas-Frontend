@@ -15,18 +15,16 @@ import {
 import Breadcrumbs from "components/Breadcrumbs";
 import Box from "components/Box";
 import BarChart from "components/Charts/BarChart";
-import { getData } from "services/api";
 import BrazilMap from "components/Charts/BrazilMap";
 import Treemap from "components/Charts/Treemap";
 import TreemapLegend from "components/Charts/Treemap/Legend";
-import LineChart from "components/Charts/LineChart";
 // import BrazilMap from "components/Charts/BrazilMap";
 // import BarChart from "components/Charts/BarChart";
 
 const DataVisualization = () => {
   const [toggle, setToggle] = useState(true);
   const [data, setData] = useState<{ Ano: number; Valor: number }[]>([]);
-  const [mapData, setMapData] = useState<{ idUF: number; idRegiao: string; Valor: number }[]>([
+  const [mapData] = useState<{ idUF: number; idRegiao: string; Valor: number }[]>([
     { idUF: 11, idRegiao: "Norte", Valor: 812 },
     { idUF: 12, idRegiao: "Norte", Valor: 215 },
     { idUF: 13, idRegiao: "Norte", Valor: 836 },
@@ -56,7 +54,7 @@ const DataVisualization = () => {
     { idUF: 53, idRegiao: "Centro-Oeste", Valor: 2475 }
   ]);
 
-  const [treemapData, setTreemapData] = useState<
+  const [treemapData] = useState<
     {
       idCadeia: number;
       CadeiaNome: string;
@@ -78,20 +76,9 @@ const DataVisualization = () => {
     { idCadeia: 10, CadeiaNome: "Publicidade", UFNome: "Acre", Percentual: 0, Taxa: 0, Valor: 17 }
   ]);
 
-  useEffect(() => {
-    const initData = async () => {
-      const data = await getData();
-      console.log(data);
-      setData(data);
-    };
-
-    initData();
-  }, [toggle]);
-
   return (
     <Page>
       <Breadcrumbs />
-      <button onClick={() => setToggle(!toggle)}>mudar</button>
       <Container>
         <Title>NÚMERO TOTAL DE EMPRESAS</Title>
         <Viewboxes>
@@ -99,9 +86,7 @@ const DataVisualization = () => {
             <BrazilMap data={mapData} />
           </Box>
           <Box id={"box-2"} title="Dados">
-            <ChartContainer>
-              <LineChart data={data} />
-            </ChartContainer>
+            <ChartContainer>{/* <LineChart data={data} /> */}</ChartContainer>
           </Box>
           <Box id={"box-3"} title="Descrição da variável">
             <Text>
@@ -111,7 +96,7 @@ const DataVisualization = () => {
           </Box>
           <Box id={"box-4"} title="Série histórica">
             <ChartContainer>
-              <BarChart data={data} />
+              <BarChart />
               <ViewOptions>
                 <button>x</button>
                 <button>x</button>

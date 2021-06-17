@@ -3,12 +3,7 @@ import * as d3 from "d3";
 import * as topojson from "topojson-client";
 
 import brStates from "../../../assets/json/br-min.json";
-import { FeatureCollection } from "geojson";
 import { GeometryCollection } from "topojson-specification";
-
-interface IProps {
-  data?: { Ano: number; Valor: number }[];
-}
 
 const BrazilMap = ({ data }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);

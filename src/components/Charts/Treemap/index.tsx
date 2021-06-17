@@ -38,8 +38,6 @@ const Treemap: React.FC<IProps> = ({ data }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
 
   const parseData = (data): IParsedData => {
-    console.log(data);
-
     const r = data.reduce((r, c) => {
       r.push({
         colorId: c.idCadeia,

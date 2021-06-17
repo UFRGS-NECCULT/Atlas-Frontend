@@ -1,24 +1,45 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
+import { useSelection } from "hooks/SelectionContext";
+import { getBars } from "services/api";
 
 interface IProps {
   data?: { Ano: number; Valor: number }[];
 }
 
-const BarChart: React.FC<IProps> = ({ data }) => {
+const BarChart: React.FC = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
 
+  const [keys, setKeys] = useState<string[]>([]);
+  const [values, setValues] = useState<number[]>([]);
+
+  const { uf, cad, prt, num } = useSelection();
+
   useEffect(() => {
-    if (data && data.length && d3Container.current) {
-      const marginLeft = 30;
+    const getData = async () => {
+      const { data } = await getBars(1, { var: num, uf, cad, prt });
+      parseBarsData(data);
+    };
+
+    getData();
+  }, [uf, cad, prt, num]);
+
+  const parseBarsData = (data) => {
+    const keys: string[] = data.map((d) => d.Ano.toString());
+    const values = data.map((d) => d.Valor);
+
+    setKeys(keys);
+    setValues(values);
+  };
+
+  useEffect(() => {
+    if (values && values.length && d3Container.current) {
+      const marginLeft = 50;
       const marginTop = 20;
       const marginBottom = 20;
 
       const width = d3Container.current.clientWidth - marginLeft;
       const height = d3Container.current.clientHeight - marginTop - marginBottom;
-
-      const keys: string[] = data.map((d) => d.Ano.toString()); //TIRAR ESSA LOGICA DAQUI
-      const values = data.map((d) => d.Valor); //TIRAR ESSA LOGICA DAQUI
 
       const svg = d3.select(d3Container.current);
 
@@ -39,9 +60,9 @@ const BarChart: React.FC<IProps> = ({ data }) => {
         .axisLeft(y)
         .scale(y)
         .ticks(4)
-        .tickSize(-width + marginLeft)
-        .tickSizeOuter(0);
-      // .tickFormat("");
+        .tickSize(-width)
+        .tickSizeOuter(0)
+        .tickFormat(() => "");
 
       svg.selectAll(".grid").remove();
       svg
@@ -61,9 +82,7 @@ const BarChart: React.FC<IProps> = ({ data }) => {
         .axisLeft(y)
         .tickSize(5)
         .tickPadding(5)
-        .tickFormat((d, i) => {
-          return d.toString();
-        });
+        .tickFormat((d, i) => d.toString());
 
       svg.selectAll(".eixo-x").remove();
       svg.selectAll(".eixo-y").remove();
@@ -113,7 +132,7 @@ const BarChart: React.FC<IProps> = ({ data }) => {
         .attr("height", 0)
         .remove();
     }
-  }, [data, d3Container.current]);
+  }, [values, d3Container.current]);
 
   return <svg ref={d3Container} width={"100%"} height={"100%"} />;
 };
