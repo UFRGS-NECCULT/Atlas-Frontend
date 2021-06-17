@@ -1,6 +1,7 @@
 import React from "react";
 
 import LandingPage from "pages/Landing";
+import DataVisualization from "pages/DataVisualization";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 const Routes = () => {
@@ -8,7 +9,7 @@ const Routes = () => {
     <BrowserRouter>
       <Switch>
         <Route path="/" exact component={LandingPage} />
-        {/* <Route path="/resultado" exact component={LandingPage} /> */}
+        <Route path="/resultado" exact component={DataVisualization} />
       </Switch>
     </BrowserRouter>
   );
