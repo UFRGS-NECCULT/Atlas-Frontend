@@ -18,12 +18,13 @@ import BarChart from "components/Charts/BarChart";
 import BrazilMap from "components/Charts/BrazilMap";
 import Treemap from "components/Charts/Treemap";
 import TreemapLegend from "components/Charts/Treemap/Legend";
+import LineChart from "components/Charts/LineChart";
 // import BrazilMap from "components/Charts/BrazilMap";
 // import BarChart from "components/Charts/BarChart";
 
 const DataVisualization = () => {
   const [toggle, setToggle] = useState(true);
-  const [data, setData] = useState<{ Ano: number; Valor: number }[]>([]);
+  const [data, setData] = useState<{ Ano: number; Valor: number; id: number }[]>([]);
   const [mapData] = useState<{ idUF: number; idRegiao: string; Valor: number }[]>([
     { idUF: 11, idRegiao: "Norte", Valor: 812 },
     { idUF: 12, idRegiao: "Norte", Valor: 215 },
@@ -86,7 +87,9 @@ const DataVisualization = () => {
             <BrazilMap data={mapData} />
           </Box>
           <Box id={"box-2"} title="Dados">
-            <ChartContainer>{/* <LineChart data={data} /> */}</ChartContainer>
+            <ChartContainer>
+              <LineChart />
+            </ChartContainer>
           </Box>
           <Box id={"box-3"} title="Descrição da variável">
             <Text>
