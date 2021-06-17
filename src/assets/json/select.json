@@ -1,0 +1,766 @@
+{
+  "eixo": [
+    {
+      "name": "Empreendimentos Culturais",
+      "value": 1
+    },
+    {
+      "name": "Mercado de Trabalho",
+      "value": 2
+    },
+    {
+      "name": "Fomento Público",
+      "value": 3
+    },
+    {
+      "name": "Comércio Internacional",
+      "value": 4
+    }
+  ],
+  "consumo": [
+    {
+      "name": "Bens",
+      "id": 1
+    },
+    {
+      "name": "Serviços",
+      "id": 0
+    }
+  ],
+  "classific": [
+    {
+      "name": "Setor",
+      "id": 0
+    },
+    {
+      "name": "Ocupação",
+      "id": 1
+    }
+  ],
+  "ano": [
+    {
+      "name": "2017",
+      "value": 2017
+    },
+    {
+      "name": "2016",
+      "value": 2016
+    },
+    {
+      "name": "2015",
+      "value": 2015
+    },
+    {
+      "name": "2014",
+      "value": 2014
+    },
+    {
+      "name": "2013",
+      "value": 2013
+    },
+    {
+      "name": "2012",
+      "value": 2012
+    },
+    {
+      "name": "2011",
+      "value": 2011
+    },
+    {
+      "name": "2010",
+      "value": 2010
+    },
+    {
+      "name": "2009",
+      "value": 2009
+    },
+    {
+      "name": "2008",
+      "value": 2008
+    },
+    {
+      "name": "2007",
+      "value": 2007
+    }
+  ],
+  "cad": [
+    {
+      "name": "Todos",
+      "id": 0
+    },
+    {
+      "name": "Arquitetura e Design",
+      "id": 1
+    },
+    {
+      "name": "Artes Cênicas e Espetáculos",
+      "id": 2
+    },
+    {
+      "name": "Audiovisual",
+      "id": 3
+    },
+    {
+      "name": "Cultura Digital",
+      "id": 4
+    },
+    {
+      "name": "Editorial",
+      "id": 5
+    },
+    {
+      "name": "Educação e Criação em Artes",
+      "id": 6
+    },
+    {
+      "name": "Entretenimento",
+      "id": 7
+    },
+    {
+      "name": "Música",
+      "id": 8
+    },
+    {
+      "name": "Patrimônio",
+      "id": 9
+    },
+    {
+      "name": "Publicidade",
+      "id": 10
+    }
+  ],
+  "ocp": [
+    {
+      "name": "Todos",
+      "id": 3
+    },
+    {
+      "name": "Atividades Relacionadas",
+      "id": 1
+    },
+    {
+      "name": "Cultura",
+      "id": 2
+    }
+  ],
+  "prt": [
+    {
+      "name": "Escolher",
+      "id": 0
+    },
+    {
+      "name": "Porte Micro",
+      "id": 1
+    },
+    {
+      "name": "Porte Pequeno",
+      "id": 2
+    },
+    {
+      "name": "Porte Médio",
+      "id": 3
+    },
+    {
+      "name": "Porte Grande",
+      "id": 4
+    }
+  ],
+  "sex": [
+    {
+      "name": "Todos",
+      "value": "0"
+    },
+    {
+      "name": "Masculino",
+      "value": "1"
+    },
+    {
+      "name": "Feminino",
+      "value": "2"
+    }
+  ],
+  "fax": [
+    {
+      "name": "Todas",
+      "value": "0"
+    },
+    {
+      "name": "10 a 17",
+      "value": "1"
+    },
+    {
+      "name": "18 a 29",
+      "value": "2"
+    },
+    {
+      "name": "30 a 49",
+      "value": "3"
+    },
+    {
+      "name": "50 a 64",
+      "value": "4"
+    },
+    {
+      "name": "65 ou mais",
+      "value": "5"
+    },
+    {
+      "name": "Não classificado",
+      "value": "6"
+    }
+  ],
+  "esc": [
+    {
+      "name": "Todos",
+      "value": "0"
+    },
+    {
+      "name": "Sem Instrução",
+      "value": "1"
+    },
+    {
+      "name": "Fundamental Incompleto",
+      "value": "2"
+    },
+    {
+      "name": "Fundamental Completo",
+      "value": "3"
+    },
+    {
+      "name": "Médio Completo",
+      "value": "4"
+    },
+    {
+      "name": "Superior Incompleto",
+      "value": "5"
+    },
+    {
+      "name": "Superior Completo",
+      "value": "6"
+    },
+    {
+      "name": "Não Determinado",
+      "value": "7"
+    }
+  ],
+  "cor": [
+    {
+      "name": "Todas",
+      "value": "0"
+    },
+    {
+      "name": "Indígena",
+      "value": "1"
+    },
+    {
+      "name": "Branca",
+      "value": "2"
+    },
+    {
+      "name": "Preta",
+      "value": "3"
+    },
+    {
+      "name": "Amarela",
+      "value": "4"
+    },
+    {
+      "name": "Parda",
+      "value": "5"
+    }
+  ],
+  "frm": [
+    {
+      "name": "Todos",
+      "value": "0"
+    },
+    {
+      "name": "Formal",
+      "value": "1"
+    },
+    {
+      "name": "Informal",
+      "value": "2"
+    }
+  ],
+  "prv": [
+    {
+      "name": "Todos",
+      "value": "0"
+    },
+    {
+      "name": "Contribuinte",
+      "value": "1"
+    },
+    {
+      "name": "Não contribuinte",
+      "value": "2"
+    }
+  ],
+  "snd": [
+    {
+      "name": "Todos",
+      "value": "0"
+    },
+    {
+      "name": "Membro",
+      "value": "1"
+    },
+    {
+      "name": "Não membro",
+      "value": "2"
+    }
+  ],
+  "slc": [
+    {
+      "name": "Setor",
+      "value": "0"
+    },
+    {
+      "name": "Ocupação",
+      "value": "1"
+    }
+  ],
+  "mec": [
+    {
+      "name": "Todos",
+      "id": 0
+    },
+    {
+      "name": "FNC",
+      "id": 1
+    },
+    {
+      "name": "Mecenato",
+      "id": 2
+    },
+    {
+      "name": "Fundo Cultural",
+      "id": 3
+    },
+    {
+      "name": "Outros",
+      "id": 4
+    }
+  ],
+  "mod": [
+    {
+      "name": "Todos",
+      "id": 0
+    },
+    {
+      "name": "Direta",
+      "id": 1
+    },
+    {
+      "name": "Indireta",
+      "id": 2
+    }
+  ],
+  "pfj": [
+    {
+      "name": "Todos",
+      "id": 0
+    },
+    {
+      "name": "Pessoa Física",
+      "id": 1
+    },
+    {
+      "name": "Pessoa Jurídica",
+      "id": 2
+    }
+  ],
+  "uos": [
+    {
+      "name": "UF",
+      "value": "0"
+    },
+    {
+      "name": "Setores",
+      "value": "1"
+    }
+  ],
+  "trab": [
+    {
+      "name": "Recebedor",
+      "id": 0
+    },
+    {
+      "name": "Trabalhador",
+      "id": 1
+    }
+  ],
+  "typ": [
+    {
+      "name": "Exportação",
+      "value": "1"
+    },
+    {
+      "name": "Importação",
+      "value": "2"
+    },
+    {
+      "name": "Saldo Comercial",
+      "value": "3"
+    },
+    {
+      "name": "Corrente de Comércio",
+      "value": "4"
+    }
+  ],
+  "prc": [
+    {
+      "name": "Mundo",
+      "id": 0
+    },
+    {
+      "name": "África",
+      "id": 1
+    },
+    {
+      "name": "América do Norte",
+      "id": 2
+    },
+    {
+      "name": "América do Sul",
+      "id": 3
+    },
+    {
+      "name": "Europa",
+      "id": 4
+    },
+    {
+      "name": "Oceania",
+      "id": 5
+    }
+  ],
+  "uf": [
+    {
+      "id": 0,
+      "name": "Todos"
+    },
+    {
+      "id": 12,
+      "name": "Acre"
+    },
+    {
+      "id": 27,
+      "name": "Alagoas"
+    },
+    {
+      "id": 16,
+      "name": "Amapá"
+    },
+    {
+      "id": 13,
+      "name": "Amazonas"
+    },
+    {
+      "id": 29,
+      "name": "Bahia"
+    },
+    {
+      "id": 23,
+      "name": "Ceará"
+    },
+    {
+      "id": 53,
+      "name": "Distrito Federal"
+    },
+    {
+      "id": 32,
+      "name": "Espírito Santo"
+    },
+    {
+      "id": 52,
+      "name": "Goiás"
+    },
+    {
+      "id": 21,
+      "name": "Maranhão"
+    },
+    {
+      "id": 51,
+      "name": "Mato Grosso"
+    },
+    {
+      "id": 50,
+      "name": "Mato Grosso do Sul"
+    },
+    {
+      "id": 31,
+      "name": "Minas Gerais"
+    },
+    {
+      "id": 15,
+      "name": "Pará"
+    },
+    {
+      "id": 25,
+      "name": "Paraíba"
+    },
+    {
+      "id": 41,
+      "name": "Paraná"
+    },
+    {
+      "id": 26,
+      "name": "Pernambuco"
+    },
+    {
+      "id": 22,
+      "name": "Piauí"
+    },
+    {
+      "id": 33,
+      "name": "Rio de Janeiro"
+    },
+    {
+      "id": 24,
+      "name": "Rio Grande do Norte"
+    },
+    {
+      "id": 43,
+      "name": "Rio Grande do Sul"
+    },
+    {
+      "id": 11,
+      "name": "Rondônia"
+    },
+    {
+      "id": 14,
+      "name": "Roraima"
+    },
+    {
+      "id": 35,
+      "name": "São Paulo"
+    },
+    {
+      "id": 42,
+      "name": "Santa Catarina"
+    },
+    {
+      "id": 28,
+      "name": "Sergipe"
+    },
+    {
+      "id": 17,
+      "name": "Tocantins"
+    }
+  ],
+  "var": [
+    [
+      {
+        "value": 1,
+        "name": "Número Total de Empresas"
+      },
+      {
+        "value": 2,
+        "name": "Participação das empresas culturais e criativas no total de empresas"
+      },
+      {
+        "value": 3,
+        "name": "Variação no Total de Empresas"
+      },
+      {
+        "value": 4,
+        "name": "Receita Total Bruta"
+      },
+      {
+        "value": 5,
+        "name": "Receita Operacional Liquida"
+      },
+      {
+        "value": 6,
+        "name": "Custo"
+      },
+      {
+        "value": 7,
+        "name": "Lucro"
+      },
+      {
+        "value": 8,
+        "name": "Valor Adicionado"
+      },
+      {
+        "value": 9,
+        "name": "Valor Adicionado / Produto Interno Bruto (PIB)"
+      },
+      {
+        "value": 10,
+        "name": "Índice de Concentração de Herfindahl-Hirschman (IHH - Empresas)"
+      },
+      {
+        "value": 11,
+        "name": "Índice de Concentração de Herfindahl-Hirschman (IHH - Valor Adicionado)"
+      },
+      {
+        "value": 12,
+        "name": "Razão de Concentração – C4 Empresas"
+      },
+      {
+        "value": 13,
+        "name": "Razão de Concentração – C4 Valor Adicionado"
+      }
+    ],
+    [
+      {
+        "value": 1,
+        "name": "Total de Ocupados"
+      },
+      {
+        "value": 2,
+        "name": "Participação no Emprego Total"
+      },
+      {
+        "value": 4,
+        "name": "Remuneração Média"
+      },
+      {
+        "value": 5,
+        "name": "Remuneração por Hora Trabalhada"
+      },
+      {
+        "value": 6,
+        "name": "Jornada de Trabalho Média"
+      },
+      {
+        "value": 7,
+        "name": "Massa de Rendimentos do Trabalho"
+      },
+      {
+        "value": 9,
+        "name": "Razão entre a Massa de Rendimentos do Trabalho e o Valor Adicionado"
+      },
+      {
+        "value": 11,
+        "name": "Razão entre os Salários Pagos e o Custo Total"
+      },
+      {
+        "value": 12,
+        "name": "Razão de Concentração do emprego cultural e criativo (C4)"
+      },
+      {
+        "value": 13,
+        "name": "Razão de Concentração da Massa Rendimentos do Trabalho (C4)"
+      },
+      {
+        "value": 14,
+        "name": "IHH (Índice Herfindahl-Hirschman de concentração) de Número de Trabalhadore(a)s"
+      },
+      {
+        "value": 15,
+        "name": "IHH (Índice Herfindahl-Hirschman de concentração) da Massa de Rendimentos do Trabalho"
+      }
+    ],
+    [
+      {
+        "value": 1,
+        "name": "Financiamento público total"
+      },
+      {
+        "value": 18,
+        "name": "Consumo via Vale-Cultura"
+      },
+      {
+        "value": 19,
+        "name": "Agentes do Vale-Cultura"
+      },
+      {
+        "value": 3,
+        "name": "Financiamento pelo BNDES"
+      },
+      {
+        "value": 4,
+        "name": "Valor total dos incentivos privados"
+      },
+      {
+        "value": 5,
+        "name": "Valor total dos incentivos das empresas estatais"
+      },
+      {
+        "value": 7,
+        "name": "Percentual de Recursos Privados no total financiado via Mecenato"
+      },
+      {
+        "value": 8,
+        "name": "Participação do financiamento público total no valor adicionado pelas atividades culturais"
+      },
+      {
+        "value": 9,
+        "name": "Participação do financiamento público total na massa salarial das atividades culturais"
+      },
+      {
+        "value": 10,
+        "name": "Participação da despesa com cultura nas contas públicas federais"
+      },
+      {
+        "value": 11,
+        "name": "Total das propostas de projetos de financiamento cultural"
+      },
+      {
+        "value": 12,
+        "name": "Total dos projetos de financiamento cultural efetivamente fomentados"
+      },
+      {
+        "value": 13,
+        "name": "Tempo médio de aprovação dos projetos de financiamento cultural"
+      },
+      {
+        "value": 14,
+        "name": "Razão entre total solicitado pelos projetos e o valor efetivo aprovado"
+      },
+      {
+        "value": 15,
+        "name": "Índice Razão para Concentração dos Incentivos Fiscais (C4) "
+      },
+      {
+        "value": 16,
+        "name": "Índice Herfindahl-Hirschman para Concentração dos Projetos Fomentados"
+      },
+      {
+        "value": 17,
+        "name": "Fomento Público Estadual à Cultura"
+      }
+    ],
+    [
+      {
+        "value": 1,
+        "name": "Comércio Externo"
+      },
+      {
+        "value": 2,
+        "name": "Participação no comércio exterior total"
+      },
+      {
+        "value": 3,
+        "name": "Relação com o valor adicionado pela cultura"
+      },
+      {
+        "value": 5,
+        "name": "Razões de concentração (C2/C4) do comércio externo"
+      },
+      {
+        "value": 8,
+        "name": "IHH (Índice Herfindahl-Hirschman) de concentração do comércio externo"
+      },
+      {
+        "value": 11,
+        "name": "Índice de quantum do comércio externo"
+      },
+      {
+        "value": 12,
+        "name": "Índice de preços do comércio externo"
+      },
+      {
+        "value": 13,
+        "name": "Quantidade física transacionada"
+      },
+      {
+        "value": 14,
+        "name": "Índice de rentabilidade das exportações"
+      }
+    ]
+  ]
+}
