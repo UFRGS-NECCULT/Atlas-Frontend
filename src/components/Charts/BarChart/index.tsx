@@ -2,10 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import { useSelection } from "hooks/SelectionContext";
 import { getBars } from "services/api";
-
-interface IProps {
-  data?: { Ano: number; Valor: number }[];
-}
+import { useData } from "hooks/DataContext";
 
 const BarChart: React.FC = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
@@ -14,6 +11,7 @@ const BarChart: React.FC = () => {
   const [values, setValues] = useState<number[]>([]);
 
   const { uf, cad, prt, num } = useSelection();
+  const { colors } = useData();
 
   useEffect(() => {
     const getData = async () => {
@@ -102,9 +100,10 @@ const BarChart: React.FC = () => {
 
       bars
         .transition()
-        .duration(300)
+        .duration(600)
         .attr("height", (d) => height - y(d))
-        .attr("y", (d) => y(d));
+        .attr("y", (d) => y(d))
+        .attr("fill", colors.cadeias[cad.toString()].color);
 
       bars
         .enter()
@@ -118,7 +117,7 @@ const BarChart: React.FC = () => {
         .attr("transform", "translate(" + marginLeft + ", " + marginTop + ")")
         .attr("width", x.bandwidth())
         .attr("height", (d) => 0)
-        .attr("fill", "orange")
+        .attr("fill", colors.cadeias[cad.toString()].color)
         .transition()
         .duration(300)
         .attr("height", (d) => height - y(d))

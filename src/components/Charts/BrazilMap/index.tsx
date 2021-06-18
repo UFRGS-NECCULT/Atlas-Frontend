@@ -1,15 +1,56 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
 
 import brStates from "../../../assets/json/br-min.json";
 import { GeometryCollection } from "topojson-specification";
+import { useSelection } from "hooks/SelectionContext";
+import { getMap } from "services/api";
+import { useData } from "hooks/DataContext";
 
-const BrazilMap = ({ data }) => {
+const BrazilMap = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
 
+  const [data, setData] = useState<{ uf: number; valor: number }[]>([]);
+  const [values, setValues] = useState<number[]>([]);
+
+  const { uf, cad, prt, ano, num, changeSelection } = useSelection();
+  const { colors } = useData();
+
   useEffect(() => {
-    if (data && d3Container.current) {
+    const getData = async () => {
+      const { data } = await getMap(1, { var: num, uf, cad, prt });
+      parseMapData(data);
+    };
+
+    getData();
+  }, [cad, ano, num]);
+
+  const parseMapData = (data) => {
+    setData(data);
+    const values = data.filter((d) => d.uf !== 0).map((d) => d.valor);
+    setValues(values);
+  };
+
+  const getValueByUf = (uf: number) => {
+    return data.find((x) => x.uf === uf)?.valor || 0;
+  };
+
+  useEffect(() => {
+    const svg = d3.select(d3Container.current);
+    svg
+      .append("defs")
+      .attr("id", "defsgrad")
+      .append("linearGradient")
+      .attr("id", "grad")
+      .attr("x1", "0%")
+      .attr("y1", "100%")
+      .attr("x2", "90%")
+      .attr("y2", "100%");
+  }, []);
+
+  useEffect(() => {
+    if (values && values.length && d3Container.current) {
       const marginLeft = 30;
       const marginTop = 20;
       const marginBottom = 20;
@@ -32,6 +73,7 @@ const BrazilMap = ({ data }) => {
         jsonFile,
         jsonFile.objects.states as GeometryCollection
       );
+
       projection.fitExtent(
         [
           [0, 0],
@@ -40,22 +82,123 @@ const BrazilMap = ({ data }) => {
         states
       );
 
-      const map = svg
+      const colorScale = d3
+        .scaleLinear<string>()
+        .domain(d3.extent(values) as [number, number])
+        .range([colors.cadeias[cad].gradient["2"], colors.cadeias[cad].gradient["6"]]); // TODO: change color dinamicallly
+
+      const [minValue, maxValue] = d3.extent(values);
+      const [lowColor, highColor] = d3.extent(values).map((v) => colorScale(v));
+
+      const stops = d3.select("#grad").selectAll("stop").data([lowColor, highColor]);
+
+      stops
+        .transition()
+        .duration(300)
+        .attr("stop-color", (d) => d);
+
+      stops
+        .enter()
+        .append("stop")
+        .attr("class", (d, i) => (i === 0 ? "begin" : "end"))
+        .attr("offset", (d, i) => (i === 0 ? "0%" : "90%"))
+        .attr("stop-color", (d) => d)
+        .style("stop-opacity", 1);
+
+      stops.exit().remove();
+
+      const legend_pos = {
+        x: width * 0.3 + width * 0.35,
+        y: height,
+        height: height * 0.03,
+        width: width * 0.35,
+        rx: height / 200,
+        ry: height / 200
+      };
+
+      svg.selectAll(".legenda").remove();
+      // const legenda = svg.select(".legenda");
+
+      const legenda = svg
         .append("g")
-        .attr("class", "states")
-        .selectAll("path")
-        .data(states.features)
+        .attr("class", "legenda")
+        .append("rect")
+        .attr("class", "legenda")
+        .attr("x", legend_pos.x)
+        .attr("y", legend_pos.y)
+        .attr("height", legend_pos.height)
+        .attr("width", legend_pos.width)
+        .attr("rx", legend_pos.rx)
+        .attr("ry", legend_pos.ry)
+        .style("fill", "url(#grad)")
+        .style("stroke-width", 1)
+        .style("stroke", "black");
+
+      legenda.exit().remove();
+
+      const legend_values = [minValue, ((minValue || 0) + (maxValue || 0)) / 2, maxValue];
+
+      const lines = svg.selectAll("line").data(legend_values);
+
+      lines
+        .enter()
+        .append("line")
+        .attr("class", "lines-legenda")
+        .attr("x1", (d, i) => legend_pos.x + i * (legend_pos.width / 2))
+        .attr("x2", (d, i) => legend_pos.x + i * (legend_pos.width / 2))
+        .attr("y1", legend_pos.y - 2)
+        .attr("y2", legend_pos.y + legend_pos.height + 2)
+        .style("stroke", "black")
+        .style("stroke-width", 1);
+
+      lines.exit().remove();
+
+      const legend_text = svg.selectAll("text").data(legend_values);
+
+      legend_text.text((d) => d || 0);
+
+      legend_text
+        .enter()
+        .append("text")
+        .attr("class", ".text-legenda")
+        .attr("x", (d, i) => legend_pos.x + i * (legend_pos.width / 2) - 8)
+        .attr("y", legend_pos.y - 5)
+        .attr("fill", "black")
+        .style("font-size", "9px")
+        .transition()
+        .duration(800)
+        .text((d) => d || 0);
+
+      legend_text.exit().remove();
+
+      /* Mapa */
+      const parsedStates = states.features.map((s) => {
+        return { ...s, color: colorScale(getValueByUf(Number(s.id))) };
+      });
+
+      const map = svg.selectAll("path").data(parsedStates);
+
+      map
         .enter()
         .append("path")
-        .style("fill", (d) => "gray")
         .attr("d", path)
+        .attr("id", (d) => d.id || 0)
+        .on("click", (d) => changeSelection("uf", d.target.id))
         .attr("stroke-linecap", "round")
+        .attr("fill", (d) => d.color)
         .attr("stroke", "black")
         .style("cursor", "pointer");
 
+      map
+        .transition()
+        .duration(300)
+        .attr("fill", (d) => d.color);
+
+      map.selectAll("path").data(data);
+
       map.exit().transition().duration(300).remove();
     }
-  }, [data, d3Container]);
+  }, [values, d3Container]);
 
   return <svg ref={d3Container} width={"100%"} height={"100%"} />;
 };

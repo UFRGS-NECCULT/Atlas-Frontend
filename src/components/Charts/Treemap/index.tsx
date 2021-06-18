@@ -1,5 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
+import { useSelection } from "hooks/SelectionContext";
+import { useData } from "hooks/DataContext";
+import { getTreemap } from "services/api";
 
 interface IProps {
   data?: {
@@ -34,8 +37,24 @@ interface IParsedData {
   }[];
 }
 
-const Treemap: React.FC<IProps> = ({ data }) => {
+const Treemap: React.FC<IProps> = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
+  const [data, setData] = useState<IParsedData>();
+
+  const { uf, prt, num, ano } = useSelection();
+  const { colors } = useData();
+
+  useEffect(() => {
+    const getData = async () => {
+      const { data } = await getTreemap(1, { var: num, uf, prt, ano });
+
+      console.log(data);
+      const x = parseData(data);
+      setData(x);
+    };
+
+    getData();
+  }, [uf, prt, num, ano]);
 
   const parseData = (data): IParsedData => {
     const r = data.reduce((r, c) => {
@@ -64,8 +83,8 @@ const Treemap: React.FC<IProps> = ({ data }) => {
   };
 
   useEffect(() => {
-    if (data && d3Container.current) {
-      const parsedData = parseData(data);
+    console.log(data);
+    if (data && data.children && data.children.length && d3Container.current) {
       const svg = d3.select(d3Container.current);
 
       const marginLeft = 0;
@@ -77,8 +96,10 @@ const Treemap: React.FC<IProps> = ({ data }) => {
 
       const treemap = d3.treemap().tile(d3.treemapResquarify).size([width, height]).round(true).paddingInner(1);
 
+      // svg.selectAll("g").remove();
+
       const root = d3
-        .hierarchy(parsedData)
+        .hierarchy(data)
         .eachBefore((d, i) => {
           d.data.id = d.data.name;
         })
@@ -91,24 +112,32 @@ const Treemap: React.FC<IProps> = ({ data }) => {
 
       treemap(root);
 
-      const cell = svg
-        .selectAll("g")
-        .data(root.leaves())
+      const cell = svg.selectAll(".cell").data(root.leaves());
+
+      cell
         .enter()
         .append("g")
+        .attr("class", "cell") // TODO: descobrir a tipagem correta
         .attr("transform", (d: any) => `translate(${d.x0}, ${d.y0})`) // TODO: descobrir a tipagem correta
-        .style("cursor", "pointer");
-
-      const rect = cell
+        .style("cursor", "pointer")
         .append("rect")
         .attr("id", (d) => d.data.id || "")
         .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
         .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
-        .attr("fill", "red");
+        .attr("fill", (d) => colors.cadeias[d.data.id || 0].color);
 
-      rect.exit().remove();
+      cell
+        .transition()
+        .duration(600)
+        .attr("transform", (d: any) => `translate(${d.x0}, ${d.y0})`)
+        .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
+        .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
+        .select("rect")
+        .attr("id", (d) => d.data.id || "")
+        .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
+        .attr("height", (d: any) => d.y1 - d.y0); // TODO: descobrir a tipagem correta
     }
-  }, [d3Container]);
+  }, [data, d3Container]);
 
   return <svg ref={d3Container} width={"100%"} height={"100%"} />;
 };
