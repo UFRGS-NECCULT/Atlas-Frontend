@@ -83,12 +83,6 @@ export const Button = styled.div`
   align-items: center;
 `;
 
-export const Text = styled.p`
-  color: #aaa;
-  text-align: justify;
-  font-weight: 500;
-`;
-
 interface ChartContainerProps {
   direction?: "column" | "row";
 }

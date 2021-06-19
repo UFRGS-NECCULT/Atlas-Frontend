@@ -29,7 +29,7 @@ const SelectionContext = createContext<SelectionContextData>({} as SelectionCont
 const SelectionProvider: React.FC = ({ children }) => {
   const baseURL = "/resultado";
 
-  const [eixo, setEixo] = useState<number>(0);
+  const [eixo] = useState<number>(0);
   const [num, setNum] = useState<number>(1);
   const [uf, setUF] = useState<number>(0);
   const [cad, setCad] = useState<number>(0);

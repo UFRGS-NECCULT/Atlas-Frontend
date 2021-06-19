@@ -90,7 +90,7 @@ const LineChart: React.FC<IProps> = () => {
           .x((d) => xScale(parseYear(d.Ano)) as number)
           .y((d) => yScale(d.Valor));
 
-        const path = svg
+        svg
           .append("path")
           .datum(data.filter((d) => d.ID == id))
           .attr("fill", "none")

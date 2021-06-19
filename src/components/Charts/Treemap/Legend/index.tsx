@@ -2,25 +2,23 @@ import React from "react";
 import { Container, List, Setor, Title } from "./styles";
 
 interface IProps {
-  data?: {
-    idCadeia: number;
-    CadeiaNome: string;
-    UFNome: string;
-    Percentual: number;
-    Taxa: number;
-    Valor: number;
-  }[];
+  data: ILegendData[];
 }
 
+interface ILegendData {
+  label: string;
+  color: string;
+}
 const TreemapLegend: React.FC<IProps> = ({ data }) => {
+  console.log(data);
   return (
     <Container>
       <Title>Setores</Title>
       <List>
         {data?.map((setor) => (
-          <Setor key={setor.idCadeia}>
-            <i></i>
-            <span>{setor.CadeiaNome}</span>
+          <Setor key={setor.label}>
+            <i style={{ backgroundColor: setor.color }}></i>
+            <span>{setor.label}</span>
           </Setor>
         ))}
       </List>
