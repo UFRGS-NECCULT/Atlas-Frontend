@@ -1,5 +1,9 @@
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
+import { useState } from "react";
+import { useSelection } from "hooks/SelectionContext";
+import { useData } from "hooks/DataContext";
+import { getLines } from "services/api";
 
 interface IProps {
   data?: Data[];
@@ -14,30 +18,19 @@ interface Data {
 const LineChart: React.FC<IProps> = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
 
-  const data = [
-    { Ano: 2007, Valor: 123, ID: 1 },
-    { Ano: 2008, Valor: 231, ID: 1 },
-    { Ano: 2009, Valor: 312, ID: 1 },
-    { Ano: 2010, Valor: 420, ID: 1 },
-    { Ano: 2011, Valor: 230, ID: 1 },
-    { Ano: 2008, Valor: 149, ID: 2 },
-    { Ano: 2009, Valor: 321, ID: 2 },
-    { Ano: 2010, Valor: 650, ID: 2 },
-    { Ano: 2011, Valor: 700, ID: 2 },
-    { Ano: 2012, Valor: 630, ID: 2 },
-    { Ano: 2013, Valor: 650, ID: 2 },
-    { Ano: 2013, Valor: 650, ID: 2 },
-    { Ano: 2013, Valor: 650, ID: 2 },
-    { Ano: 2013, Valor: 650, ID: 2 },
-    { Ano: 2009, Valor: 156, ID: 3 },
-    { Ano: 2010, Valor: 162, ID: 3 },
-    { Ano: 2011, Valor: 186, ID: 3 },
-    { Ano: 2012, Valor: 195, ID: 3 },
-    { Ano: 2013, Valor: 196, ID: 3 },
-    { Ano: 2014, Valor: 215, ID: 3 },
-    { Ano: 2015, Valor: 215, ID: 1 },
-    { Ano: 2016, Valor: 198, ID: 1 }
-  ];
+  const [data, setData] = useState<Data[]>([]);
+
+  const { num, uf, cad, deg } = useSelection();
+  const { colors } = useData();
+
+  useEffect(() => {
+    const getData = async () => {
+      const { data } = await getLines(1, { var: num, uf, cad, deg });
+      setData(data);
+    };
+
+    getData();
+  }, [num, uf, cad, deg]);
 
   useEffect(() => {
     if (data && data.length && d3Container.current) {
@@ -50,8 +43,8 @@ const LineChart: React.FC<IProps> = () => {
 
       const svg = d3.select(d3Container.current);
 
-      // Clear out the chart
-      svg.selectAll("*").remove();
+      // Remove previous axes
+      svg.selectAll(".axis").remove();
 
       const parseYear = (d: number) => d3.timeParse("%Y")(d.toString()) as Date;
 
@@ -67,6 +60,7 @@ const LineChart: React.FC<IProps> = () => {
         .tickPadding(5);
       svg
         .append("g")
+        .attr("class", "axis")
         .attr("transform", `translate(${marginLeft}, ${marginTop + height})`)
         .call(xAxis);
 
@@ -79,26 +73,38 @@ const LineChart: React.FC<IProps> = () => {
         .tickSize(5)
         .tickPadding(5)
         .tickFormat((d) => d.toString());
-      svg.append("g").attr("transform", `translate(${marginLeft}, ${marginTop})`).call(yAxis);
+      svg.append("g").attr("class", "axis").attr("transform", `translate(${marginLeft}, ${marginTop})`).call(yAxis);
 
-      // Make the lines
-      const uniqueIDs = new Set(data.map((d) => d.ID));
-      const palette = d3.scaleOrdinal(d3.schemeCategory10); // A color for each id
-      uniqueIDs.forEach((id) => {
-        const line = d3
-          .line<Data>()
-          .x((d) => xScale(parseYear(d.Ano)) as number)
-          .y((d) => yScale(d.Valor));
+      // Group each value based on their ID
+      const groups: Data[][] = [];
+      outer: for (const d of data) {
+        // Try to find a group with our id
+        for (const group of groups) {
+          if (group[0].ID == d.ID) {
+            group.push(d);
+            continue outer;
+          }
+        }
+        // Found no group, create a new
+        groups.push([d]);
+      }
 
-        svg
-          .append("path")
-          .datum(data.filter((d) => d.ID == id))
-          .attr("fill", "none")
-          .attr("stroke", (d) => palette(id.toString()))
-          .attr("stroke-width", 2)
-          .attr("transform", `translate(${marginLeft}, ${marginTop})`)
-          .attr("d", line);
-      });
+      const line = d3
+        .line<Data>()
+        .x((d) => xScale(parseYear(d.Ano)) as number)
+        .y((d) => yScale(d.Valor));
+
+      const lines = svg.selectAll("path.line").data(groups);
+      lines
+        .join("path")
+        .attr("class", "line")
+        .transition()
+        .duration(1000)
+        .attr("fill", "none")
+        .attr("stroke", (d) => colors['cadeias'][d[0].ID.toString()]['color'])
+        .attr("stroke-width", 2)
+        .attr("transform", `translate(${marginLeft}, ${marginTop})`)
+        .attr("d", line);
     }
   }, [data, d3Container.current]);
 
