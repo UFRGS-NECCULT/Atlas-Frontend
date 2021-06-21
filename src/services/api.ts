@@ -10,6 +10,10 @@ export const getBars = async (eixo = 1, params) => {
   return await api.get(`/eixo/${eixo}/bars?${qs.stringify(params)}`);
 };
 
+export const getLines = async (eixo = 1, params) => {
+  return await api.get(`/eixo/${eixo}/lines?${qs.stringify(params)}`);
+}
+
 export const getMap = async (eixo = 1, params) => {
   return await api.get(`/eixo/${eixo}/map?${qs.stringify(params)}`);
 };

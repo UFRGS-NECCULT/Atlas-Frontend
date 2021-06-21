@@ -12,6 +12,7 @@ interface SelectionContextData {
   uf: number;
   cad: number;
   prt: number;
+  deg: number;
 }
 
 export interface ISimpleOptions {
@@ -35,6 +36,7 @@ const SelectionProvider: React.FC = ({ children }) => {
   const [cad, setCad] = useState<number>(0);
   const [prt, setPrt] = useState<number>(0);
   const [ano, setAno] = useState<number>(2017);
+  const [deg, setDeg] = useState<number>(0);
   // const history = useHistory();
 
   const [options, setOptions] = useState<IOptions>({});
@@ -50,6 +52,7 @@ const SelectionProvider: React.FC = ({ children }) => {
       parsed.uf ? setUF(Number(parsed.uf)) : setUF(0);
       parsed.cad ? setCad(Number(parsed.cad)) : setCad(0);
       parsed.prt ? setPrt(Number(parsed.prt)) : setPrt(0);
+      parsed.deg ? setDeg(Number(parsed.deg)) : setDeg(0);
     }
   }, []);
 
@@ -70,6 +73,9 @@ const SelectionProvider: React.FC = ({ children }) => {
         break;
       case "var":
         setNum(value);
+        break;
+      case "deg":
+        setDeg(value);
         break;
       default:
         console.error("Seletor não existe");
@@ -98,6 +104,7 @@ const SelectionProvider: React.FC = ({ children }) => {
         ano,
         cad,
         prt,
+        deg,
         changeSelection
       }}
     >
