@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
+import SVGTooltip from 'components/SVGTooltip';
 
 interface IProps {
   data?: Data[];
@@ -20,15 +21,18 @@ const LineChart: React.FC<IProps> = () => {
     { Ano: 2009, Valor: 312, ID: 1 },
     { Ano: 2010, Valor: 420, ID: 1 },
     { Ano: 2011, Valor: 230, ID: 1 },
-    { Ano: 2008, Valor: 149, ID: 2 },
+    { Ano: 2007, Valor: 650, ID: 2 },
+    { Ano: 2008, Valor: 650, ID: 2 },
     { Ano: 2009, Valor: 321, ID: 2 },
     { Ano: 2010, Valor: 650, ID: 2 },
     { Ano: 2011, Valor: 700, ID: 2 },
     { Ano: 2012, Valor: 630, ID: 2 },
     { Ano: 2013, Valor: 650, ID: 2 },
     { Ano: 2013, Valor: 650, ID: 2 },
-    { Ano: 2013, Valor: 650, ID: 2 },
-    { Ano: 2013, Valor: 650, ID: 2 },
+    { Ano: 2022, Valor: 650, ID: 2 },
+    { Ano: 2023, Valor: 650, ID: 2 },
+    { Ano: 2024, Valor: 650, ID: 2 },
+    { Ano: 2025, Valor: 650, ID: 2 },
     { Ano: 2009, Valor: 156, ID: 3 },
     { Ano: 2010, Valor: 162, ID: 3 },
     { Ano: 2011, Valor: 186, ID: 3 },
@@ -36,7 +40,9 @@ const LineChart: React.FC<IProps> = () => {
     { Ano: 2013, Valor: 196, ID: 3 },
     { Ano: 2014, Valor: 215, ID: 3 },
     { Ano: 2015, Valor: 215, ID: 1 },
-    { Ano: 2016, Valor: 198, ID: 1 }
+    { Ano: 2016, Valor: 198, ID: 1 },
+    { Ano: 2022, Valor: 198, ID: 1 },
+    { Ano: 2025, Valor: 198, ID: 1 }
   ];
 
   useEffect(() => {
@@ -84,12 +90,12 @@ const LineChart: React.FC<IProps> = () => {
       // Make the lines
       const uniqueIDs = new Set(data.map((d) => d.ID));
       const palette = d3.scaleOrdinal(d3.schemeCategory10); // A color for each id
+      // Functions to calculate the (x, y) position of a data point inside the svg
+      const getXPos = (d: Data) => xScale(parseYear(d.Ano)) as number;
+      const getYPos = (d: Data) => yScale(d.Valor);
+      const line = d3.line<Data>().x(getXPos).y(getYPos);
+      // Group the data points by their group ID
       uniqueIDs.forEach((id) => {
-        const line = d3
-          .line<Data>()
-          .x((d) => xScale(parseYear(d.Ano)) as number)
-          .y((d) => yScale(d.Valor));
-
         svg
           .append("path")
           .datum(data.filter((d) => d.ID == id))
@@ -99,10 +105,46 @@ const LineChart: React.FC<IProps> = () => {
           .attr("transform", `translate(${marginLeft}, ${marginTop})`)
           .attr("d", line);
       });
+
+      const tooltip = new SVGTooltip(d3Container.current, {
+        right: 0,
+        left: marginLeft,
+        top: marginTop,
+        bottom: marginBottom
+      });
+      const positions = data.map((d) => {
+        return { dx: getXPos(d), dy: getYPos(d), d };
+      });
+
+      svg.on("mousemove touchmove", (e) => {
+        let [x, y] = d3.pointer(e);
+
+        // Adjust to account for margins
+        x -= marginLeft;
+        y -= marginTop;
+
+        // Shortcuts
+        const sqrt = Math.sqrt;
+        const sqr = (x: number) => Math.pow(x, 2);
+
+        // Calculate the distance of the pointer to every data point and select the closest
+        // https://en.wikipedia.org/wiki/Euclidean_distance#Two_dimensions
+        const { dx, dy, d } = positions
+          .map(({ dx, dy, d }) => {
+            return { distance: sqrt(sqr(x - dx) + sqr(y - dy)), dx, dy, d };
+          })
+          .sort((a, b) => a.distance - b.distance)[0];
+
+        tooltip.setText(`Valor: ${d.Valor}\nAno: ${d.Ano}\nGrupo: ${d.ID}`);
+        tooltip.setXY(dx, dy);
+        tooltip.show();
+      });
+
+      svg.on("touchend mouseleave", () => tooltip.hide());
     }
   }, [data, d3Container.current]);
 
-  return <svg ref={d3Container} width={"100%"} height={"100%"} />;
+  return <svg ref={d3Container} width="100%" height="100%" />;
 };
 
 export default LineChart;
