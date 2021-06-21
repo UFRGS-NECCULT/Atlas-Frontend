@@ -37,6 +37,11 @@ export default class SVGTooltip {
   }
 
   show() {
+    // Move the tooltip to the front
+    this.tooltip.each(function() {
+      this.parentNode?.appendChild(this);
+    });
+
     if (!this.visible) {
       this.visible = true;
       this.draw();
