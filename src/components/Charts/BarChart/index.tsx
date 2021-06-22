@@ -10,7 +10,7 @@ const BarChart: React.FC = () => {
   const [keys, setKeys] = useState<string[]>([]);
   const [values, setValues] = useState<number[]>([]);
 
-  const { uf, cad, prt, num, changeSelection } = useSelection();
+  const { uf, cad, prt, num, ano, changeSelection } = useSelection();
   const { colors } = useData();
 
   useEffect(() => {
@@ -104,11 +104,14 @@ const BarChart: React.FC = () => {
 
       bars
         .on("click", (e, d) => changeSelection("ano", Number(findKeyByValue(d))))
+        .attr("class", (d) => (ano === Number(findKeyByValue(d)) ? "destacado" : "normal"))
         .transition()
         .duration(600)
         .attr("height", (d) => height - y(d))
         .attr("y", (d) => y(d))
         .attr("fill", colors.cadeias[cad.toString()].color);
+
+      // .attr("fill", (d) => (ano === Number(findKeyByValue(d)) ? "red" : colors.cadeias[cad.toString()].color));
 
       bars
         .enter()
@@ -129,6 +132,17 @@ const BarChart: React.FC = () => {
         .attr("height", (d) => height - y(d))
         .attr("y", (d) => y(d));
 
+      svg.selectAll(".normal").attr("stroke", "none").attr("opacity", 0.65);
+
+      svg
+        .selectAll(".destacado")
+        .attr("stroke", "#555")
+        .attr("opacity", 1)
+        .attr("stroke-width", 2)
+        .transition()
+        .duration(600)
+        .attr("fill", "#6dbfc9"); //TODO: Mudar para cor do respectivo eixo selecionado
+
       bars
         .exit()
         .transition()
@@ -137,7 +151,7 @@ const BarChart: React.FC = () => {
         .attr("height", 0)
         .remove();
     }
-  }, [values, d3Container.current]);
+  }, [ano, values, d3Container.current]);
 
   return <svg ref={d3Container} width={"100%"} height={"100%"} />;
 };

@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
-import { useState } from "react";
+
 import { useSelection } from "hooks/SelectionContext";
 import { useData } from "hooks/DataContext";
 import { getLines } from "services/api";
@@ -45,7 +45,7 @@ const LineChart: React.FC<IProps> = () => {
           right: 0,
           left: marginLeft,
           top: marginTop,
-          bottom: marginBottom,
+          bottom: marginBottom
         });
       }
       const tooltip = tooltipContainer.current;
@@ -103,10 +103,7 @@ const LineChart: React.FC<IProps> = () => {
       // Build a line for each group
       const getXPos = (d: Data) => xScale(parseYear(d.Ano)) as number;
       const getYPos = (d: Data) => yScale(d.Valor);
-      const line = d3
-        .line<Data>()
-        .x(getXPos)
-        .y(getYPos);
+      const line = d3.line<Data>().x(getXPos).y(getYPos);
       const lines = svg.selectAll("path.line").data(groups);
       lines
         .join("path")

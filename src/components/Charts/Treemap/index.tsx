@@ -3,7 +3,7 @@ import * as d3 from "d3";
 import { useSelection } from "hooks/SelectionContext";
 import { useData } from "hooks/DataContext";
 import { getTreemap } from "services/api";
-import Legend from "./Legend";
+import Legend, { ILegendData } from "../Legend";
 import { TreemapContainer } from "./styles";
 import SVGTooltip from "components/SVGTooltip";
 
@@ -40,12 +40,6 @@ interface IParsedData {
   }[];
 }
 
-interface ILegendData {
-  label: string;
-  id: number;
-  color: string;
-}
-
 const Treemap: React.FC<IProps> = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
@@ -68,7 +62,7 @@ const Treemap: React.FC<IProps> = () => {
 
   const parseData = (data): IParsedData => {
     const legend: ILegendData[] = data.map((d) => {
-      return { label: d.CadeiaNome, color: colors.cadeias[d.idCadeia].color };
+      return { label: d.CadeiaNome, color: colors.cadeias[d.idCadeia].color, id: d.idCadeia };
     });
 
     setLegendData(legend);
@@ -148,7 +142,7 @@ const Treemap: React.FC<IProps> = () => {
         .attr("id", (d) => d.data.id || "")
         .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
         .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
-        .attr("opacity", (d) => (cad === 0 || cad === Number(d.data.id)) ? 1 : unfocusOpacity)
+        .attr("opacity", (d) => (cad === 0 || cad === Number(d.data.id) ? 1 : unfocusOpacity))
         .attr("fill", (d) => colors.cadeias[d.data.id || 0].color)
         .on("click", (d) => changeSelection("cad", Number(d.target.id)));
 
@@ -191,7 +185,7 @@ const Treemap: React.FC<IProps> = () => {
         .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
         .select("rect")
         .attr("id", (d) => d.data.id || "")
-        .style("opacity", (d) => (cad === 0 || cad === Number(d.data.id)) ? 1 : unfocusOpacity)
+        .style("opacity", (d) => (cad === 0 || cad === Number(d.data.id) ? 1 : unfocusOpacity))
         .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
         .attr("height", (d: any) => d.y1 - d.y0); // TODO: descobrir a tipagem correta
 
@@ -249,9 +243,9 @@ const Treemap: React.FC<IProps> = () => {
 
         tooltip.setText(
           `Valor: ${selected.value}\n` +
-            (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
-            `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
-            `Cadeia: ${selected.data.name}`
+          (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
+          `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
+          `Cadeia: ${selected.data.name}`
         );
         tooltip.setXY((selected.x0 + selected.x1) / 2, (selected.y0 + selected.y1) / 2); // Middle of the rectangle
         tooltip.show();
@@ -264,7 +258,7 @@ const Treemap: React.FC<IProps> = () => {
   return (
     <TreemapContainer>
       <svg ref={d3Container} width={"100%"} height={"100%"} />
-      <Legend data={legendData} />
+      <Legend selector="cad" title="Setores" data={legendData} />
     </TreemapContainer>
   );
 };

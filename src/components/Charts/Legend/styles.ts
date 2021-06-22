@@ -28,6 +28,7 @@ export const List = styled.div`
 `;
 
 export const Setor = styled.div`
+  cursor: pointer;
   width: 100%;
 
   display: flex;
