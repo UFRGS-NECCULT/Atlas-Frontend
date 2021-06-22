@@ -119,10 +119,10 @@ const BrazilMap = () => {
       stops.exit().remove();
 
       const legend_pos = {
-        x: width * 0.3 + width * 0.35,
-        y: height,
+        x: width * 0.28,
+        y: height + 10,
         height: height * 0.03,
-        width: width * 0.35,
+        width: width * 0.5,
         rx: height / 200,
         ry: height / 200
       };
@@ -173,7 +173,7 @@ const BrazilMap = () => {
         .append("text")
         .attr("class", ".text-legenda")
         .attr("x", (d, i) => legend_pos.x + i * (legend_pos.width / 2) - 8)
-        .attr("y", legend_pos.y - 5)
+        .attr("y", legend_pos.y + 25)
         .attr("fill", "black")
         .style("font-size", "9px")
         .transition()
@@ -191,7 +191,7 @@ const BrazilMap = () => {
         tooltip.setXY(x, y);
         tooltip.setText(
           `Estado: ${d.properties.name[0].toUpperCase() + d.properties.name.slice(1).toLowerCase()}\n` +
-            `Valor: ${getValueByUf(Number(d.id))}`
+          `Valor: ${getValueByUf(Number(d.id))}`
         );
         tooltip.show();
       };
