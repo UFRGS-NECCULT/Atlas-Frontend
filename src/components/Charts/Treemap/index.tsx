@@ -50,7 +50,9 @@ const Treemap: React.FC<IProps> = () => {
   const [data, setData] = useState<IParsedData>();
   const [legendData, setLegendData] = useState<ILegendData[]>([]);
 
-  const { uf, prt, num, ano, changeSelection } = useSelection();
+  const unfocusOpacity = 0.8;
+
+  const { uf, prt, num, ano, cad, changeSelection } = useSelection();
   const { colors } = useData();
 
   useEffect(() => {
@@ -134,10 +136,9 @@ const Treemap: React.FC<IProps> = () => {
         .attr("id", (d) => d.data.id || "")
         .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
         .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
-        // .attr("opacity", (d: any) => (cad === 0 || cad === d.data.id ? 1 : 0.5))
-        .attr("opacity", (d: any) => 1)
+        .attr("opacity", (d) => (cad === 0 || cad === Number(d.data.id)) ? 1 : unfocusOpacity)
         .attr("fill", (d) => colors.cadeias[d.data.id || 0].color)
-        .on("click", (d) => changeSelection("cad", d.target.id));
+        .on("click", (d) => changeSelection("cad", Number(d.target.id)));
 
       g.append("text")
         .attr("class", "title")
@@ -178,7 +179,7 @@ const Treemap: React.FC<IProps> = () => {
         .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
         .select("rect")
         .attr("id", (d) => d.data.id || "")
-        // .style("opacity", (d: any) => (cad === 0 || cad === d.data.id ? 1 : 0.5))
+        .style("opacity", (d) => (cad === 0 || cad === Number(d.data.id)) ? 1 : unfocusOpacity)
         .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
         .attr("height", (d: any) => d.y1 - d.y0); // TODO: descobrir a tipagem correta
 
@@ -207,7 +208,7 @@ const Treemap: React.FC<IProps> = () => {
 
       cell.exit().remove();
     }
-  }, [data, d3Container]);
+  }, [data, cad, d3Container]);
 
   return (
     <TreemapContainer>
