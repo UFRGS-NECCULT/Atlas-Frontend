@@ -5,6 +5,7 @@ import { useData } from "hooks/DataContext";
 import { getTreemap } from "services/api";
 import Legend from "./Legend";
 import { TreemapContainer } from "./styles";
+import SVGTooltip from "components/SVGTooltip";
 
 interface IProps {
   data?: {
@@ -47,10 +48,13 @@ interface ILegendData {
 
 const Treemap: React.FC<IProps> = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
+  const tooltipContainer = useRef<SVGTooltip | null>(null);
   const [data, setData] = useState<IParsedData>();
   const [legendData, setLegendData] = useState<ILegendData[]>([]);
 
-  const { uf, prt, num, ano, changeSelection } = useSelection();
+  const unfocusOpacity = 0.8;
+
+  const { uf, prt, num, ano, cad, changeSelection } = useSelection();
   const { colors } = useData();
 
   useEffect(() => {
@@ -96,12 +100,22 @@ const Treemap: React.FC<IProps> = () => {
   };
 
   useEffect(() => {
-    if (data && data.children && data.children.length && d3Container.current) {
-      const svg = d3.select(d3Container.current);
+    const marginLeft = 0;
+    const marginTop = 0;
+    const marginBottom = 0;
 
-      const marginLeft = 0;
-      const marginTop = 0;
-      const marginBottom = 0;
+    if (data && data.children && data.children.length && d3Container.current) {
+      if (tooltipContainer.current == null) {
+        tooltipContainer.current = new SVGTooltip(d3Container.current, {
+          right: 0,
+          left: marginLeft,
+          top: marginTop,
+          bottom: marginBottom
+        });
+      }
+      const tooltip = tooltipContainer.current;
+
+      const svg = d3.select(d3Container.current);
 
       const width = d3Container.current.clientWidth - marginLeft;
       const height = d3Container.current.clientHeight - marginTop - marginBottom;
@@ -134,10 +148,9 @@ const Treemap: React.FC<IProps> = () => {
         .attr("id", (d) => d.data.id || "")
         .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
         .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
-        // .attr("opacity", (d: any) => (cad === 0 || cad === d.data.id ? 1 : 0.5))
-        .attr("opacity", (d: any) => 1)
+        .attr("opacity", (d) => (cad === 0 || cad === Number(d.data.id)) ? 1 : unfocusOpacity)
         .attr("fill", (d) => colors.cadeias[d.data.id || 0].color)
-        .on("click", (d) => changeSelection("cad", d.target.id));
+        .on("click", (d) => changeSelection("cad", Number(d.target.id)));
 
       g.append("text")
         .attr("class", "title")
@@ -178,7 +191,7 @@ const Treemap: React.FC<IProps> = () => {
         .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
         .select("rect")
         .attr("id", (d) => d.data.id || "")
-        // .style("opacity", (d: any) => (cad === 0 || cad === d.data.id ? 1 : 0.5))
+        .style("opacity", (d) => (cad === 0 || cad === Number(d.data.id)) ? 1 : unfocusOpacity)
         .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
         .attr("height", (d: any) => d.y1 - d.y0); // TODO: descobrir a tipagem correta
 
@@ -206,8 +219,47 @@ const Treemap: React.FC<IProps> = () => {
         });
 
       cell.exit().remove();
+
+      svg.on("mousemove touchmove", (e) => {
+        let [x, y] = d3.pointer(e);
+
+        // Adjust to account for margins
+        x -= marginLeft;
+        y -= marginTop;
+
+        // Tells if a point (x, y) is inside a rectangle that starts at (rx1, ry1) and ends at (rx2, ry2)
+        const isInside = (x: number, y: number, rx1: number, ry1: number, rx2: number, ry2: number) =>
+          x > rx1 && x < rx2 && y > ry1 && y < ry2;
+
+        // Select the rectangle the mouse is on
+        let selected: any = null;
+        for (const data of root.leaves() as any[]) {
+          // TODO: Find correct typing
+          if (isInside(x, y, data.x0, data.y0, data.x1, data.y1)) {
+            selected = data;
+            break;
+          }
+        }
+
+        // If we're not inside any rectangle, just hide the tooltip
+        if (selected === null) {
+          tooltip.hide();
+          return;
+        }
+
+        tooltip.setText(
+          `Valor: ${selected.value}\n` +
+            (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
+            `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
+            `Cadeia: ${selected.data.name}`
+        );
+        tooltip.setXY((selected.x0 + selected.x1) / 2, (selected.y0 + selected.y1) / 2); // Middle of the rectangle
+        tooltip.show();
+      });
+
+      svg.on("touchend mouseleave", () => tooltip.hide());
     }
-  }, [data, d3Container]);
+  }, [data, cad, d3Container]);
 
   return (
     <TreemapContainer>
