@@ -7,12 +7,13 @@ import { GeometryCollection } from "topojson-specification";
 import { useSelection } from "hooks/SelectionContext";
 import { getMap } from "services/api";
 import { useData } from "hooks/DataContext";
+import SVGTooltip from "components/SVGTooltip";
 
 const BrazilMap = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
+  const tooltipContainer = useRef<SVGTooltip | null>(null);
 
   const [data, setData] = useState<{ uf: number; valor: number }[]>([]);
-  const [values, setValues] = useState<number[]>([]);
 
   const { uf, cad, prt, ano, num, changeSelection } = useSelection();
   const { colors } = useData();
@@ -28,8 +29,6 @@ const BrazilMap = () => {
 
   const parseMapData = (data) => {
     setData(data);
-    const values = data.filter((d) => d.uf !== 0).map((d) => d.valor);
-    setValues(values);
   };
 
   const getValueByUf = (uf: number) => {
@@ -50,10 +49,20 @@ const BrazilMap = () => {
   }, []);
 
   useEffect(() => {
-    if (values && values.length && d3Container.current) {
+    if (data && data.length && d3Container.current) {
       const marginLeft = 30;
       const marginTop = 20;
       const marginBottom = 20;
+
+      if (tooltipContainer.current == null) {
+        tooltipContainer.current = new SVGTooltip(d3Container.current, {
+          right: 0,
+          left: marginLeft,
+          top: marginTop,
+          bottom: marginBottom
+        });
+      }
+      const tooltip = tooltipContainer.current;
 
       const width = d3Container.current.clientWidth - marginLeft;
       const height = d3Container.current.clientHeight - marginTop - marginBottom;
@@ -81,6 +90,8 @@ const BrazilMap = () => {
         ],
         states
       );
+
+      const values = data.filter((d) => d.uf !== 0).map((d) => d.valor);
 
       const colorScale = d3
         .scaleLinear<string>()
@@ -171,18 +182,62 @@ const BrazilMap = () => {
 
       legend_text.exit().remove();
 
+      const showTooltip = (d) => {
+        let [x, y] = projection(d.mid)!;
+        // Adjust for margins
+        x -= marginLeft;
+        y -= marginTop;
+
+        tooltip.setXY(x, y);
+        tooltip.setText(
+          `Estado: ${d.properties.name[0].toUpperCase() + d.properties.name.slice(1).toLowerCase()}\n` +
+            `Valor: ${getValueByUf(Number(d.id))}`
+        );
+        tooltip.show();
+      };
+      const hideTooltip = () => {
+        tooltip.hide();
+      };
+
       /* Mapa */
-      const parsedStates = states.features.map((s) => {
-        return { ...s, color: colorScale(getValueByUf(Number(s.id))) };
+      // TODO: Find correct typing
+      const parsedStates = states.features.map((s: any) => {
+        // Compute mid point (just the average of all points)
+        let midx = 0;
+        let midy = 0;
+        let coords = [];
+        switch (s.geometry.type) {
+          case "MultiPolygon":
+            coords = s.geometry.coordinates[0][0];
+            break;
+          case "Polygon":
+            coords = s.geometry.coordinates[0];
+            break;
+          default:
+            throw `Unknown geometry type "${s.geometry.type}"`;
+        }
+        for (const [x, y] of coords) {
+          midx += x;
+          midy += y;
+        }
+        midx /= coords.length;
+        midy /= coords.length;
+
+        return { ...s, mid: [midx, midy], color: colorScale(getValueByUf(Number(s.id))) };
       });
 
-      const map = svg.selectAll("path").data(parsedStates);
+      const map = svg
+        .selectAll("path.uf")
+        .on("mouseover", (_, d) => showTooltip(d))
+        .on("mouseout", () => hideTooltip())
+        .data(parsedStates);
 
       map
         .enter()
         .append("path")
+        .attr("class", "uf")
         .attr("d", path)
-        .attr("id", (d) => d.id || 0)
+        .attr("id", (d) => Number(d.id) || 0)
         .on("click", (d) => changeSelection("uf", d.target.id))
         .attr("stroke-linecap", "round")
         .attr("fill", (d) => d.color)
@@ -194,11 +249,9 @@ const BrazilMap = () => {
         .duration(300)
         .attr("fill", (d) => d.color);
 
-      map.selectAll("path").data(data);
-
       map.exit().transition().duration(300).remove();
     }
-  }, [values, d3Container]);
+  }, [data, d3Container]);
 
   return <svg ref={d3Container} width={"100%"} height={"100%"} />;
 };

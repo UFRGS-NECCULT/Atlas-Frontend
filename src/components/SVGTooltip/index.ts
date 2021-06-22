@@ -24,7 +24,7 @@ export default class SVGTooltip {
 
   constructor(svg: SVGSVGElement, margins = { top: 0, bottom: 0, left: 0, right: 0 }) {
     this.svg = d3.select(svg);
-    this.tooltip = this.svg.append("g");
+    this.tooltip = this.svg.append("g").style("pointer-events", "none");
     this.margins = margins;
 
     this.border = this.tooltip
@@ -38,7 +38,7 @@ export default class SVGTooltip {
 
   show() {
     // Move the tooltip to the front
-    this.tooltip.each(function() {
+    this.tooltip.each(function () {
       this.parentNode?.appendChild(this);
     });
 
