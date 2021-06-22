@@ -20,7 +20,7 @@ const BrazilMap = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getMap(1, { var: num, uf, cad, prt });
+      const { data } = await getMap(1, { var: num, uf, cad, prt, ano });
       parseMapData(data);
     };
 

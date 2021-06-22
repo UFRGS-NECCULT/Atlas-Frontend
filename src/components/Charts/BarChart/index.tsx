@@ -10,7 +10,7 @@ const BarChart: React.FC = () => {
   const [keys, setKeys] = useState<string[]>([]);
   const [values, setValues] = useState<number[]>([]);
 
-  const { uf, cad, prt, num } = useSelection();
+  const { uf, cad, prt, num, changeSelection } = useSelection();
   const { colors } = useData();
 
   useEffect(() => {
@@ -96,9 +96,14 @@ const BarChart: React.FC = () => {
         .attr("transform", "translate(" + marginLeft + ", " + marginBottom + ")")
         .call(yAxis);
 
+      const findKeyByValue = (data) => {
+        const index = values.findIndex((v) => v === data);
+        return keys[index];
+      };
       const bars = svg.selectAll("rect").data(values);
 
       bars
+        .on("click", (e, d) => changeSelection("ano", Number(findKeyByValue(d))))
         .transition()
         .duration(600)
         .attr("height", (d) => height - y(d))
@@ -117,6 +122,7 @@ const BarChart: React.FC = () => {
         .attr("transform", "translate(" + marginLeft + ", " + marginTop + ")")
         .attr("width", x.bandwidth())
         .attr("height", (d) => 0)
+        .style("cursor", "pointer")
         .attr("fill", colors.cadeias[cad.toString()].color)
         .transition()
         .duration(300)
