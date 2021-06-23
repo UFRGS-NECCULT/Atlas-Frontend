@@ -12,7 +12,7 @@ const VarDescription: React.FC = () => {
 
   useEffect(() => {
     if (data.var) {
-      setDescription(data.var[eixo][num].desc);
+      setDescription(data.var[eixo][num - 1].desc);
     }
   }, [data, eixo, num]);
 
