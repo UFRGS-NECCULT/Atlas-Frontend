@@ -10,7 +10,7 @@ const BarChart: React.FC = () => {
   const [keys, setKeys] = useState<string[]>([]);
   const [values, setValues] = useState<number[]>([]);
 
-  const { uf, cad, prt, num, ano, changeSelection } = useSelection();
+  const { eixo, uf, cad, prt, num, ano, changeSelection } = useSelection();
   const { colors } = useData();
 
   useEffect(() => {
@@ -108,10 +108,20 @@ const BarChart: React.FC = () => {
         .transition()
         .duration(600)
         .attr("height", (d) => height - y(d))
-        .attr("y", (d) => y(d))
+        .attr("y", (d) => y(d));
+
+      svg
+        .selectAll(".normal")
+        .attr("stroke", "none")
+        .attr("opacity", 0.65)
         .attr("fill", colors.cadeias[cad.toString()].color);
 
-      // .attr("fill", (d) => (ano === Number(findKeyByValue(d)) ? "red" : colors.cadeias[cad.toString()].color));
+      svg
+        .selectAll(".destacado")
+        .attr("stroke", "#555")
+        .attr("opacity", 1)
+        .attr("stroke-width", 2)
+        .attr("fill", colors.eixo[eixo.toString()].color["2"]);
 
       bars
         .enter()
@@ -119,29 +129,15 @@ const BarChart: React.FC = () => {
         .attr("x", (d, i) => {
           return x(keys[i]) || 0;
         })
-        .attr("y", (d) => {
-          return height;
-        })
+        .attr("y", (d) => height)
         .attr("transform", "translate(" + marginLeft + ", " + marginTop + ")")
         .attr("width", x.bandwidth())
         .attr("height", (d) => 0)
         .style("cursor", "pointer")
-        .attr("fill", colors.cadeias[cad.toString()].color)
         .transition()
         .duration(300)
         .attr("height", (d) => height - y(d))
         .attr("y", (d) => y(d));
-
-      svg.selectAll(".normal").attr("stroke", "none").attr("opacity", 0.65);
-
-      svg
-        .selectAll(".destacado")
-        .attr("stroke", "#555")
-        .attr("opacity", 1)
-        .attr("stroke-width", 2)
-        .transition()
-        .duration(600)
-        .attr("fill", "#6dbfc9"); //TODO: Mudar para cor do respectivo eixo selecionado
 
       bars
         .exit()
