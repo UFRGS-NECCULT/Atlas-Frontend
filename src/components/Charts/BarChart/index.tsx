@@ -96,15 +96,15 @@ const BarChart: React.FC = () => {
         .attr("transform", "translate(" + marginLeft + ", " + marginBottom + ")")
         .call(yAxis);
 
-      const findKeyByValue = (data) => {
-        const index = values.findIndex((v) => v === data);
-        return keys[index];
-      };
       const bars = svg.selectAll("rect").data(values);
 
       bars
-        .on("click", (e, d) => changeSelection("ano", Number(findKeyByValue(d))))
-        .attr("class", (d) => (ano === Number(findKeyByValue(d)) ? "destacado" : "normal"))
+        .on("click", function (e, d) {
+          return changeSelection("ano", Number(d3.select(this).attr("ano")));
+        })
+        .attr("class", function () {
+          return ano === Number(d3.select(this).attr("ano")) ? "destacado" : "normal";
+        })
         .transition()
         .duration(600)
         .attr("height", (d) => height - y(d))
@@ -130,6 +130,7 @@ const BarChart: React.FC = () => {
           return x(keys[i]) || 0;
         })
         .attr("y", (d) => height)
+        .attr("ano", (d, i) => keys[i])
         .attr("transform", "translate(" + marginLeft + ", " + marginTop + ")")
         .attr("width", x.bandwidth())
         .attr("height", (d) => 0)
