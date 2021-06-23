@@ -188,11 +188,13 @@ const BrazilMap = () => {
         x -= marginLeft;
         y -= marginTop;
 
+        const name = d.properties.name
+          .split(" ")
+          .map((n) => n[0].toUpperCase() + n.slice(1).toLowerCase())
+          .join(" ");
+
         tooltip.setXY(x, y);
-        tooltip.setText(
-          `Estado: ${d.properties.name[0].toUpperCase() + d.properties.name.slice(1).toLowerCase()}\n` +
-          `Valor: ${getValueByUf(Number(d.id))}`
-        );
+        tooltip.setText(`Estado: ${name}\nValor: ${getValueByUf(Number(d.id))}`);
         tooltip.show();
       };
       const hideTooltip = () => {
@@ -226,11 +228,7 @@ const BrazilMap = () => {
         return { ...s, mid: [midx, midy], color: colorScale(getValueByUf(Number(s.id))) };
       });
 
-      const map = svg
-        .selectAll("path.uf")
-        .on("mouseover", (_, d) => showTooltip(d))
-        .on("mouseout", () => hideTooltip())
-        .data(parsedStates);
+      const map = svg.selectAll("path.uf").data(parsedStates);
 
       map
         .enter()
@@ -243,6 +241,11 @@ const BrazilMap = () => {
         .attr("fill", (d) => d.color)
         .attr("stroke", "black")
         .style("cursor", "pointer");
+
+      svg
+        .selectAll("path.uf")
+        .on("mouseover", (_, d) => showTooltip(d))
+        .on("mouseout", () => hideTooltip());
 
       map
         .transition()
