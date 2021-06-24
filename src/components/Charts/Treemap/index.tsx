@@ -158,7 +158,7 @@ const Treemap: React.FC<IProps> = () => {
         .style("padding", "0.8em")
         .style("text-overflow", "ellipsis")
         .style("display", "inline-block")
-        .style("overflow-x", "hidden")
+        .style("overflow", "hidden")
         .style("width", "100%")
         .style("height", "100%")
         .style("font-size", "12px")
