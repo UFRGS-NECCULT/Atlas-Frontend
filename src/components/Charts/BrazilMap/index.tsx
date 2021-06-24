@@ -182,8 +182,8 @@ const BrazilMap = () => {
 
       legend_text.exit().remove();
 
-      const showTooltip = (d) => {
-        let [x, y] = projection(d.mid)!;
+      const showTooltip = (e, d) => {
+        let [x, y] = d3.pointer(e);
         // Adjust for margins
         x -= marginLeft;
         y -= marginTop;
@@ -204,28 +204,7 @@ const BrazilMap = () => {
       /* Mapa */
       // TODO: Find correct typing
       const parsedStates = states.features.map((s: any) => {
-        // Compute mid point (just the average of all points)
-        let midx = 0;
-        let midy = 0;
-        let coords = [];
-        switch (s.geometry.type) {
-          case "MultiPolygon":
-            coords = s.geometry.coordinates[0][0];
-            break;
-          case "Polygon":
-            coords = s.geometry.coordinates[0];
-            break;
-          default:
-            throw `Unknown geometry type "${s.geometry.type}"`;
-        }
-        for (const [x, y] of coords) {
-          midx += x;
-          midy += y;
-        }
-        midx /= coords.length;
-        midy /= coords.length;
-
-        return { ...s, mid: [midx, midy], color: colorScale(getValueByUf(Number(s.id))) };
+        return { ...s, color: colorScale(getValueByUf(Number(s.id))) };
       });
 
       const map = svg.selectAll("path.uf").data(parsedStates);
@@ -244,7 +223,7 @@ const BrazilMap = () => {
 
       svg
         .selectAll("path.uf")
-        .on("mouseover", (_, d) => showTooltip(d))
+        .on("mousemove", showTooltip)
         .on("mouseout", () => hideTooltip());
 
       map

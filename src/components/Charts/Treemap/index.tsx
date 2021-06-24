@@ -256,11 +256,11 @@ const Treemap: React.FC<IProps> = () => {
 
         tooltip.setText(
           `Valor: ${selected.value}\n` +
-          (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
-          `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
-          `Cadeia: ${selected.data.name}`
+            (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
+            `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
+            `Cadeia: ${selected.data.name}`
         );
-        tooltip.setXY((selected.x0 + selected.x1) / 2, (selected.y0 + selected.y1) / 2); // Middle of the rectangle
+        tooltip.setXY(x, y);
         tooltip.show();
       });
 
