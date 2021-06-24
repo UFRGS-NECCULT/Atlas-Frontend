@@ -18,6 +18,7 @@ import BrazilMap from "components/Charts/BrazilMap";
 import Treemap from "components/Charts/Treemap";
 // import TreemapLegend from "components/Charts/Treemap/Legend";
 import LineChart from "components/Charts/LineChart";
+import DonutChart from "components/Charts/DonutChart";
 import VarDescription from "components/Charts/VarDescription";
 
 const DataVisualization = () => {
@@ -51,6 +52,11 @@ const DataVisualization = () => {
             <ChartContainer direction="row">
               <Treemap />
             </ChartContainer>
+          </Box>
+          <Box id="box-6" title="Donut - Setores Culturais Criativos">
+          <ChartContainer direction="row">
+            <DonutChart />
+          </ChartContainer>
           </Box>
         </Viewboxes>
       </Container>
