@@ -19,6 +19,7 @@ import Treemap from "components/Charts/Treemap";
 // import TreemapLegend from "components/Charts/Treemap/Legend";
 import LineChart from "components/Charts/LineChart";
 import VarDescription from "components/Charts/VarDescription";
+import WorldMap from "components/Charts/WorldMap";
 
 const DataVisualization = () => {
   return (
@@ -28,7 +29,8 @@ const DataVisualization = () => {
         <Title>NÚMERO TOTAL DE EMPRESAS</Title>
         <Viewboxes>
           <Box id={"box-1"} title="Mapa do Brasil">
-            <BrazilMap />
+            {/* <BrazilMap /> */}
+            <WorldMap />
           </Box>
           <Box id={"box-2"} title="Dados">
             <ChartContainer>
