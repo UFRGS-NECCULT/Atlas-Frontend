@@ -138,7 +138,11 @@ const BarChart: React.FC = () => {
         .transition()
         .duration(300)
         .attr("height", (d) => height - y(d))
-        .attr("y", (d) => y(d));
+        .attr("y", (d) => y(d))
+        .attr("opacity", (d, i) => (ano === Number(keys[i]) ? 1 : 0.65))
+        .attr("fill", (d, i) =>
+          ano === Number(keys[i]) ? colors.eixo[eixo.toString()].color["2"] : colors.cadeias[cad.toString()].color
+        );
 
       bars
         .exit()
