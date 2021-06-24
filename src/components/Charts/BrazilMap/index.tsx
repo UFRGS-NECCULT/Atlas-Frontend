@@ -15,6 +15,15 @@ const BrazilMap = () => {
 
   const [data, setData] = useState<{ uf: number; valor: number }[]>([]);
 
+  // O tamanho da janela faz parte do nosso estado já que sempre
+  // que a janela muda de tamanho, temos que redesenhar o svg
+  const [size, setSize] = useState<[number, number]>([0, 0]);
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      setSize([window.innerWidth, window.innerHeight]);
+    });
+  }, []);
+
   const { uf, cad, prt, ano, num, changeSelection } = useSelection();
   const { colors } = useData();
 
@@ -101,24 +110,19 @@ const BrazilMap = () => {
       const [minValue, maxValue] = d3.extent(values);
       const [lowColor, highColor] = d3.extent(values).map((v) => colorScale(v));
 
-      const stops = d3.select("#grad").selectAll("stop").data([lowColor, highColor]);
-
-      stops
+      d3.select("#grad")
+        .selectAll("stop")
+        .data([lowColor, highColor])
+        .join('stop')
+        .attr("class", (d, i) => (i === 0 ? "begin" : "end"))
+        .attr("offset", (d, i) => (i === 0 ? "0%" : "90%"))
+        .attr("stop-color", (d) => d)
+        .style("stop-opacity", 1)
         .transition()
         .duration(300)
         .attr("stop-color", (d) => d);
 
-      stops
-        .enter()
-        .append("stop")
-        .attr("class", (d, i) => (i === 0 ? "begin" : "end"))
-        .attr("offset", (d, i) => (i === 0 ? "0%" : "90%"))
-        .attr("stop-color", (d) => d)
-        .style("stop-opacity", 1);
-
-      stops.exit().remove();
-
-      const legend_pos = {
+      const legendPos = {
         x: width * 0.28,
         y: height + 10,
         height: height * 0.03,
@@ -128,59 +132,46 @@ const BrazilMap = () => {
       };
 
       svg.selectAll(".legenda").remove();
-      // const legenda = svg.select(".legenda");
-
       const legenda = svg
         .append("g")
         .attr("class", "legenda")
         .append("rect")
         .attr("class", "legenda")
-        .attr("x", legend_pos.x)
-        .attr("y", legend_pos.y)
-        .attr("height", legend_pos.height)
-        .attr("width", legend_pos.width)
-        .attr("rx", legend_pos.rx)
-        .attr("ry", legend_pos.ry)
+        .attr("x", legendPos.x)
+        .attr("y", legendPos.y)
+        .attr("height", legendPos.height)
+        .attr("width", legendPos.width)
+        .attr("rx", legendPos.rx)
+        .attr("ry", legendPos.ry)
         .style("fill", "url(#grad)")
         .style("stroke-width", 1)
         .style("stroke", "black");
-
       legenda.exit().remove();
 
-      const legend_values = [minValue, ((minValue || 0) + (maxValue || 0)) / 2, maxValue];
+      const legendValues = [minValue, ((minValue || 0) + (maxValue || 0)) / 2, maxValue];
 
-      const lines = svg.selectAll("line").data(legend_values);
-
-      lines
-        .enter()
-        .append("line")
+      svg.selectAll("line.lines-legenda")
+        .data(legendValues)
+        .join('line')
         .attr("class", "lines-legenda")
-        .attr("x1", (d, i) => legend_pos.x + i * (legend_pos.width / 2))
-        .attr("x2", (d, i) => legend_pos.x + i * (legend_pos.width / 2))
-        .attr("y1", legend_pos.y - 2)
-        .attr("y2", legend_pos.y + legend_pos.height + 2)
+        .attr("x1", (d, i) => legendPos.x + i * (legendPos.width / 2))
+        .attr("x2", (d, i) => legendPos.x + i * (legendPos.width / 2))
+        .attr("y1", legendPos.y - 2)
+        .attr("y2", legendPos.y + legendPos.height + 2)
         .style("stroke", "black")
         .style("stroke-width", 1);
 
-      lines.exit().remove();
-
-      const legend_text = svg.selectAll("text").data(legend_values);
-
-      legend_text.text((d) => d || 0);
-
-      legend_text
-        .enter()
-        .append("text")
-        .attr("class", ".text-legenda")
-        .attr("x", (d, i) => legend_pos.x + i * (legend_pos.width / 2) - 8)
-        .attr("y", legend_pos.y + 25)
+      svg.selectAll("text.text-legenda")
+        .data(legendValues)
+        .join('text')
+        .attr("x", (d, i) => legendPos.x + i * (legendPos.width / 2) - 8)
+        .attr("y", legendPos.y + 25)
+        .attr("class", "text-legenda")
         .attr("fill", "black")
         .style("font-size", "9px")
         .transition()
         .duration(800)
         .text((d) => d || 0);
-
-      legend_text.exit().remove();
 
       const showTooltip = (e, d) => {
         let [x, y] = d3.pointer(e);
@@ -201,39 +192,27 @@ const BrazilMap = () => {
         tooltip.hide();
       };
 
-      /* Mapa */
-      // TODO: Find correct typing
-      const parsedStates = states.features.map((s: any) => {
+      const parsedStates = states.features.map((s) => {
         return { ...s, color: colorScale(getValueByUf(Number(s.id))) };
       });
 
-      const map = svg.selectAll("path.uf").data(parsedStates);
-
-      map
-        .enter()
-        .append("path")
+      svg.selectAll("path.uf")
+        .data(parsedStates)
+        .join('path')
         .attr("class", "uf")
-        .attr("d", path)
         .attr("id", (d) => Number(d.id) || 0)
-        .on("click", (d) => changeSelection("uf", d.target.id))
         .attr("stroke-linecap", "round")
-        .attr("fill", (d) => d.color)
         .attr("stroke", "black")
-        .style("cursor", "pointer");
-
-      svg
-        .selectAll("path.uf")
+        .style("cursor", "pointer")
+        .on("click", (d) => changeSelection("uf", d.target.id))
         .on("mousemove", showTooltip)
-        .on("mouseout", () => hideTooltip());
-
-      map
+        .on("mouseout", () => hideTooltip())
         .transition()
-        .duration(300)
+        .duration(800)
+        .attr("d", path)
         .attr("fill", (d) => d.color);
-
-      map.exit().transition().duration(300).remove();
     }
-  }, [data, d3Container]);
+  }, [data, size, d3Container]);
 
   return <svg ref={d3Container} width={"100%"} height={"100%"} />;
 };

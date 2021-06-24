@@ -22,6 +22,15 @@ const LineChart: React.FC<IProps> = () => {
 
   const [data, setData] = useState<Data[]>([]);
 
+  // O tamanho da janela faz parte do nosso estado já que sempre
+  // que a janela muda de tamanho, temos que redesenhar o svg
+  const [size, setSize] = useState<[number, number]>([0, 0]);
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      setSize([window.innerWidth, window.innerHeight]);
+    });
+  }, []);
+
   const { num, uf, cad, deg } = useSelection();
   const { colors } = useData();
 
@@ -147,7 +156,7 @@ const LineChart: React.FC<IProps> = () => {
 
       svg.on("touchend mouseleave", () => tooltip.hide());
     }
-  }, [data, d3Container.current]);
+  }, [data, size, d3Container.current]);
 
   return <svg ref={d3Container} width="100%" height="100%" />;
 };
