@@ -32,6 +32,16 @@ const DonutChart: React.FC<IProps> = () => {
   const [data, setData] = useState<Data | null>(null);
   const { colors } = useData();
 
+  // O tamanho da janela faz parte do nosso estado já que sempre
+  // que a janela muda de tamanho, temos que redesenhar o svg
+  const [size, setSize] = useState<[number, number]>([0, 0]);
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      setSize([window.innerWidth, window.innerHeight]);
+    });
+  }, []);
+
+
   const { eixo, uf, prt, num, ano, cad, changeSelection } = useSelection();
 
   // Valor entre (0, 1) para o quão grosso devem ser as fatias
@@ -139,7 +149,7 @@ const DonutChart: React.FC<IProps> = () => {
         .attr("stroke-width", (d) => (d.data.group === data.selectedGroup ? selectThickness : 0))
         .attr("fill", (d) => (d.data.group === data.selectedGroup ? d.data.selectColor : d.data.groupColor));
     }
-  }, [d3Container.current, data]);
+  }, [d3Container.current, size, data]);
 
   const getLegend = (data: Data | null): ILegendData[] => {
     if (data == null) {
