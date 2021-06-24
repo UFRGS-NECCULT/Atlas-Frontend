@@ -4,11 +4,15 @@ import { useSelection } from "hooks/SelectionContext";
 import { getBars } from "services/api";
 import { useData } from "hooks/DataContext";
 
+interface Data {
+  value: number;
+  year: number;
+}
+
 const BarChart: React.FC = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
 
-  const [keys, setKeys] = useState<string[]>([]);
-  const [values, setValues] = useState<number[]>([]);
+  const [data, setData] = useState<Data[]>([]);
 
   const { eixo, uf, cad, prt, num, ano, changeSelection } = useSelection();
   const { colors } = useData();
@@ -22,16 +26,18 @@ const BarChart: React.FC = () => {
     getData();
   }, [uf, cad, prt, num]);
 
-  const parseBarsData = (data) => {
-    const keys: string[] = data.map((d) => d.Ano.toString());
-    const values = data.map((d) => d.Valor);
-
-    setKeys(keys);
-    setValues(values);
-  };
+  const parseBarsData = (data) =>
+    setData(
+      data.map(
+        (d): Data => ({
+          year: d.Ano,
+          value: d.Valor
+        })
+      )
+    );
 
   useEffect(() => {
-    if (values && values.length && d3Container.current) {
+    if (data && data.length && d3Container.current) {
       const marginLeft = 50;
       const marginTop = 20;
       const marginBottom = 20;
@@ -41,20 +47,19 @@ const BarChart: React.FC = () => {
 
       const svg = d3.select(d3Container.current);
 
-      const x = d3.scaleBand().domain(keys).rangeRound([0, width]).padding(0.1);
+      const years = data.map((d) => d.year.toString());
+      const values = data.map((d) => d.value);
+
+      const x = d3.scaleBand().domain(years).rangeRound([0, width]).padding(0.1);
 
       const y = d3
         .scaleLinear()
         .domain(d3.extent(values) as [number, number])
         .rangeRound([height, 0]);
 
-      y.domain(
-        d3.extent(values, function (d) {
-          return d;
-        }) as [number, number]
-      ).nice();
+      y.domain(d3.extent(values) as [number, number]).nice();
 
-      const grid_lines = d3
+      const gridLines = d3
         .axisLeft(y)
         .scale(y)
         .ticks(4)
@@ -68,19 +73,15 @@ const BarChart: React.FC = () => {
         .attr("class", "grid")
         .style("opacity", 0.1)
         .attr("transform", "translate(" + marginLeft + ", " + marginTop + ")")
-        .call(grid_lines);
+        .call(gridLines);
 
-      const xAxis = d3
-        .axisBottom(x)
-        .tickFormat((d, i) => keys[i])
-        .tickSize(5)
-        .tickPadding(5);
+      const xAxis = d3.axisBottom(x).tickSize(5).tickPadding(5);
 
       const yAxis = d3
         .axisLeft(y)
         .tickSize(5)
         .tickPadding(5)
-        .tickFormat((d, i) => d.toString());
+        .tickFormat((d) => d.toString());
 
       svg.selectAll(".eixo-x").remove();
       svg.selectAll(".eixo-y").remove();
@@ -96,63 +97,31 @@ const BarChart: React.FC = () => {
         .attr("transform", "translate(" + marginLeft + ", " + marginBottom + ")")
         .call(yAxis);
 
-      const bars = svg.selectAll("rect").data(values);
-
-      bars
-        .on("click", function (e, d) {
-          return changeSelection("ano", Number(d3.select(this).attr("ano")));
-        })
-        .attr("class", function () {
-          return ano === Number(d3.select(this).attr("ano")) ? "destacado" : "normal";
-        })
-        .transition()
-        .duration(600)
-        .attr("height", (d) => height - y(d))
-        .attr("y", (d) => y(d));
+      const selectColor = colors.eixo[eixo.toString()].color["2"];
+      const groupColor = colors.cadeias[cad.toString()].color;
 
       svg
-        .selectAll(".normal")
-        .attr("stroke", "none")
-        .attr("opacity", 0.65)
-        .attr("fill", colors.cadeias[cad.toString()].color);
-
-      svg
-        .selectAll(".destacado")
-        .attr("stroke", "#555")
-        .attr("opacity", 1)
-        .attr("stroke-width", 2)
-        .attr("fill", colors.eixo[eixo.toString()].color["2"]);
-
-      bars
-        .enter()
-        .append("rect")
-        .attr("x", (d, i) => {
-          return x(keys[i]) || 0;
+        .selectAll("rect")
+        .data(data.map((d) => ({ ...d, selected: d.year === ano })))
+        .join("rect")
+        .on("click", (_, d) => {
+          return changeSelection("ano", d.year);
         })
-        .attr("y", (d) => height)
-        .attr("ano", (d, i) => keys[i])
         .attr("transform", "translate(" + marginLeft + ", " + marginTop + ")")
-        .attr("width", x.bandwidth())
-        .attr("height", (d) => 0)
+        .attr('stroke-width', 2)
         .style("cursor", "pointer")
         .transition()
         .duration(300)
-        .attr("height", (d) => height - y(d))
-        .attr("y", (d) => y(d))
-        .attr("opacity", (d, i) => (ano === Number(keys[i]) ? 1 : 0.65))
-        .attr("fill", (d, i) =>
-          ano === Number(keys[i]) ? colors.eixo[eixo.toString()].color["2"] : colors.cadeias[cad.toString()].color
-        );
-
-      bars
-        .exit()
-        .transition()
-        .duration(300)
-        .attr("y", (d) => height)
-        .attr("height", 0)
-        .remove();
+        .attr("x", (d) => x(d.year.toString()) || 0)
+        .attr("y", (d) => y(d.value))
+        .attr("width", x.bandwidth())
+        .attr("height", (d) => height - y(d.value))
+        .attr("opacity", (d) => (d.selected ? 1 : 0.65))
+        .attr("fill", (d) => (d.selected ? selectColor : groupColor))
+        .attr("stroke", (d) => (d.selected ? "#555" : "none"))
+        .attr("opacity", (d) => (d.selected ? 0.65 : 1));
     }
-  }, [ano, values, d3Container.current]);
+  }, [ano, data, d3Container.current]);
 
   return <svg ref={d3Container} width={"100%"} height={"100%"} />;
 };
