@@ -146,17 +146,26 @@ const Treemap: React.FC<IProps> = () => {
         .attr("fill", (d) => colors.cadeias[d.data.id || 0].color)
         .on("click", (d) => changeSelection("cad", Number(d.target.id)));
 
-      g.append("text")
+      g.append("foreignObject")
+        .style("pointer-events", "none")
+        .attr("class", "title-container")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", (d: any) => d.x1 - d.x0)
+        .attr("height", (d: any) => d.y1 - d.y0)
+        .append("xhtml:span")
         .attr("class", "title")
-        .attr("x", 10)
-        .attr("y", 19)
-        .attr("text-anchor", "start")
-        .attr("font-size", 12)
-        .append("tspan")
+        .style("padding", "0.8em")
+        .style("text-overflow", "ellipsis")
+        .style("display", "inline-block")
+        .style("overflow-x", "hidden")
+        .style("width", "100%")
+        .style("height", "100%")
+        .style("font-size", "12px")
         .text((d: any) => {
           const height = d.y1 - d.y0;
           const width = d.x1 - d.x0;
-          return height < 50 || width < 80 ? "" : d.data.name;
+          return height < 40 || width < 50 ? "" : d.data.name;
         });
 
       g.append("text")
@@ -189,11 +198,15 @@ const Treemap: React.FC<IProps> = () => {
         .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
         .attr("height", (d: any) => d.y1 - d.y0); // TODO: descobrir a tipagem correta
 
-      cell.select("text.title").text((d: any) => {
+      cell.select("span.title").text((d: any) => {
         const height = d.y1 - d.y0;
         const width = d.x1 - d.x0;
-        return height < 50 || width < 80 ? "" : d.data.name;
+        return height < 40 || width < 50 ? "" : d.data.name;
       });
+      cell
+        .select("foreignObject.title-container")
+        .attr("width", (d: any) => d.x1 - d.x0)
+        .attr("height", (d: any) => d.y1 - d.y0);
 
       cell
         .select("text.value")
@@ -243,11 +256,11 @@ const Treemap: React.FC<IProps> = () => {
 
         tooltip.setText(
           `Valor: ${selected.value}\n` +
-          (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
-          `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
-          `Cadeia: ${selected.data.name}`
+            (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
+            `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
+            `Cadeia: ${selected.data.name}`
         );
-        tooltip.setXY((selected.x0 + selected.x1) / 2, (selected.y0 + selected.y1) / 2); // Middle of the rectangle
+        tooltip.setXY(x, y);
         tooltip.show();
       });
 
