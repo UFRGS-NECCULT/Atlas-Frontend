@@ -54,7 +54,9 @@ const DataVisualization = () => {
             </ChartContainer>
           </Box>
           <Box id="box-6" title="Donut - Setores Culturais Criativos">
+          <ChartContainer direction="row">
             <DonutChart />
+          </ChartContainer>
           </Box>
         </Viewboxes>
       </Container>

@@ -5,6 +5,8 @@ import { useData } from "hooks/DataContext";
 import SVGTooltip from "components/SVGTooltip";
 import { useSelection } from "hooks/SelectionContext";
 import { getTreemap } from "services/api";
+import { DonutChartContainer } from "./styles";
+import Legend, { ILegendData } from "../Legend";
 
 interface IProps {
   data?: Data[];
@@ -16,10 +18,11 @@ interface Data {
 }
 
 interface Entry {
-  Value: number;
-  Group: number;
-  GroupName: string;
-  GroupColor: string;
+  value: number;
+  group: number;
+  groupName: string;
+  groupColor: string;
+  selectColor: string;
 }
 
 const DonutChart: React.FC<IProps> = () => {
@@ -29,7 +32,7 @@ const DonutChart: React.FC<IProps> = () => {
   const [data, setData] = useState<Data | null>(null);
   const { colors } = useData();
 
-  const { uf, prt, num, ano, cad, changeSelection } = useSelection();
+  const { eixo, uf, prt, num, ano, cad, changeSelection } = useSelection();
 
   // Valor entre (0, 1) para o quão grosso devem ser as fatias
   // em % do raio (1 = 100% do raio, 0 = 0% do raio)
@@ -48,26 +51,42 @@ const DonutChart: React.FC<IProps> = () => {
   useEffect(() => {
     const getData = async () => {
       // TODO: Pegar dados corretos do backend
-      const { data } = await getTreemap(1, { var: num, uf, prt, ano });
-      // TODO: Ler o eixo e escolher a função correta para parsear os dados
-      setData({
-        selectedGroup: cad,
-        entries: parseEntries(data)
-      });
+      const { data } = await getTreemap(eixo + 1, { var: num, uf, prt, ano });
+
+      switch (eixo) {
+        case 0:
+          setData({
+            selectedGroup: cad,
+            entries: parseEntries1(data)
+          });
+          break;
+        default:
+          throw `Eixo ${eixo + 1} não suportado pelo gráfico em donut!`;
+      }
     };
 
     getData();
-  }, [uf, prt, num, ano, cad]);
+  }, [uf, prt, num, ano, cad, eixo]);
 
-  const parseEntries = (data): Entry[] =>
+  const parseEntries1 = (data): Entry[] =>
     data.map((d): Entry => {
       return {
-        Value: d.Valor,
-        Group: d.idCadeia,
-        GroupName: d.CadeiaNome,
-        GroupColor: colors["cadeias"][d.idCadeia.toString() as string]["color"]
+        value: d.Valor,
+        group: d.idCadeia,
+        groupName: d.CadeiaNome,
+        groupColor: colors["cadeias"][d.idCadeia.toString() as string]["color"],
+        selectColor: colors.eixo[0].color["2"]
       };
     });
+
+  const getSelector = (eixo) => {
+    switch (eixo) {
+      case 0:
+        return "cad";
+      default:
+        throw `Eixo ${eixo + 1} não suportado pelo gráfico em donut!`;
+    }
+  };
 
   useEffect(() => {
     if (d3Container.current && data && data.entries.length) {
@@ -85,9 +104,9 @@ const DonutChart: React.FC<IProps> = () => {
       const pie = d3
         .pie<Entry>()
         .padAngle(0.015)
-        .sort((a, b) => b.Value - a.Value) // Ordenar as fatias pelo valor em ordem decrescente
-        .value((d) => d.Value);
-      const arcs = pie(data.entries);
+        .sort((a, b) => b.value - a.value) // Ordenar as fatias pelo valor em ordem decrescente
+        .value((d) => d.value);
+      const arcs = pie(data.entries.filter((d) => d.value > 0));
       const arc = d3
         .arc<d3.PieArcDatum<Entry>>()
         .innerRadius(radius * (1 - thickness))
@@ -97,11 +116,11 @@ const DonutChart: React.FC<IProps> = () => {
         .selectAll("path.slice")
         .data(arcs)
         .join("path")
-        .attr("transform", `translate(${margins.left + width / 2}, ${margins.top + height / 2})`)
         .attr("class", "slice")
+        .attr("transform", `translate(${margins.left + width / 2}, ${margins.top + height / 2})`)
         .style("cursor", "pointer")
         .on("click", (_, d) => {
-          changeSelection("cad", d.data.Group);
+          changeSelection(getSelector(eixo), d.data.group);
         })
         .on("mouseover", (_, d) => {
           let [x, y] = arc.centroid(d);
@@ -109,7 +128,7 @@ const DonutChart: React.FC<IProps> = () => {
           y += margins.top + height / 2;
 
           tooltip.setXY(x, y);
-          tooltip.setText(`Valor: ${d.data.Value}\n` + `Grupo: ${d.data.GroupName}`);
+          tooltip.setText(`Valor: ${d.data.value}\n` + `Grupo: ${d.data.groupName}`);
           tooltip.show();
         })
         .on("mouseleave", () => tooltip.hide())
@@ -117,12 +136,31 @@ const DonutChart: React.FC<IProps> = () => {
         .duration(300)
         .attr("d", arc)
         .attr("stroke", "black")
-        .attr("stroke-width", (d) => (d.data.Group === data.selectedGroup ? selectThickness : 0))
-        .attr("fill", (d) => d.data.GroupColor);
+        .attr("stroke-width", (d) => (d.data.group === data.selectedGroup ? selectThickness : 0))
+        .attr("fill", (d) => (d.data.group === data.selectedGroup ? d.data.selectColor : d.data.groupColor));
     }
   }, [d3Container.current, data]);
 
-  return <svg ref={d3Container} width="100%" height="100%" />;
+  const getLegend = (data: Data | null): ILegendData[] => {
+    if (data == null) {
+      return [];
+    }
+
+    return data.entries.map((d: Entry) => {
+      return {
+        label: d.groupName,
+        color: d.groupColor,
+        id: d.group
+      };
+    });
+  };
+
+  return (
+    <DonutChartContainer>
+      <svg ref={d3Container} width="100%" height="100%" />
+      <Legend selector={getSelector(eixo)} title="Setores" data={getLegend(data)}></Legend>
+    </DonutChartContainer>
+  );
 };
 
 export default DonutChart;
