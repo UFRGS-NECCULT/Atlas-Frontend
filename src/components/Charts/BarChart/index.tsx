@@ -14,6 +14,15 @@ const BarChart: React.FC = () => {
 
   const [data, setData] = useState<Data[]>([]);
 
+  // O tamanho da janela faz parte do nosso estado já que sempre
+  // que a janela muda de tamanho, temos que redesenhar o svg
+  const [size, setSize] = useState<[number, number]>([0, 0]);
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      setSize([window.innerWidth, window.innerHeight]);
+    });
+  }, []);
+
   const { eixo, uf, cad, prt, num, ano, changeSelection } = useSelection();
   const { colors } = useData();
 
@@ -121,7 +130,7 @@ const BarChart: React.FC = () => {
         .attr("stroke", (d) => (d.selected ? "#555" : "none"))
         .attr("opacity", (d) => (d.selected ? 0.65 : 1));
     }
-  }, [ano, data, d3Container.current]);
+  }, [ano, data, size, d3Container.current]);
 
   return <svg ref={d3Container} width={"100%"} height={"100%"} />;
 };

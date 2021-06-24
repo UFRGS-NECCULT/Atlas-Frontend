@@ -46,6 +46,15 @@ const Treemap: React.FC<IProps> = () => {
   const [data, setData] = useState<IParsedData>();
   const [legendData, setLegendData] = useState<ILegendData[]>([]);
 
+  // O tamanho da janela faz parte do nosso estado já que sempre
+  // que a janela muda de tamanho, temos que redesenhar o svg
+  const [size, setSize] = useState<[number, number]>([0, 0]);
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      setSize([window.innerWidth, window.innerHeight]);
+    });
+  }, []);
+
   const unfocusOpacity = 0.8;
 
   const { uf, prt, num, ano, cad, changeSelection } = useSelection();
@@ -266,7 +275,7 @@ const Treemap: React.FC<IProps> = () => {
 
       svg.on("touchend mouseleave", () => tooltip.hide());
     }
-  }, [data, cad, d3Container]);
+  }, [data, size, cad, d3Container]);
 
   return (
     <TreemapContainer>
