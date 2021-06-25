@@ -63,7 +63,7 @@ const Treemap: React.FC<IProps> = () => {
   useEffect(() => {
     const getData = async () => {
       const { data } = await getTreemap(1, { var: num, uf, prt, ano });
-      setData(parseData(data));
+      setData(parseData(data.filter(d => d.Valor !== 0)));
     };
 
     getData();
@@ -90,7 +90,7 @@ const Treemap: React.FC<IProps> = () => {
                 id: c.idCadeia,
                 percentual: c.Percentual,
                 taxa: c.Taxa,
-                size: c.Valor
+                size: Math.abs(c.Valor)
               }
             ]
           }
