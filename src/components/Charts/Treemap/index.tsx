@@ -9,8 +9,8 @@ import SVGTooltip from "components/SVGTooltip";
 
 interface IProps {
   data?: {
-    idCadeia: number;
-    CadeiaNome: string;
+    IDGrupo: number;
+    NomeGrupo: string;
     UFNome: string;
     Percentual: number;
     Taxa: number;
@@ -31,7 +31,7 @@ interface IParsedData {
     children: {
       name: string;
       children: {
-        idCadeia: number;
+        IDGrupo: number;
         name: string;
         taxa: number;
         size: number;
@@ -71,23 +71,23 @@ const Treemap: React.FC<IProps> = () => {
 
   const parseData = (data): IParsedData => {
     const legend: ILegendData[] = data.map((d) => {
-      return { label: d.CadeiaNome, color: colors.cadeias[d.idCadeia].color, id: d.idCadeia };
+      return { label: d.NomeGrupo, color: colors.cadeias[d.IDGrupo].color, id: d.IDGrupo };
     });
 
     setLegendData(legend);
 
     const r = data.reduce((r, c) => {
       r.push({
-        cadeiaId: c.idCadeia,
-        name: c.CadeiaNome,
+        cadeiaId: c.IDGrupo,
+        name: c.NomeGrupo,
         children: [
           {
-            cadeiaId: c.idCadeia,
-            name: c.CadeiaNome,
+            cadeiaId: c.IDGrupo,
+            name: c.NomeGrupo,
             children: [
               {
-                name: c.CadeiaNome,
-                id: c.idCadeia,
+                name: c.NomeGrupo,
+                id: c.IDGrupo,
                 percentual: c.Percentual,
                 taxa: c.Taxa,
                 size: Math.abs(c.Valor)

@@ -17,7 +17,7 @@ interface IOptions {
 }
 
 //TODO: Arrumar para todos os modelos no JSON
-interface IColors {
+export interface IColors {
   [key: string]: {
     [key: string]: {
       name: string;

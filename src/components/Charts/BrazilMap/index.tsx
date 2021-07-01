@@ -113,7 +113,7 @@ const BrazilMap = () => {
       d3.select("#grad")
         .selectAll("stop")
         .data([lowColor, highColor])
-        .join('stop')
+        .join("stop")
         .attr("class", (d, i) => (i === 0 ? "begin" : "end"))
         .attr("offset", (d, i) => (i === 0 ? "0%" : "90%"))
         .attr("stop-color", (d) => d)
@@ -150,9 +150,10 @@ const BrazilMap = () => {
 
       const legendValues = [minValue, ((minValue || 0) + (maxValue || 0)) / 2, maxValue];
 
-      svg.selectAll("line.lines-legenda")
+      svg
+        .selectAll("line.lines-legenda")
         .data(legendValues)
-        .join('line')
+        .join("line")
         .attr("class", "lines-legenda")
         .attr("x1", (d, i) => legendPos.x + i * (legendPos.width / 2))
         .attr("x2", (d, i) => legendPos.x + i * (legendPos.width / 2))
@@ -161,9 +162,10 @@ const BrazilMap = () => {
         .style("stroke", "black")
         .style("stroke-width", 1);
 
-      svg.selectAll("text.text-legenda")
+      svg
+        .selectAll("text.text-legenda")
         .data(legendValues)
-        .join('text')
+        .join("text")
         .attr("x", (d, i) => legendPos.x + i * (legendPos.width / 2) - 8)
         .attr("y", legendPos.y + 25)
         .attr("class", "text-legenda")
@@ -196,9 +198,10 @@ const BrazilMap = () => {
         return { ...s, color: colorScale(getValueByUf(Number(s.id))) };
       });
 
-      svg.selectAll("path.uf")
+      svg
+        .selectAll("path.uf")
         .data(parsedStates)
-        .join('path')
+        .join("path")
         .attr("class", "uf")
         .attr("id", (d) => Number(d.id) || 0)
         .attr("stroke-linecap", "round")

@@ -41,7 +41,6 @@ const DonutChart: React.FC<IProps> = () => {
     });
   }, []);
 
-
   const { eixo, uf, prt, num, ano, cad, changeSelection } = useSelection();
 
   // Valor entre (0, 1) para o quão grosso devem ser as fatias
@@ -82,9 +81,9 @@ const DonutChart: React.FC<IProps> = () => {
     data.map((d): Entry => {
       return {
         value: d.Valor,
-        group: d.idCadeia,
-        groupName: d.CadeiaNome,
-        groupColor: colors["cadeias"][d.idCadeia.toString() as string]["color"],
+        group: d.IDGrupo,
+        groupName: d.NomeGrupo,
+        groupColor: colors["cadeias"][d.IDGrupo.toString() as string]["color"],
         selectColor: colors.eixo[0].color["2"]
       };
     });
@@ -115,8 +114,8 @@ const DonutChart: React.FC<IProps> = () => {
         .pie<Entry>()
         .padAngle(0.015)
         .sort((a, b) => b.value - a.value) // Ordenar as fatias pelo valor em ordem decrescente
-        .value((d) => d.value);
-      const arcs = pie(data.entries.filter((d) => d.value > 0));
+        .value((d) => Math.abs(d.value));
+      const arcs = pie(data.entries.filter((d) => d.value !== 0));
       const arc = d3
         .arc<d3.PieArcDatum<Entry>>()
         .innerRadius(radius * (1 - thickness))

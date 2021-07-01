@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
 import { useSelection } from "hooks/SelectionContext";
-import { useData } from "hooks/DataContext";
+import { IColors, useData } from "hooks/DataContext";
 import { getLines } from "services/api";
 import SVGTooltip from "components/SVGTooltip";
 
@@ -13,7 +13,25 @@ interface IProps {
 interface Data {
   Ano: number;
   Valor: number;
-  ID: number;
+  NomeGrupo: string;
+}
+
+function getColor(group: string, colors: IColors, eixo: number, deg: number, variable: number): string {
+  switch (eixo) {
+    case 0:
+      if (variable >= 10) {
+        // TODO: Receber cores do backend
+        return 'red';
+      }
+      return colors["cadeias"][group]["color"];
+    case 1:
+      if (deg === 0) {
+        return colors["cadeias"][group]["color"];
+      }
+      return colors["deg"][deg.toString()]["subdeg"][group];
+  }
+
+  throw "Categoria de cores não encontrada!";
 }
 
 const LineChart: React.FC<IProps> = () => {
@@ -31,17 +49,18 @@ const LineChart: React.FC<IProps> = () => {
     });
   }, []);
 
-  const { num, uf, cad, deg } = useSelection();
+  const { eixo, num, uf, cad, deg, prt } = useSelection();
+
   const { colors } = useData();
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getLines(1, { var: num, uf, cad, deg });
+      const { data } = await getLines(eixo + 1, { var: num, uf, cad, prt, deg });
       setData(data);
     };
 
     getData();
-  }, [num, uf, cad, deg]);
+  }, [eixo, num, uf, cad, prt, deg]);
 
   useEffect(() => {
     const marginLeft = 30;
@@ -101,7 +120,7 @@ const LineChart: React.FC<IProps> = () => {
       outer: for (const d of data) {
         // Try to find a group with our id
         for (const group of groups) {
-          if (group[0].ID == d.ID) {
+          if (group[0].NomeGrupo == d.NomeGrupo) {
             group.push(d);
             continue outer;
           }
@@ -120,7 +139,7 @@ const LineChart: React.FC<IProps> = () => {
         .transition()
         .duration(1000)
         .attr("fill", "none")
-        .attr("stroke", (d) => colors["cadeias"][d[0].ID.toString()]["color"])
+        .attr("stroke", (d) => getColor(d[0].NomeGrupo, colors, eixo, deg, num))
         .attr("stroke-width", 2)
         .attr("transform", `translate(${marginLeft}, ${marginTop})`)
         .attr("d", line);
@@ -149,7 +168,7 @@ const LineChart: React.FC<IProps> = () => {
           })
           .sort((a, b) => a.distance - b.distance)[0];
 
-        tooltip.setText(`Valor: ${d.Valor}\nAno: ${d.Ano}\nGrupo: ${d.ID}`);
+        tooltip.setText(`Valor: ${d.Valor}\nAno: ${d.Ano}\nGrupo: ${d.NomeGrupo}`);
         tooltip.setXY(dx, dy);
         tooltip.show();
       });
