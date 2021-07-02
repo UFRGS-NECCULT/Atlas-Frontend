@@ -21,7 +21,7 @@ function getColor(group: string, colors: IColors, eixo: number, deg: number, var
     case 0:
       if (variable >= 10) {
         // TODO: Receber cores do backend
-        return 'red';
+        return "red";
       }
       return colors["cadeias"][group]["color"];
     case 1:

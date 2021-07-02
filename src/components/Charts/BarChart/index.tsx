@@ -9,7 +9,7 @@ interface Data {
   [group: string]: number;
 }
 
-const BarChart: React.FC<{stacked: boolean}> = ({ stacked }) => {
+const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
 
   const [data, setData] = useState<Data[]>([]);
@@ -28,13 +28,13 @@ const BarChart: React.FC<{stacked: boolean}> = ({ stacked }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getBars(1, { var: num, uf, cad, prt });
+      const { data } = await getBars(eixo + 1, { var: num, uf, cad, prt });
       const parsedData = parseBarsData(data);
       setData(parsedData);
     };
 
     getData();
-  }, [uf, cad, prt, num, stacked]);
+  }, [eixo, uf, cad, prt, num, stacked]);
 
   const parseBarsData = (data): Data[] => {
     // Agrupar desagregações por ano
@@ -136,18 +136,15 @@ const BarChart: React.FC<{stacked: boolean}> = ({ stacked }) => {
         .attr("transform", "translate(" + marginLeft + ", " + marginBottom + ")")
         .call(yAxis);
 
-      const selectColor = colors.eixo[eixo.toString()].color["2"];
-      const groupColor = colors.cadeias[cad.toString()].color;
-
       svg
         .selectAll("g.bar-group")
         .data(stackedData)
         .join("g")
-        .attr('class', 'bar-group')
-        .attr('fill', d => colors.cadeias[d.key].color)
+        .attr("class", "bar-group")
+        .attr("fill", (d) => colors.cadeias[d.key].color)
         .attr("transform", "translate(" + marginLeft + ", " + marginTop + ")")
         .selectAll("rect")
-        .data(d => d.map(d => ({...d, selected: d.data.year === ano})))
+        .data((d) => d.map((d) => ({ ...d, selected: d.data.year === ano })))
         .join("rect")
         .on("click", (_, d) => {
           return changeSelection("ano", d.data.year);

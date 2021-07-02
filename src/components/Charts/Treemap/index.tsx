@@ -63,7 +63,7 @@ const Treemap: React.FC<IProps> = () => {
   useEffect(() => {
     const getData = async () => {
       const { data } = await getTreemap(1, { var: num, uf, prt, ano });
-      setData(parseData(data.filter(d => d.Valor !== 0)));
+      setData(parseData(data.filter((d) => d.Valor !== 0)));
     };
 
     getData();
