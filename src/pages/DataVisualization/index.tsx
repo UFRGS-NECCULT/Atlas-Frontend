@@ -20,8 +20,11 @@ import Treemap from "components/Charts/Treemap";
 import LineChart from "components/Charts/LineChart";
 import DonutChart from "components/Charts/DonutChart";
 import VarDescription from "components/Charts/VarDescription";
+import { useState } from 'react';
 
 const DataVisualization = () => {
+  const [stacked, setStacked] = useState<boolean>(false);
+
   return (
     <Page>
       <Breadcrumbs />
@@ -41,10 +44,10 @@ const DataVisualization = () => {
           </Box>
           <Box id={"box-4"} title="Série histórica">
             <ChartContainer>
-              <BarChart />
+              <BarChart stacked={stacked} />
               <ViewOptions>
-                <button>x</button>
-                <button>x</button>
+                <button onClick={() => setStacked(false)}>Agrupados</button>
+                <button onClick={() => setStacked(true)}>Desagregados</button>
               </ViewOptions>
             </ChartContainer>
           </Box>

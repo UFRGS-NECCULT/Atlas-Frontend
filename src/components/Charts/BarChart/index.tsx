@@ -9,7 +9,7 @@ interface Data {
   [group: string]: number;
 }
 
-const BarChart: React.FC = () => {
+const BarChart: React.FC<{stacked: boolean}> = ({ stacked }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
 
   const [data, setData] = useState<Data[]>([]);
@@ -34,17 +34,33 @@ const BarChart: React.FC = () => {
     };
 
     getData();
-  }, [uf, cad, prt, num]);
+  }, [uf, cad, prt, num, stacked]);
 
   const parseBarsData = (data): Data[] => {
     // Agrupar desagregações por ano
     const groupsByYear = {};
     for (const item of data) {
+      let groupName = item.NomeGrupo;
+
+      if (!stacked) {
+        // Se foi selecionada uma cadeia e não estamos no modo stackado,
+        // mostre somente a cadeia selecionada
+        if (cad !== 0 && cad !== item.IDGrupo) {
+          continue;
+        }
+
+        // Se não estamos no modo stackado, junte todos os dados em um só grupo
+        groupName = cad.toString();
+      }
+
       if (!(item.Ano in groupsByYear)) {
         groupsByYear[item.Ano] = {};
       }
+      if (!(groupName in groupsByYear[item.Ano])) {
+        groupsByYear[item.Ano][groupName] = 0;
+      }
 
-      groupsByYear[item.Ano][item.NomeGrupo] = item.Valor;
+      groupsByYear[item.Ano][groupName] += item.Valor;
     }
 
     // Transformar em um objeto adequado para o d3.stack()
@@ -72,8 +88,6 @@ const BarChart: React.FC = () => {
 
       const stack = d3.stack<Data>().keys(groups);
       const stackedData = stack(data);
-
-      console.log({stackedData});
 
       const x = d3
         .scaleBand()
