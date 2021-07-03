@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
 import worldMap from "../../../assets/json/world-110m.json";
@@ -7,10 +7,17 @@ import SVGTooltip from "components/SVGTooltip";
 import { VectorMap } from "react-jvectormap";
 
 import "./styles.css";
+import { useData } from "hooks/DataContext";
+import { useSelection } from "hooks/SelectionContext";
 
 const BrazilMap = () => {
   const d3Container = useRef<HTMLDivElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
+
+  const [data, setData] = useState<{ uf: number; valor: number }[]>([]);
+
+  const { uf, cad, prt, ano, num, changeSelection } = useSelection();
+  const { colors } = useData();
 
   useEffect(() => {
     if (worldMap && d3Container.current) {
@@ -23,7 +30,15 @@ const BrazilMap = () => {
 
       const jsonFile = JSON.parse(JSON.stringify(worldMap));
 
+      // const values = data.filter((d) => d.uf !== 0).map((d) => d.valor);
+
+      // const colorScale = d3
+      //   .scaleLinear<string>()
+      //   .domain(d3.extent(values) as [number, number])
+      //   .range([colors.cadeias[cad].gradient["2"], colors.cadeias[cad].gradient["6"]]); // TODO: change color dinamicallly
+
       const svg = d3.select(d3Container.current);
+
       const paths = svg.selectAll("path").attr("fill", "blue");
     }
   }, [d3Container]);
