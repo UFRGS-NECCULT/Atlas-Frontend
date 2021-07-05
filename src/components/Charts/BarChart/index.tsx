@@ -31,18 +31,19 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
     });
   }, []);
 
-  const { eixo, uf, cad, prt, num, ano, changeSelection } = useSelection();
+  // TODO: ocp, subdeg
+  const { eixo, deg, uf, cad, prt, num, ano, changeSelection } = useSelection();
   const { colors } = useData();
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getBars(eixo + 1, { var: num, uf, cad, prt });
+      const { data } = await getBars(eixo + 1, { var: num, uf, cad, prt, deg });
       const parsedData = parseBarsData(data);
       setData(parsedData);
     };
 
     getData();
-  }, [eixo, uf, cad, prt, num, stacked]);
+  }, [eixo, deg, uf, cad, prt, num, stacked]);
 
   const parseBarsData = (data): Data[] => {
     // Agrupar desagregações por ano
