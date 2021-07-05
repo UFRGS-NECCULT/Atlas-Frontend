@@ -12,6 +12,7 @@ const Breadcrumbs = () => {
     <Container>
       {!!selectOptions && !!selectOptions.var && (
         <>
+          <BreadcrumbSelect value={eixo} id="eixo" label="Eixo" options={selectOptions.eixo} />
           <BreadcrumbSelect value={num} id="var" label="Variável" options={selectOptions.var[eixo]} />
           <BreadcrumbSelect value={uf} id="uf" label="UF" options={selectOptions.uf} />
           <BreadcrumbSelect value={ano} id="ano" label="Ano" options={selectOptions.ano} />

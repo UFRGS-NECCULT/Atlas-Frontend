@@ -30,29 +30,38 @@ const SelectionContext = createContext<SelectionContextData>({} as SelectionCont
 const SelectionProvider: React.FC = ({ children }) => {
   const baseURL = "/resultado";
 
-  const [eixo] = useState<number>(0);
+  const [eixo, setEixo] = useState<number>(0);
   const [num, setNum] = useState<number>(1);
   const [uf, setUF] = useState<number>(0);
   const [cad, setCad] = useState<number>(0);
   const [prt, setPrt] = useState<number>(0);
-  const [ano, setAno] = useState<number>(2017);
+  const [ano, setAno] = useState<number>(2016);
   const [deg, setDeg] = useState<number>(0);
-  // const history = useHistory();
 
   const [options, setOptions] = useState<IOptions>({});
 
   useEffect(() => {
-    if (!window.location.search) {
-      history.pushState({}, "", `${baseURL}?${"var=1&chg=0&uf=0&deg=0&cad=0&ano=2016"}`);
-    } else {
+    if (window.location.search) {
       const parsed = qs.parse(window.location.search);
 
-      parsed.ano ? setAno(Number(parsed.ano)) : setAno(2017);
-      parsed.num ? setNum(Number(parsed.num)) : setUF(0);
-      parsed.uf ? setUF(Number(parsed.uf)) : setUF(0);
-      parsed.cad ? setCad(Number(parsed.cad)) : setCad(0);
-      parsed.prt ? setPrt(Number(parsed.prt)) : setPrt(0);
-      parsed.deg ? setDeg(Number(parsed.deg)) : setDeg(0);
+      if (parsed.ano) {
+        setAno(Number(parsed.ano));
+      }
+      if (parsed.num) {
+        setNum(Number(parsed.num));
+      }
+      if (parsed.uf) {
+        setUF(Number(parsed.uf));
+      }
+      if (parsed.cad) {
+        setCad(Number(parsed.cad));
+      }
+      if (parsed.prt) {
+        setPrt(Number(parsed.prt));
+      }
+      if (parsed.deg) {
+        setDeg(Number(parsed.deg));
+      }
     }
   }, []);
 
@@ -76,6 +85,9 @@ const SelectionProvider: React.FC = ({ children }) => {
         break;
       case "deg":
         setDeg(value);
+        break;
+      case "eixo":
+        setEixo(value);
         break;
       default:
         console.error("Seletor não existe");

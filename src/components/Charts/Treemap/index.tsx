@@ -71,7 +71,7 @@ const Treemap: React.FC<IProps> = () => {
 
   const parseData = (data): IParsedData => {
     const legend: ILegendData[] = data.map((d) => {
-      return { label: d.NomeGrupo, color: colors.cadeias[d.IDGrupo].color, id: d.IDGrupo };
+      return { label: d.NomeGrupo, color: colors.cadeias[d.IDGrupo.toString()].color, id: d.IDGrupo };
     });
 
     setLegendData(legend);

@@ -11,6 +11,9 @@ export const Container = styled.div`
   border-bottom: 1px #f7f7f7 solid;
   // position: fixed;
 
+  padding-left: 2%;
+  padding-right: 2%;
+
   // top: 0;
   // left: 0;
   // z-index: 99;

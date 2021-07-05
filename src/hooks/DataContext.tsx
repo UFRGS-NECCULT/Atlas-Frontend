@@ -37,13 +37,8 @@ export interface IColors {
 const DataContext = createContext<DataContextData>({} as DataContextData);
 
 const DataProvider: React.FC = ({ children }) => {
-  const [data, setData] = useState({});
-  const [colors, setColors] = useState({});
-
-  useEffect(() => {
-    setData(JSON.parse(JSON.stringify(DATA_JSON)));
-    setColors(JSON.parse(JSON.stringify(COLOR_JSON)));
-  }, []);
+  const [data, ] = useState(JSON.parse(JSON.stringify(DATA_JSON)));
+  const [colors, ] = useState(JSON.parse(JSON.stringify(COLOR_JSON)));
 
   return <DataContext.Provider value={{ data, colors }}>{children}</DataContext.Provider>;
 };
