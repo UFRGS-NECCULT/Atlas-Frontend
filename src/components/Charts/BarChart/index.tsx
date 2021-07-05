@@ -3,14 +3,22 @@ import * as d3 from "d3";
 import { useSelection } from "hooks/SelectionContext";
 import { getBars } from "services/api";
 import { useData } from "hooks/DataContext";
+import SVGTooltip from "components/SVGTooltip";
 
 interface Data {
   year: number;
-  [group: string]: number;
+  groups: {
+    [groupID: string]: {
+      name: string;
+      id: number;
+      value: number;
+    };
+  };
 }
 
 const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
+  const tooltipContainer = useRef<SVGTooltip | null>(null);
 
   const [data, setData] = useState<Data[]>([]);
 
@@ -40,33 +48,38 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
     // Agrupar desagregações por ano
     const groupsByYear = {};
     for (const item of data) {
-      let groupName = item.NomeGrupo;
+      let group = item.IDGrupo;
 
       if (!stacked) {
         // Se foi selecionada uma cadeia e não estamos no modo stackado,
         // mostre somente a cadeia selecionada
-        if (cad !== 0 && cad !== item.IDGrupo) {
+        if (prt !== 0 && prt !== item.IDGrupo) {
           continue;
         }
 
         // Se não estamos no modo stackado, junte todos os dados em um só grupo
-        groupName = cad.toString();
+        group = prt.toString();
       }
 
       if (!(item.Ano in groupsByYear)) {
         groupsByYear[item.Ano] = {};
       }
-      if (!(groupName in groupsByYear[item.Ano])) {
-        groupsByYear[item.Ano][groupName] = 0;
+      if (!(group in groupsByYear[item.Ano])) {
+        // Esse código assume que agrupamentos de mesmo nome têm o mesmo ID
+        groupsByYear[item.Ano][group] = {
+          name: item.NomeGrupo,
+          id: item.IDGrupo,
+          value: 0
+        };
       }
 
-      groupsByYear[item.Ano][groupName] += item.Valor;
+      groupsByYear[item.Ano][group].value += item.Valor;
     }
 
     // Transformar em um objeto adequado para o d3.stack()
     const result: Data[] = [];
     for (const year in groupsByYear) {
-      result.push({ year: Number(year), ...groupsByYear[year] });
+      result.push({ year: Number(year), groups: groupsByYear[year] });
     }
 
     return result;
@@ -78,16 +91,31 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
       const marginTop = 20;
       const marginBottom = 20;
 
+      if (tooltipContainer.current == null) {
+        tooltipContainer.current = new SVGTooltip(d3Container.current, {
+          right: 0,
+          left: marginLeft,
+          top: marginTop,
+          bottom: marginBottom
+        });
+      }
+      const tooltip = tooltipContainer.current;
+
       const width = d3Container.current.clientWidth - marginLeft;
       const height = d3Container.current.clientHeight - marginTop - marginBottom;
 
       const svg = d3.select(d3Container.current);
 
       // Pegar todos os diferentes grupos de agregação
-      const groups = Array.from(new Set(data.flatMap((d) => Object.keys(d).filter((k) => k !== "year"))));
+      const groups = Array.from(new Set(data.flatMap((d) => Object.keys(d.groups).filter((k) => k !== "year"))));
 
-      const stack = d3.stack<Data>().keys(groups);
+      const stack = d3
+        .stack<Data>()
+        .keys(groups)
+        .value((d, k) => d.groups[k].value);
       const stackedData = stack(data);
+
+      console.log({ data, groups, stackedData });
 
       const x = d3
         .scaleBand()
@@ -141,22 +169,30 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
         .data(stackedData)
         .join("g")
         .attr("class", "bar-group")
-        .attr("fill", (d) => colors.cadeias[d.key].color)
         .attr("transform", "translate(" + marginLeft + ", " + marginTop + ")")
         .selectAll("rect")
-        .data((d) => d.map((d) => ({ ...d, selected: d.data.year === ano })))
+        .data((d) =>
+          d.map((o) => ({ ...o, group: o.data.groups[d.key], year: o.data.year, selected: o.data.year === ano }))
+        )
         .join("rect")
         .on("click", (_, d) => {
           return changeSelection("ano", d.data.year);
         })
-        .attr("stroke-width", 2)
+        .on("mouseenter", (_, d) => {
+          tooltip.setText(`Valor: ${d.group.value}\nGrupo: ${d.group.name}`);
+          tooltip.setXY((x(d.year.toString()) || 0) + x.bandwidth() / 2, y(d[0]) - (y(d[0]) - y(d[1])) / 2);
+          tooltip.show();
+        })
+        .on("mouseleave", () => tooltip.hide())
         .style("cursor", "pointer")
         .transition()
         .duration(300)
+        // TODO: Receber cores do backend
+        .attr("fill", (d) => stacked ? colors.deg['1']['subdeg'][d.group.name] : colors['cadeias'][d.group.id.toString()].color)
         .attr("x", (d) => x(d.data.year.toString()) || 0)
-        .attr("y", (d) => y(d[1]))
+        .attr("y", (d) => Math.min(y(d[0]), y(d[1])))
         .attr("width", x.bandwidth())
-        .attr("height", (d) => y(d[0]) - y(d[1]))
+        .attr("height", (d) => Math.abs(y(d[0]) - y(d[1])))
         .attr("opacity", (d) => (d.selected ? 1 : 0.65));
     }
   }, [ano, data, size, d3Container.current]);
