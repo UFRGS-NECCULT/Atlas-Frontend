@@ -44,6 +44,9 @@ const SelectionProvider: React.FC = ({ children }) => {
     if (window.location.search) {
       const parsed = qs.parse(window.location.search);
 
+      if (parsed.eixo) {
+        setEixo(Number(parsed.eixo));
+      }
       if (parsed.ano) {
         setAno(Number(parsed.ano));
       }
