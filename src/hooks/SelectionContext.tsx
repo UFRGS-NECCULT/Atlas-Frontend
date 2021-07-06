@@ -40,6 +40,8 @@ const SelectionProvider: React.FC = ({ children }) => {
 
   const [options, setOptions] = useState<IOptions>({});
 
+  const location = window.location.toString();
+
   useEffect(() => {
     if (window.location.search) {
       const parsed = qs.parse(window.location.search);
@@ -66,7 +68,7 @@ const SelectionProvider: React.FC = ({ children }) => {
         setDeg(Number(parsed.deg));
       }
     }
-  }, []);
+  }, [location]);
 
   const changeSelection = (selector: string, value: number) => {
     /* Mudando a variável global */

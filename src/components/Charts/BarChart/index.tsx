@@ -116,8 +116,6 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
         .value((d, k) => d.groups[k].value);
       const stackedData = stack(data);
 
-      console.log({ data, groups, stackedData });
-
       const x = d3
         .scaleBand()
         .domain(data.map((d) => d.year.toString()))
