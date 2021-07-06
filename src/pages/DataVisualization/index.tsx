@@ -33,7 +33,9 @@ const DataVisualization = () => {
             <BrazilMap />
           </Box>
           <Box id={"box-2"} title="Dados">
-            <ChartContainer>{/* <LineChart /> */}</ChartContainer>
+            <ChartContainer>
+              <LineChart />
+            </ChartContainer>
           </Box>
           <Box id={"box-3"} title="Descrição da variável">
             {/* <VarDescription /> */}
@@ -48,10 +50,14 @@ const DataVisualization = () => {
             </ChartContainer>
           </Box>
           <Box id={"box-5"} title="Treemap - Setores Culturais Criativos">
-            <ChartContainer direction="row">{/* <Treemap /> */}</ChartContainer>
+            <ChartContainer direction="row">
+              <Treemap />
+            </ChartContainer>
           </Box>
           <Box id="box-6" title="Donut - Setores Culturais Criativos">
-            <ChartContainer direction="row">{/* <DonutChart /> */}</ChartContainer>
+            <ChartContainer direction="row">
+              <DonutChart />
+            </ChartContainer>
           </Box>
         </Viewboxes>
       </Container>

@@ -7,19 +7,9 @@ import Legend, { ILegendData } from "../Legend";
 import { TreemapContainer } from "./styles";
 import SVGTooltip from "components/SVGTooltip";
 
-interface IProps {
-  data?: {
-    IDGrupo: number;
-    NomeGrupo: string;
-    UFNome: string;
-    Percentual: number;
-    Taxa: number;
-    Valor: number;
-  }[];
-}
-
 interface IParsedData {
   name: string;
+  color: string;
   id?: string;
   x0?: number;
   y0?: number;
@@ -27,11 +17,13 @@ interface IParsedData {
   y1?: number;
   children: {
     cadeiaId: number;
+    color: string;
     name: string;
     children: {
       name: string;
       children: {
-        IDGrupo: number;
+        color: string;
+        cadeia_id: number;
         name: string;
         taxa: number;
         size: number;
@@ -40,7 +32,7 @@ interface IParsedData {
   }[];
 }
 
-const Treemap: React.FC<IProps> = () => {
+const Treemap: React.FC = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
   const [data, setData] = useState<IParsedData>();
@@ -58,12 +50,11 @@ const Treemap: React.FC<IProps> = () => {
   const unfocusOpacity = 0.8;
 
   const { uf, prt, num, ano, cad, changeSelection } = useSelection();
-  const { colors } = useData();
 
   useEffect(() => {
     const getData = async () => {
       const { data } = await getTreemap(1, { var: num, uf, prt, ano });
-      setData(parseData(data.filter((d) => d.Valor !== 0)));
+      setData(parseData(data.filter((d) => d.valor !== 0)));
     };
 
     getData();
@@ -71,26 +62,29 @@ const Treemap: React.FC<IProps> = () => {
 
   const parseData = (data): IParsedData => {
     const legend: ILegendData[] = data.map((d) => {
-      return { label: d.NomeGrupo, color: colors.cadeias[d.IDGrupo].color, id: d.IDGrupo };
+      return { label: d.cadeia, color: d.cor, id: d.cadeia_id };
     });
 
     setLegendData(legend);
 
     const r = data.reduce((r, c) => {
       r.push({
-        cadeiaId: c.IDGrupo,
-        name: c.NomeGrupo,
+        cadeiaId: c.cadeia_id,
+        name: c.cadeia,
+        color: c.cor,
         children: [
           {
-            cadeiaId: c.IDGrupo,
-            name: c.NomeGrupo,
+            cadeiaId: c.cadeia_id,
+            name: c.cadeia,
+            color: c.cor,
             children: [
               {
-                name: c.NomeGrupo,
-                id: c.IDGrupo,
-                percentual: c.Percentual,
-                taxa: c.Taxa,
-                size: Math.abs(c.Valor)
+                name: c.cadeia,
+                id: c.cadeia_id,
+                percentual: c.percentual,
+                taxa: c.taxa,
+                color: c.cor,
+                size: Math.abs(c.valor)
               }
             ]
           }
@@ -99,7 +93,7 @@ const Treemap: React.FC<IProps> = () => {
 
       return r;
     }, []);
-    return { name: "scc", children: r };
+    return { name: "scc", color: r.color, children: r };
   };
 
   useEffect(() => {
@@ -152,7 +146,7 @@ const Treemap: React.FC<IProps> = () => {
         .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
         .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
         .attr("opacity", (d) => (cad === 0 || cad === Number(d.data.id) ? 1 : unfocusOpacity))
-        .attr("fill", (d) => colors.cadeias[d.data.id || 0].color)
+        .attr("fill", (d) => d.data.color)
         .on("click", (d) => changeSelection("cad", Number(d.target.id)));
 
       g.append("foreignObject")
@@ -265,9 +259,9 @@ const Treemap: React.FC<IProps> = () => {
 
         tooltip.setText(
           `Valor: ${selected.value}\n` +
-            (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
-            `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
-            `Cadeia: ${selected.data.name}`
+          (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
+          `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
+          `Cadeia: ${selected.data.name}`
         );
         tooltip.setXY(x, y);
         tooltip.show();
