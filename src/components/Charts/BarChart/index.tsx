@@ -3,6 +3,7 @@ import * as d3 from "d3";
 import { useSelection } from "hooks/SelectionContext";
 import { getBars } from "services/api";
 import { useData } from "hooks/DataContext";
+import SVGTooltip from "components/SVGTooltip";
 
 interface Bar {
   year: number;
@@ -16,6 +17,7 @@ interface BarSection {
 
 interface RawData {
   ano: number;
+  valor: string;
   cor: string;
   sdg_nome: string;
   sdg_cor: string;
@@ -28,6 +30,7 @@ interface ParsedData {
 
 const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
+  const tooltipContainer = useRef<SVGTooltip | null>(null);
 
   const [data, setData] = useState<ParsedData[]>([]);
   const [rawData, setRawData] = useState<RawData[]>([]);
@@ -41,7 +44,8 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
     });
   }, []);
 
-  const { eixo, uf, cad, prt, num, ano, changeSelection } = useSelection();
+  // TODO: ocp, subdeg
+  const { eixo, deg, uf, cad, prt, num, ano, changeSelection } = useSelection();
   const { colors } = useData();
 
   useEffect(() => {
@@ -54,7 +58,7 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
     };
 
     getData();
-  }, [eixo, uf, cad, prt, num, stacked]);
+  }, [eixo, deg, uf, cad, prt, num, stacked]);
 
   const parseBarsData = (data) => {
     const groupedData = data.reduce((r, c) => {
@@ -90,6 +94,16 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
       const marginLeft = 50;
       const marginTop = 20;
       const marginBottom = 20;
+
+      if (tooltipContainer.current == null) {
+        tooltipContainer.current = new SVGTooltip(d3Container.current, {
+          right: 0,
+          left: marginLeft,
+          top: marginTop,
+          bottom: marginBottom
+        });
+      }
+      const tooltip = tooltipContainer.current;
 
       const width = d3Container.current.clientWidth - marginLeft;
       const height = d3Container.current.clientHeight - marginTop - marginBottom;
@@ -175,7 +189,16 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
         .on("click", (_, d) => {
           return changeSelection("ano", d.data.ano);
         })
-        .attr("stroke-width", 2)
+        .on("mouseenter", (_, d) => {
+          //CHECK
+          tooltip.setText(`Valor: ${d.dados.valor}\nGrupo: ${d.dados.sdg_nome}`);
+          tooltip.setXY(
+            (x(d.dados.ano?.toString() || `2016`) || 0) + x.bandwidth() / 2,
+            y(d[0]) - (y(d[0]) - y(d[1])) / 2
+          );
+          tooltip.show();
+        })
+        .on("mouseleave", () => tooltip.hide())
         .style("cursor", "pointer")
         .attr("fill", (d) => d.dados.sdg_cor || "red")
         .transition()
@@ -183,7 +206,7 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
         .attr("x", (d) => x(d.data.ano.toString()) || 0)
         .attr("y", (d) => y(d[1]))
         .attr("width", x.bandwidth())
-        .attr("height", (d) => y(d[0]) - y(d[1]))
+        .attr("height", (d) => Math.abs(y(d[0]) - y(d[1])))
         .attr("opacity", (d) => (d.selected ? 1 : 0.65));
     }
   }, [ano, data, size, d3Container.current]);

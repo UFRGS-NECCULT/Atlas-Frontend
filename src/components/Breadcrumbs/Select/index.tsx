@@ -5,7 +5,7 @@ import { Container, Label, Select, Option } from "./styles";
 interface BreadcumbSelectProps {
   id: string;
   label: string;
-  defaultValue: number;
+  value: number;
   options: {
     name: string;
     value?: string | number;
@@ -13,19 +13,14 @@ interface BreadcumbSelectProps {
   }[];
 }
 
-const BreadcrumbSelect: React.FC<BreadcumbSelectProps> = ({ id, label, options, defaultValue }) => {
+const BreadcrumbSelect: React.FC<BreadcumbSelectProps> = ({ id, label, options, value }) => {
   const { changeSelection } = useSelection();
 
   return (
     <Container>
       <Label htmlFor={id}>{label}</Label>
       {options && (
-        <Select
-          name={id}
-          id={id}
-          defaultValue={defaultValue}
-          onChange={(e) => changeSelection(id, Number(e.target.value))}
-        >
+        <Select name={id} id={id} value={value} onChange={(e) => changeSelection(id, Number(e.target.value))}>
           {options.map((opt) => (
             <Option key={opt.id || opt.value || 0} value={opt.id || opt.value || 0}>
               {opt.name}
