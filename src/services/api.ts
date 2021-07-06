@@ -21,3 +21,7 @@ export const getMap = async (eixo = 1, params) => {
 export const getTreemap = async (eixo = 1, params) => {
   return await api.get(`/eixo/${eixo}/treemap?${qs.stringify(params)}`);
 };
+
+export const getDonut = async (eixo = 1, params) => {
+  return await api.get(`/eixo/${eixo}/donut?${qs.stringify(params)}`);
+};
