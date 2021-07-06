@@ -38,7 +38,7 @@ const DataVisualization = () => {
             </ChartContainer>
           </Box>
           <Box id={"box-3"} title="Descrição da variável">
-            {/* <VarDescription /> */}
+            <VarDescription />
           </Box>
           <Box id={"box-4"} title="Série histórica">
             <ChartContainer>
