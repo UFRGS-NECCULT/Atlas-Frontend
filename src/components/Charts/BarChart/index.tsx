@@ -157,17 +157,19 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
         .attr("transform", "translate(" + marginLeft + ", " + marginTop + ")")
         .selectAll("rect")
         .data((d) => {
-          const x = d.map((yd) => {
-            const ji = rawData.find((r) => (r.ano === yd.data.ano && r.sdg_nome === d.key) || d.key === "Total");
+          const bar = d.map((barSection) => {
+            const data = rawData.find(
+              (r) => (r.ano === barSection.data.ano && r.sdg_nome === d.key) || d.key === "Total"
+            );
             return {
-              ...yd,
-              selected: yd.data.ano === ano,
-              dados: { ...ji },
-              data: { ...yd.data }
+              ...barSection,
+              selected: barSection.data.ano === ano,
+              dados: { ...data },
+              data: { ...barSection.data }
             };
           });
 
-          return x;
+          return bar;
         })
         .join("rect")
         .on("click", (_, d) => {
