@@ -11,9 +11,12 @@ interface IProps {
 }
 
 interface Data {
-  Ano: number;
-  Valor: number;
-  NomeGrupo: string;
+  ano: number;
+  valor: number;
+  percentual: number;
+  taxa: number;
+  cadeia: string;
+  cor: string;
 }
 
 function getColor(group: string, colors: IColors, eixo: number, deg: number, variable: number): string {
@@ -91,7 +94,7 @@ const LineChart: React.FC<IProps> = () => {
       // Make the X axis
       const xScale = d3
         .scaleTime()
-        .domain(d3.extent(data, (d) => parseYear(d.Ano)) as [Date, Date])
+        .domain(d3.extent(data, (d) => parseYear(d.ano)) as [Date, Date])
         .rangeRound([0, width]);
       const xAxis = d3
         .axisBottom(xScale)
@@ -105,7 +108,7 @@ const LineChart: React.FC<IProps> = () => {
         .call(xAxis);
 
       // Make the y axis
-      const values = data.map((d) => d.Valor);
+      const values = data.map((d) => d.valor);
       const yScale = d3.scaleLinear().rangeRound([height, 0]);
       yScale.domain(d3.extent(values) as [number, number]).nice();
       const yAxis = d3
@@ -120,7 +123,7 @@ const LineChart: React.FC<IProps> = () => {
       outer: for (const d of data) {
         // Try to find a group with our id
         for (const group of groups) {
-          if (group[0].NomeGrupo == d.NomeGrupo) {
+          if (group[0].cadeia == d.cadeia) {
             group.push(d);
             continue outer;
           }
@@ -129,8 +132,8 @@ const LineChart: React.FC<IProps> = () => {
         groups.push([d]);
       }
       // Build a line for each group
-      const getXPos = (d: Data) => xScale(parseYear(d.Ano)) as number;
-      const getYPos = (d: Data) => yScale(d.Valor);
+      const getXPos = (d: Data) => xScale(parseYear(d.ano)) as number;
+      const getYPos = (d: Data) => yScale(d.valor);
       const line = d3.line<Data>().x(getXPos).y(getYPos);
       const lines = svg.selectAll("path.line").data(groups);
       lines
@@ -139,7 +142,7 @@ const LineChart: React.FC<IProps> = () => {
         .transition()
         .duration(1000)
         .attr("fill", "none")
-        .attr("stroke", (d) => getColor(d[0].NomeGrupo, colors, eixo, deg, num))
+        .attr("stroke", (d) => d[0].cor)
         .attr("stroke-width", 2)
         .attr("transform", `translate(${marginLeft}, ${marginTop})`)
         .attr("d", line);
@@ -168,7 +171,7 @@ const LineChart: React.FC<IProps> = () => {
           })
           .sort((a, b) => a.distance - b.distance)[0];
 
-        tooltip.setText(`Valor: ${d.Valor}\nAno: ${d.Ano}\nGrupo: ${d.NomeGrupo}`);
+        tooltip.setText(`Valor: ${d.valor}\nAno: ${d.ano}\nGrupo: ${d.cadeia}`);
         tooltip.setXY(dx, dy);
         tooltip.show();
       });
