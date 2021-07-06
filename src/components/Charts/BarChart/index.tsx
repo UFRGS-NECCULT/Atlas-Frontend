@@ -4,15 +4,33 @@ import { useSelection } from "hooks/SelectionContext";
 import { getBars } from "services/api";
 import { useData } from "hooks/DataContext";
 
-interface Data {
+interface Bar {
   year: number;
-  [group: string]: number;
+  data: BarSection[];
+}
+
+interface BarSection {
+  name: string;
+  value: number;
+}
+
+interface RawData {
+  ano: number;
+  cor: string;
+  sdg_nome: string;
+  sdg_cor: string;
+}
+
+interface ParsedData {
+  year: number;
+  [deg: string]: number;
 }
 
 const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
 
-  const [data, setData] = useState<Data[]>([]);
+  const [data, setData] = useState<ParsedData[]>([]);
+  const [rawData, setRawData] = useState<RawData[]>([]);
 
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg
@@ -28,48 +46,43 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getBars(eixo + 1, { var: num, uf, cad, prt });
+      const { data } = await getBars(eixo + 1, { var: num, uf, cad, deg: 10 });
+
       const parsedData = parseBarsData(data);
+      setRawData(data);
       setData(parsedData);
     };
 
     getData();
   }, [eixo, uf, cad, prt, num, stacked]);
 
-  const parseBarsData = (data): Data[] => {
-    // Agrupar desagregações por ano
-    const groupsByYear = {};
-    for (const item of data) {
-      let groupName = item.NomeGrupo;
+  const parseBarsData = (data) => {
+    const groupedData = data.reduce((r, c) => {
+      const index = r.findIndex((d) => d.ano === c.ano);
 
-      if (!stacked) {
-        // Se foi selecionada uma cadeia e não estamos no modo stackado,
-        // mostre somente a cadeia selecionada
-        if (cad !== 0 && cad !== item.IDGrupo) {
-          continue;
-        }
-
-        // Se não estamos no modo stackado, junte todos os dados em um só grupo
-        groupName = cad.toString();
+      if (index >= 0) {
+        r[index].dados.push(c);
+      } else {
+        r.push({
+          ano: c.ano,
+          dados: [c]
+        });
       }
 
-      if (!(item.Ano in groupsByYear)) {
-        groupsByYear[item.Ano] = {};
-      }
-      if (!(groupName in groupsByYear[item.Ano])) {
-        groupsByYear[item.Ano][groupName] = 0;
-      }
+      return r;
+    }, []);
 
-      groupsByYear[item.Ano][groupName] += item.Valor;
-    }
+    const parsedData = groupedData.map((bar) => {
+      const obj = { ano: bar.ano };
 
-    // Transformar em um objeto adequado para o d3.stack()
-    const result: Data[] = [];
-    for (const year in groupsByYear) {
-      result.push({ year: Number(year), ...groupsByYear[year] });
-    }
+      bar.dados.forEach((deg) => {
+        obj[deg.sdg_nome || "Total"] = deg.valor;
+      });
 
-    return result;
+      return obj;
+    });
+
+    return parsedData;
   };
 
   useEffect(() => {
@@ -84,14 +97,14 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
       const svg = d3.select(d3Container.current);
 
       // Pegar todos os diferentes grupos de agregação
-      const groups = Array.from(new Set(data.flatMap((d) => Object.keys(d).filter((k) => k !== "year"))));
+      const groups = Array.from(new Set(data.flatMap((d) => Object.keys(d).filter((k) => k !== "ano"))));
 
-      const stack = d3.stack<Data>().keys(groups);
+      const stack = d3.stack<ParsedData>().keys(groups);
       const stackedData = stack(data);
 
       const x = d3
         .scaleBand()
-        .domain(data.map((d) => d.year.toString()))
+        .domain(data.map((d) => d.ano.toString()))
         .rangeRound([0, width])
         .padding(0.1);
 
@@ -141,19 +154,31 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
         .data(stackedData)
         .join("g")
         .attr("class", "bar-group")
-        .attr("fill", (d) => colors.cadeias[d.key].color)
         .attr("transform", "translate(" + marginLeft + ", " + marginTop + ")")
         .selectAll("rect")
-        .data((d) => d.map((d) => ({ ...d, selected: d.data.year === ano })))
+        .data((d) => {
+          const x = d.map((yd) => {
+            const ji = rawData.find((r) => (r.ano === yd.data.ano && r.sdg_nome === d.key) || d.key === "Total");
+            return {
+              ...yd,
+              selected: yd.data.ano === ano,
+              dados: { ...ji },
+              data: { ...yd.data }
+            };
+          });
+
+          return x;
+        })
         .join("rect")
         .on("click", (_, d) => {
-          return changeSelection("ano", d.data.year);
+          return changeSelection("ano", d.data.ano);
         })
         .attr("stroke-width", 2)
         .style("cursor", "pointer")
+        .attr("fill", (d) => d.dados.sdg_cor || "red")
         .transition()
         .duration(300)
-        .attr("x", (d) => x(d.data.year.toString()) || 0)
+        .attr("x", (d) => x(d.data.ano.toString()) || 0)
         .attr("y", (d) => y(d[1]))
         .attr("width", x.bandwidth())
         .attr("height", (d) => y(d[0]) - y(d[1]))

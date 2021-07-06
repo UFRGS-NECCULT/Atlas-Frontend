@@ -13,7 +13,19 @@ const BrazilMap = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
-  const [data, setData] = useState<{ uf: number; valor: number }[]>([]);
+  const [data, setData] = useState<
+    {
+      cadeia: string;
+      cadeia_id: number;
+      uf: string;
+      uf_id: number;
+      cor: string;
+      cor_eixo: string;
+      valor: number;
+      percentual: number;
+      taxa: number;
+    }[]
+  >([]);
 
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg
@@ -30,18 +42,14 @@ const BrazilMap = () => {
   useEffect(() => {
     const getData = async () => {
       const { data } = await getMap(1, { var: num, uf, cad, prt, ano });
-      parseMapData(data);
+      setData(data);
     };
 
     getData();
   }, [cad, ano, num]);
 
-  const parseMapData = (data) => {
-    setData(data);
-  };
-
   const getValueByUf = (uf: number) => {
-    return data.find((x) => x.uf === uf)?.valor || 0;
+    return data.find((x) => x.uf_id === uf)?.valor || 0;
   };
 
   useEffect(() => {
@@ -100,12 +108,12 @@ const BrazilMap = () => {
         states
       );
 
-      const values = data.filter((d) => d.uf !== 0).map((d) => d.valor);
+      const values = data.filter((d) => d.uf_id !== 0).map((d) => d.valor);
 
       const colorScale = d3
         .scaleLinear<string>()
         .domain(d3.extent(values) as [number, number])
-        .range([colors.cadeias[cad].gradient["2"], colors.cadeias[cad].gradient["6"]]); // TODO: change color dinamicallly
+        .range([colors.cadeias[cad].gradient["2"], colors.cadeias[cad].gradient["6"]]); // TODO: change color dynamically
 
       const [minValue, maxValue] = d3.extent(values);
       const [lowColor, highColor] = d3.extent(values).map((v) => colorScale(v));
@@ -195,7 +203,9 @@ const BrazilMap = () => {
       };
 
       const parsedStates = states.features.map((s) => {
-        return { ...s, color: colorScale(getValueByUf(Number(s.id))) };
+        const d = data.find((x) => x.uf_id === Number(s.id));
+
+        return { ...s, ...d, id: Number(s.id), color: colorScale(d?.valor || 0) };
       });
 
       svg
@@ -213,9 +223,9 @@ const BrazilMap = () => {
         .transition()
         .duration(800)
         .attr("d", path)
-        .attr("fill", (d) => d.color);
+        .attr("fill", (d) => (uf === d.id ? d.cor_eixo || d.color : d.color));
     }
-  }, [data, size, d3Container]);
+  }, [uf, data, size, d3Container]);
 
   return <svg ref={d3Container} width={"100%"} height={"100%"} />;
 };

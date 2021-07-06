@@ -7,7 +7,7 @@ const api = axios.create({
 });
 
 export const getBars = async (eixo = 1, params) => {
-  return await api.get(`/eixo/${eixo}/bars?${qs.stringify(params)}`);
+  return await api.get(`/eixo/${eixo}/stacked-bars?${qs.stringify(params)}`);
 };
 
 export const getLines = async (eixo = 1, params) => {
