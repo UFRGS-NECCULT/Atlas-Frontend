@@ -5,6 +5,7 @@ import { useSelection } from "hooks/SelectionContext";
 import { IColors, useData } from "hooks/DataContext";
 import { getLines } from "services/api";
 import SVGTooltip from "components/SVGTooltip";
+import { format } from 'utils';
 
 interface IProps {
   data?: Data[];
@@ -66,11 +67,12 @@ const LineChart: React.FC<IProps> = () => {
     const marginLeft = 30;
     const marginTop = 20;
     const marginBottom = 20;
+    const marginRight = 15;
 
     if (data && data.length && d3Container.current) {
       if (tooltipContainer.current == null) {
         tooltipContainer.current = new SVGTooltip(d3Container.current, {
-          right: 0,
+          right: marginRight,
           left: marginLeft,
           top: marginTop,
           bottom: marginBottom
@@ -78,7 +80,7 @@ const LineChart: React.FC<IProps> = () => {
       }
       const tooltip = tooltipContainer.current;
 
-      const width = d3Container.current.clientWidth - marginLeft;
+      const width = d3Container.current.clientWidth - marginLeft - marginRight;
       const height = d3Container.current.clientHeight - marginTop - marginBottom;
 
       const svg = d3.select(d3Container.current);
@@ -112,7 +114,7 @@ const LineChart: React.FC<IProps> = () => {
         .axisLeft(yScale)
         .tickSize(5)
         .tickPadding(5)
-        .tickFormat((d) => d.toString());
+        .tickFormat((d) => format(d.valueOf(), 'si'));
       svg.append("g").attr("class", "axis").attr("transform", `translate(${marginLeft}, ${marginTop})`).call(yAxis);
 
       // Group each value based on their ID

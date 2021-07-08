@@ -4,6 +4,7 @@ import { useSelection } from "hooks/SelectionContext";
 import { getBars } from "services/api";
 import { useData } from "hooks/DataContext";
 import SVGTooltip from "components/SVGTooltip";
+import { format } from 'utils';
 
 interface Data {
   year: number;
@@ -88,7 +89,7 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
 
   useEffect(() => {
     if (data && data.length && d3Container.current) {
-      const marginLeft = 50;
+      const marginLeft = 35;
       const marginTop = 20;
       const marginBottom = 20;
 
@@ -147,7 +148,7 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
         .axisLeft(y)
         .tickSize(5)
         .tickPadding(5)
-        .tickFormat((d) => d.toString());
+        .tickFormat((d) => format(d.valueOf(), "si"));
 
       svg.selectAll(".eixo-x").remove();
       svg.selectAll(".eixo-y").remove();

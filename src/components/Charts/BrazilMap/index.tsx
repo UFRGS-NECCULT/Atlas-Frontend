@@ -8,6 +8,7 @@ import { useSelection } from "hooks/SelectionContext";
 import { getMap } from "services/api";
 import { useData } from "hooks/DataContext";
 import SVGTooltip from "components/SVGTooltip";
+import { format } from 'utils';
 
 const BrazilMap = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
@@ -173,7 +174,9 @@ const BrazilMap = () => {
         .style("font-size", "9px")
         .transition()
         .duration(800)
-        .text((d) => d || 0);
+        // TODO: Pegar do backend o formato da variável
+        // TODO: formato === 'none' ? 'si' : formato
+        .text((d) => format(d || 0, 'si'));
 
       const showTooltip = (e, d) => {
         let [x, y] = d3.pointer(e);

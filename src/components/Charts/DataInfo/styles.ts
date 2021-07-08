@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const MainContainer = styled.div`
   display: flex;
-  height: 70%;
+  height: 100%;
   align-items: center;
 `;
 
@@ -44,7 +44,6 @@ export const BigNumber = styled.span`
   display: inline-block;
   text-align: center;
   width: 100%;
-  margin: auto;
 `;
 
 export const BigNumberDesc = styled.span`
@@ -54,5 +53,4 @@ export const BigNumberDesc = styled.span`
   font-size: 1vw;
   color: gray;
   width: 100%;
-  margin: auto;
 `;

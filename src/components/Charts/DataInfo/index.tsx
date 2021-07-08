@@ -4,11 +4,15 @@ import { useData } from "hooks/DataContext";
 import { TabButton, Flex, Column, BigNumber, BigNumberDesc, MainContainer } from "./styles";
 import { getInfo } from "services/api";
 import { useEffect } from "react";
+import { format } from "utils";
 
 interface Data {
   val1: number;
+  val1Type: string;
   val2: number;
+  val2Type: string;
   val3: number;
+  val3Type: string;
 
   state: string;
   desag: string;
@@ -28,8 +32,11 @@ const DataInfo: React.FC = () => {
       const { data } = await getInfo(eixo + 1, { var: num, ano, cad, uf, prt, deg });
       setData({
         val1: data.val1,
+        val1Type: data.tipo_val1,
         val2: data.val2,
+        val2Type: data.tipo_val2,
         val3: data.val3,
+        val3Type: data.tipo_val3,
         sector: data.cadeia,
         state: data.uf,
         desag: data.desag,
@@ -81,16 +88,17 @@ const DataInfo: React.FC = () => {
       .replace(/\[uf\]/gi, data.state)
       .replace(/\[cad\]/gi, data.sector);
 
-    const suffix = ["", "%", "%"][which];
-
-    const value = [data.val1, data.val2, data.val3][which];
+    const [value, type] = (
+      [
+        [data.val1, data.val1Type],
+        [data.val2, data.val2Type],
+        [data.val3, data.val3Type]
+      ] as [number, string][]
+    )[which];
 
     return (
       <>
-        <BigNumber>
-          {value}
-          {suffix}
-        </BigNumber>
+        <BigNumber>{format(value, type)}</BigNumber>
         <BigNumberDesc>{text}</BigNumberDesc>
       </>
     );
