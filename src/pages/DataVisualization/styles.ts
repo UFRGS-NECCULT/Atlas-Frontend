@@ -29,6 +29,8 @@ export const Viewboxes = styled.div`
     "box-1 box-4"
     "box-3 box-4"
     "box-3 box-4"
+    "box-7 box-7"
+    "box-7 box-7"
     "box-6 box-6"
     "box-5 box-5";
 
