@@ -2,8 +2,13 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import { useSelection } from "hooks/SelectionContext";
 import { getBars } from "services/api";
-import { useData } from "hooks/DataContext";
 import SVGTooltip from "components/SVGTooltip";
+import { format } from "utils";
+
+interface Data {
+  bars: Bar[];
+  format: string;
+}
 
 interface Bar {
   year: number;
@@ -52,7 +57,6 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
     const getData = async () => {
       const { data } = await getBars(eixo + 1, { var: num, uf, cad, deg });
 
-      console.log(data);
       const parsedData = parseBarsData(data);
       setRawData(data);
       setData(parsedData);
@@ -92,7 +96,7 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
 
   useEffect(() => {
     if (data && data.length && d3Container.current) {
-      const marginLeft = 50;
+      const marginLeft = 35;
       const marginTop = 20;
       const marginBottom = 20;
 
@@ -148,7 +152,7 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
         .axisLeft(y)
         .tickSize(5)
         .tickPadding(5)
-        .tickFormat((d) => d.toString());
+        .tickFormat((d) => format(d.valueOf(), "si"));
 
       svg.selectAll(".eixo-x").remove();
       svg.selectAll(".eixo-y").remove();

@@ -8,8 +8,6 @@ const Breadcrumbs = () => {
   const { num, uf, ano, cad, deg, eixo } = useSelection();
   const { options } = useSelection();
 
-  console.log(options);
-
   const getValueById = (id): number => {
     switch (id) {
       case "var":

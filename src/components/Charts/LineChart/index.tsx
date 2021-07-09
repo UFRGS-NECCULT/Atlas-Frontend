@@ -5,6 +5,7 @@ import { useSelection } from "hooks/SelectionContext";
 import { IColors, useData } from "hooks/DataContext";
 import { getLines } from "services/api";
 import SVGTooltip from "components/SVGTooltip";
+import { format } from "utils";
 
 interface IProps {
   data?: Data[];
@@ -42,6 +43,7 @@ const LineChart: React.FC<IProps> = () => {
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
   const [data, setData] = useState<Data[]>([]);
+  const [dataFormat, setDataFormat] = useState("real");
 
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg
@@ -60,20 +62,22 @@ const LineChart: React.FC<IProps> = () => {
     const getData = async () => {
       const { data } = await getLines(eixo + 1, { var: num, uf, cad, deg });
       setData(data);
+      setDataFormat("real");
     };
 
     getData();
   }, [eixo, num, uf, cad, deg]);
 
   useEffect(() => {
-    const marginLeft = 30;
+    const marginLeft = 40;
     const marginTop = 20;
     const marginBottom = 20;
+    const marginRight = 15;
 
     if (data && data.length && d3Container.current) {
       if (tooltipContainer.current == null) {
         tooltipContainer.current = new SVGTooltip(d3Container.current, {
-          right: 0,
+          right: marginRight,
           left: marginLeft,
           top: marginTop,
           bottom: marginBottom
@@ -81,7 +85,7 @@ const LineChart: React.FC<IProps> = () => {
       }
       const tooltip = tooltipContainer.current;
 
-      const width = d3Container.current.clientWidth - marginLeft;
+      const width = d3Container.current.clientWidth - marginLeft - marginRight;
       const height = d3Container.current.clientHeight - marginTop - marginBottom;
 
       const svg = d3.select(d3Container.current);
@@ -115,7 +119,7 @@ const LineChart: React.FC<IProps> = () => {
         .axisLeft(yScale)
         .tickSize(5)
         .tickPadding(5)
-        .tickFormat((d) => d.toString());
+        .tickFormat((d) => format(d.valueOf(), dataFormat === "percent" ? "percent" : "si"));
       svg.append("g").attr("class", "axis").attr("transform", `translate(${marginLeft}, ${marginTop})`).call(yAxis);
 
       // Group each value based on their ID
@@ -131,6 +135,7 @@ const LineChart: React.FC<IProps> = () => {
         // Found no group, create a new
         groups.push([d]);
       }
+
       // Build a line for each group
       const getXPos = (d: Data) => xScale(parseYear(d.ano)) as number;
       const getYPos = (d: Data) => yScale(d.valor);

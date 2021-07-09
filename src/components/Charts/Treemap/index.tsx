@@ -6,6 +6,7 @@ import { getTreemap } from "services/api";
 import Legend, { ILegendData } from "../Legend";
 import { TreemapContainer } from "./styles";
 import SVGTooltip from "components/SVGTooltip";
+import { format } from "utils";
 
 interface IParsedData {
   name: string;
@@ -36,6 +37,7 @@ const Treemap: React.FC = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
   const [data, setData] = useState<IParsedData>();
+  const [dataFormat, setDataFormat] = useState("percent");
   const [legendData, setLegendData] = useState<ILegendData[]>([]);
 
   // O tamanho da janela faz parte do nosso estado já que sempre
@@ -54,6 +56,7 @@ const Treemap: React.FC = () => {
   useEffect(() => {
     const getData = async () => {
       const { data } = await getTreemap(1, { var: num, uf, ano });
+      setDataFormat("percent");
       setData(parseData(data.filter((d) => d.valor !== 0)));
     };
 
@@ -185,7 +188,7 @@ const Treemap: React.FC = () => {
         .text((d: any) => {
           const height = d.y1 - d.y0;
           const width = d.x1 - d.x0;
-          return height < 20 || width < 40 ? "" : d.value;
+          return height < 20 || width < 40 ? "" : format(d.value, dataFormat);
         })
         .style("opacity", "1");
 
@@ -225,7 +228,7 @@ const Treemap: React.FC = () => {
         .text((d: any) => {
           const height = d.y1 - d.y0;
           const width = d.x1 - d.x0;
-          return height < 20 || width < 40 ? "" : d.value;
+          return height < 20 || width < 40 ? "" : format(d.value, dataFormat);
         });
 
       cell.exit().remove();

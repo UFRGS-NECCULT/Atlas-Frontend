@@ -26,6 +26,9 @@ export const getDonut = async (eixo = 1, params) => {
   return await api.get(`/eixo/${eixo}/donut?${qs.stringify(params)}`);
 };
 
-export const getBreadcrumb = async (eixo, num) => {
+export const getBreadcrumb = async (eixo = 1, num) => {
   return await api.get(`/eixo/${eixo}/breadcrumb?var=${num}`);
+};
+export const getInfo = async (eixo = 1, params) => {
+  return await api.get(`/eixo/${1}/info?${qs.stringify(params)}`);
 };

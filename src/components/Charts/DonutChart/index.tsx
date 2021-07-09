@@ -1,12 +1,12 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
-import { useData } from "hooks/DataContext";
 import SVGTooltip from "components/SVGTooltip";
 import { useSelection } from "hooks/SelectionContext";
-import { getDonut, getTreemap } from "services/api";
+import { getDonut } from "services/api";
 import { DonutChartContainer } from "./styles";
-import Legend, { ILegendData } from "../Legend";
+import { ILegendData } from "../Legend";
+import { format } from "utils";
 
 interface Data {
   valor: number;
@@ -23,6 +23,7 @@ const DonutChart: React.FC = () => {
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
   const [data, setData] = useState<Data[]>([]);
+  const [dataFormat, setDataFormat] = useState("percent");
 
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg
@@ -53,6 +54,7 @@ const DonutChart: React.FC = () => {
     const getData = async () => {
       const { data } = await getDonut(eixo + 1, { var: num, uf, deg, ano });
       setData(data);
+      setDataFormat("percent");
     };
 
     getData();
@@ -105,6 +107,8 @@ const DonutChart: React.FC = () => {
           let [x, y] = arc.centroid(d);
           x += margins.left + width / 2;
           y += margins.top + height / 2;
+
+          const value = format(d.value, dataFormat);
 
           tooltip.setXY(x, y);
           tooltip.setText(`Valor: ${d.data.valor}\n` + `Grupo: ${d.data.cadeia}`);

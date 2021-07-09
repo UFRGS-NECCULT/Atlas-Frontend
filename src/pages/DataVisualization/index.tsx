@@ -19,6 +19,7 @@ import Treemap from "components/Charts/Treemap";
 import LineChart from "components/Charts/LineChart";
 import DonutChart from "components/Charts/DonutChart";
 import VarDescription from "components/Charts/VarDescription";
+import DataInfo from 'components/Charts/DataInfo';
 
 const DataVisualization = () => {
   const [stacked, setStacked] = useState<boolean>(false);
@@ -39,6 +40,9 @@ const DataVisualization = () => {
           </Box>
           <Box id={"box-3"} title="Descrição da variável">
             <VarDescription />
+          </Box>
+          <Box id="box-7" title="Dados">
+            <DataInfo/>
           </Box>
           <Box id={"box-4"} title="Série histórica">
             <ChartContainer>

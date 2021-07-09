@@ -8,6 +8,12 @@ import { useSelection } from "hooks/SelectionContext";
 import { getMap } from "services/api";
 import { useData } from "hooks/DataContext";
 import SVGTooltip from "components/SVGTooltip";
+import { format } from "utils";
+
+interface IData {
+  ufs: { uf: number; valor: number; formato: string }[];
+  format: string;
+}
 
 const BrazilMap = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
@@ -27,6 +33,8 @@ const BrazilMap = () => {
     }[]
   >([]);
 
+  const [dataFormat, setDataFormat] = useState("none");
+
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg
   const [size, setSize] = useState<[number, number]>([0, 0]);
@@ -43,6 +51,7 @@ const BrazilMap = () => {
     const getData = async () => {
       const { data } = await getMap(1, { var: num, uf, cad, ano });
       setData(data);
+      setDataFormat("percent");
     };
 
     getData();
@@ -181,7 +190,7 @@ const BrazilMap = () => {
         .style("font-size", "9px")
         .transition()
         .duration(800)
-        .text((d) => d || 0);
+        .text((d) => format(d || 0, dataFormat === "percent" ? "percent" : "si"));
 
       const showTooltip = (e, d) => {
         let [x, y] = d3.pointer(e);
@@ -194,8 +203,10 @@ const BrazilMap = () => {
           .map((n) => n[0].toUpperCase() + n.slice(1).toLowerCase())
           .join(" ");
 
+        const valor = getValueByUf(Number(d.id));
+
         tooltip.setXY(x, y);
-        tooltip.setText(`Estado: ${name}\nValor: ${getValueByUf(Number(d.id))}`);
+        tooltip.setText(`Estado: ${name}\nValor: ${format(valor, dataFormat)}`);
         tooltip.show();
       };
       const hideTooltip = () => {
