@@ -7,13 +7,11 @@ import { useSelection } from "hooks/SelectionContext";
 import { getTreemap } from "services/api";
 import { DonutChartContainer } from "./styles";
 import Legend, { ILegendData } from "../Legend";
-
-interface IProps {
-  data?: Data[];
-}
+import { format } from 'utils';
 
 interface Data {
   selectedGroup: number;
+  format: string;
   entries: Entry[];
 }
 
@@ -25,7 +23,7 @@ interface Entry {
   selectColor: string;
 }
 
-const DonutChart: React.FC<IProps> = () => {
+const DonutChart: React.FC = () => {
   const d3Container = useRef<SVGSVGElement>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
@@ -59,13 +57,14 @@ const DonutChart: React.FC<IProps> = () => {
 
   useEffect(() => {
     const getData = async () => {
-      // TODO: Pegar dados corretos do backend
       const { data } = await getTreemap(eixo + 1, { var: num, uf, prt, ano });
 
       switch (eixo) {
         case 0:
           setData({
             selectedGroup: cad,
+            // TODO: Pegar formato do backend
+            format: 'percent',
             entries: parseEntries1(data)
           });
           break;
@@ -136,8 +135,10 @@ const DonutChart: React.FC<IProps> = () => {
           x += margins.left + width / 2;
           y += margins.top + height / 2;
 
+          const value = format(d.data.value, data.format);
+
           tooltip.setXY(x, y);
-          tooltip.setText(`Valor: ${d.data.value}\n` + `Grupo: ${d.data.groupName}`);
+          tooltip.setText(`Valor: ${value}\n` + `Grupo: ${d.data.groupName}`);
           tooltip.show();
         })
         .on("mouseleave", () => tooltip.hide())

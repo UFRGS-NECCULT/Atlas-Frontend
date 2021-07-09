@@ -6,41 +6,34 @@ import { getTreemap } from "services/api";
 import Legend, { ILegendData } from "../Legend";
 import { TreemapContainer } from "./styles";
 import SVGTooltip from "components/SVGTooltip";
-
-interface IProps {
-  data?: {
-    IDGrupo: number;
-    NomeGrupo: string;
-    UFNome: string;
-    Percentual: number;
-    Taxa: number;
-    Valor: number;
-  }[];
-}
+import { format } from "utils";
 
 interface IParsedData {
-  name: string;
-  id?: string;
-  x0?: number;
-  y0?: number;
-  x1?: number;
-  y1?: number;
-  children: {
-    cadeiaId: number;
+  format: string;
+  tree: {
     name: string;
+    id?: string;
+    x0?: number;
+    y0?: number;
+    x1?: number;
+    y1?: number;
     children: {
+      cadeiaId: number;
       name: string;
       children: {
-        IDGrupo: number;
         name: string;
-        taxa: number;
-        size: number;
+        children: {
+          IDGrupo: number;
+          name: string;
+          taxa: number;
+          size: number;
+        }[];
       }[];
     }[];
-  }[];
+  };
 }
 
-const Treemap: React.FC<IProps> = () => {
+const Treemap: React.FC = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
   const [data, setData] = useState<IParsedData>();
@@ -99,7 +92,11 @@ const Treemap: React.FC<IProps> = () => {
 
       return r;
     }, []);
-    return { name: "scc", children: r };
+    return {
+      // TODO: Pegar formato do backend
+      format: "none",
+      tree: { name: "scc", children: r }
+    };
   };
 
   useEffect(() => {
@@ -107,7 +104,7 @@ const Treemap: React.FC<IProps> = () => {
     const marginTop = 0;
     const marginBottom = 0;
 
-    if (data && data.children && data.children.length && d3Container.current) {
+    if (data && data.tree.children && data.tree.children.length && d3Container.current) {
       if (tooltipContainer.current == null) {
         tooltipContainer.current = new SVGTooltip(d3Container.current, {
           right: 0,
@@ -128,7 +125,7 @@ const Treemap: React.FC<IProps> = () => {
       const fontScale = d3.scaleThreshold().domain([12, 25, 30, 40]).range([8, 12, 16, 20]);
 
       const root = d3
-        .hierarchy(data)
+        .hierarchy(data.tree)
         .sum((d: any) => {
           return d.size;
         })
@@ -191,7 +188,7 @@ const Treemap: React.FC<IProps> = () => {
         .text((d: any) => {
           const height = d.y1 - d.y0;
           const width = d.x1 - d.x0;
-          return height < 20 || width < 40 ? "" : d.value;
+          return height < 20 || width < 40 ? "" : format(d.value, data.format);
         })
         .style("opacity", "1");
 
@@ -231,7 +228,7 @@ const Treemap: React.FC<IProps> = () => {
         .text((d: any) => {
           const height = d.y1 - d.y0;
           const width = d.x1 - d.x0;
-          return height < 20 || width < 40 ? "" : d.value;
+          return height < 20 || width < 40 ? "" : format(d.value, data.format);
         });
 
       cell.exit().remove();

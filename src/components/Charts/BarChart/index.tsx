@@ -7,6 +7,11 @@ import SVGTooltip from "components/SVGTooltip";
 import { format } from 'utils';
 
 interface Data {
+  bars: Bar[];
+  format: string;
+}
+
+interface Bar {
   year: number;
   groups: {
     [groupID: string]: {
@@ -21,7 +26,7 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
-  const [data, setData] = useState<Data[]>([]);
+  const [data, setData] = useState<Data|null>(null);
 
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg
@@ -46,7 +51,7 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
     getData();
   }, [eixo, deg, uf, cad, prt, num, stacked]);
 
-  const parseBarsData = (data): Data[] => {
+  const parseBarsData = (data): Data => {
     // Agrupar desagregações por ano
     const groupsByYear = {};
     for (const item of data) {
@@ -79,16 +84,20 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
     }
 
     // Transformar em um objeto adequado para o d3.stack()
-    const result: Data[] = [];
+    const result: Bar[] = [];
     for (const year in groupsByYear) {
       result.push({ year: Number(year), groups: groupsByYear[year] });
     }
 
-    return result;
+    return {
+      // TODO: Pegar formato do backend
+      format: 'none',
+      bars: result
+    };
   };
 
   useEffect(() => {
-    if (data && data.length && d3Container.current) {
+    if (data && data.bars.length && d3Container.current) {
       const marginLeft = 35;
       const marginTop = 20;
       const marginBottom = 20;
@@ -109,17 +118,17 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
       const svg = d3.select(d3Container.current);
 
       // Pegar todos os diferentes grupos de agregação
-      const groups = Array.from(new Set(data.flatMap((d) => Object.keys(d.groups).filter((k) => k !== "year"))));
+      const groups = Array.from(new Set(data.bars.flatMap((d) => Object.keys(d.groups).filter((k) => k !== "year"))));
 
       const stack = d3
-        .stack<Data>()
+        .stack<Bar>()
         .keys(groups)
         .value((d, k) => d.groups[k].value);
-      const stackedData = stack(data);
+      const stackedData = stack(data.bars);
 
       const x = d3
         .scaleBand()
-        .domain(data.map((d) => d.year.toString()))
+        .domain(data.bars.map((d) => d.year.toString()))
         .rangeRound([0, width])
         .padding(0.1);
 
