@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelection } from "hooks/SelectionContext";
 import { useData } from "hooks/DataContext";
 import { TabButton, Flex, Column, BigNumber, BigNumberDesc, MainContainer } from "./styles";
 import { getInfo } from "services/api";
-import { useEffect } from "react";
+
 import { format } from "utils";
 
 interface Data {
@@ -22,14 +22,14 @@ interface Data {
 }
 
 const DataInfo: React.FC = () => {
-  const { eixo, ano, num, cad, uf, deg, prt } = useSelection();
+  const { eixo, ano, num, cad, uf, deg } = useSelection();
   const { desc } = useData();
 
   const [data, setData] = useState<Data | null>(null);
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getInfo(eixo + 1, { var: num, ano, cad, uf, prt, deg });
+      const { data } = await getInfo(eixo, { var: num, ano, cad, uf, deg });
       setData({
         val1: data.val1,
         val1Type: data.tipo_val1,

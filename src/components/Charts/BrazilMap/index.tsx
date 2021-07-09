@@ -19,7 +19,21 @@ const BrazilMap = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
-  const [data, setData] = useState<IData | null>(null);
+  const [data, setData] = useState<
+    {
+      cadeia: string;
+      cadeia_id: number;
+      uf: string;
+      uf_id: number;
+      cor: string;
+      cor_eixo: string;
+      valor: number;
+      percentual: number;
+      taxa: number;
+    }[]
+  >([]);
+
+  const [dataFormat, setDataFormat] = useState("none");
 
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg
@@ -30,25 +44,21 @@ const BrazilMap = () => {
     });
   }, []);
 
-  const { uf, cad, prt, ano, num, changeSelection } = useSelection();
+  const { uf, cad, ano, num, changeSelection } = useSelection();
   const { colors } = useData();
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getMap(1, { var: num, uf, cad, prt, ano });
-      parseMapData(data);
+      const { data } = await getMap(1, { var: num, uf, cad, ano });
+      setData(data);
+      setDataFormat("percent");
     };
 
     getData();
   }, [cad, ano, num]);
 
-  const parseMapData = (data) => {
-    // TODO: Pegar formato do backend
-    setData({ ufs: data, format: "percent" });
-  };
-
   const getValueByUf = (uf: number) => {
-    return data?.ufs.find((x) => x.uf === uf)?.valor || 0;
+    return data.find((x) => x.uf_id === uf)?.valor || 0;
   };
 
   useEffect(() => {
@@ -65,7 +75,7 @@ const BrazilMap = () => {
   }, []);
 
   useEffect(() => {
-    if (data && data.ufs.length && d3Container.current) {
+    if (data && data.length && d3Container.current) {
       const marginLeft = 30;
       const marginTop = 20;
       const marginBottom = 20;
@@ -107,12 +117,12 @@ const BrazilMap = () => {
         states
       );
 
-      const values = data.ufs.filter((d) => d.uf !== 0).map((d) => d.valor);
+      const values = data.filter((d) => d.uf_id !== 0).map((d) => d.valor);
 
       const colorScale = d3
         .scaleLinear<string>()
         .domain(d3.extent(values) as [number, number])
-        .range([colors.cadeias[cad].gradient["2"], colors.cadeias[cad].gradient["6"]]); // TODO: change color dinamicallly
+        .range([colors.cadeias[cad].gradient["2"], colors.cadeias[cad].gradient["6"]]); // TODO: change color dynamically
 
       const [minValue, maxValue] = d3.extent(values);
       const [lowColor, highColor] = d3.extent(values).map((v) => colorScale(v));
@@ -180,7 +190,7 @@ const BrazilMap = () => {
         .style("font-size", "9px")
         .transition()
         .duration(800)
-        .text((d) => format(d || 0, data.format === "percent" ? "percent" : "si"));
+        .text((d) => format(d || 0, dataFormat === "percent" ? "percent" : "si"));
 
       const showTooltip = (e, d) => {
         let [x, y] = d3.pointer(e);
@@ -196,7 +206,7 @@ const BrazilMap = () => {
         const valor = getValueByUf(Number(d.id));
 
         tooltip.setXY(x, y);
-        tooltip.setText(`Estado: ${name}\nValor: ${format(valor, data.format)}`);
+        tooltip.setText(`Estado: ${name}\nValor: ${format(valor, dataFormat)}`);
         tooltip.show();
       };
       const hideTooltip = () => {
@@ -204,7 +214,9 @@ const BrazilMap = () => {
       };
 
       const parsedStates = states.features.map((s) => {
-        return { ...s, color: colorScale(getValueByUf(Number(s.id))) };
+        const d = data.find((x) => x.uf_id === Number(s.id));
+
+        return { ...s, ...d, id: Number(s.id), color: colorScale(d?.valor || 0) };
       });
 
       svg
@@ -216,15 +228,15 @@ const BrazilMap = () => {
         .attr("stroke-linecap", "round")
         .attr("stroke", "black")
         .style("cursor", "pointer")
-        .on("click", (d) => changeSelection("uf", d.target.id))
+        .on("click", (d) => changeSelection("uf", Number(d.target.id)))
         .on("mousemove", showTooltip)
         .on("mouseout", () => hideTooltip())
         .transition()
         .duration(800)
         .attr("d", path)
-        .attr("fill", (d) => d.color);
+        .attr("fill", (d) => (uf === d.id ? d.cor_eixo || d.color : d.color));
     }
-  }, [data, size, d3Container]);
+  }, [uf, data, size, d3Container]);
 
   return <svg ref={d3Container} width={"100%"} height={"100%"} />;
 };

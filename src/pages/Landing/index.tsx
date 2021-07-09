@@ -11,7 +11,7 @@ import logoFinal from "../../assets/images/atlas_dark.png";
 import { Separator } from "components/Separator1";
 import MapIndex from "components/MapIndex";
 import Footer from "components/Footer";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 const LandingPage = () => {
   return (

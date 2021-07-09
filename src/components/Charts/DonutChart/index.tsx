@@ -1,34 +1,29 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
-import { useData } from "hooks/DataContext";
 import SVGTooltip from "components/SVGTooltip";
 import { useSelection } from "hooks/SelectionContext";
-import { getTreemap } from "services/api";
+import { getDonut } from "services/api";
 import { DonutChartContainer } from "./styles";
-import Legend, { ILegendData } from "../Legend";
-import { format } from 'utils';
+import { ILegendData } from "../Legend";
+import { format } from "utils";
 
 interface Data {
-  selectedGroup: number;
-  format: string;
-  entries: Entry[];
-}
-
-interface Entry {
-  value: number;
-  group: number;
-  groupName: string;
-  groupColor: string;
-  selectColor: string;
+  valor: number;
+  percentual: number;
+  taxa: number;
+  ano: number;
+  cadeia_id: number;
+  cor: string;
+  cadeia: string;
 }
 
 const DonutChart: React.FC = () => {
   const d3Container = useRef<SVGSVGElement>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
-  const [data, setData] = useState<Data | null>(null);
-  const { colors } = useData();
+  const [data, setData] = useState<Data[]>([]);
+  const [dataFormat, setDataFormat] = useState("percent");
 
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg
@@ -39,7 +34,7 @@ const DonutChart: React.FC = () => {
     });
   }, []);
 
-  const { eixo, uf, prt, num, ano, cad, changeSelection } = useSelection();
+  const { eixo, uf, deg, num, ano, cad, changeSelection } = useSelection();
 
   // Valor entre (0, 1) para o quão grosso devem ser as fatias
   // em % do raio (1 = 100% do raio, 0 = 0% do raio)
@@ -57,35 +52,13 @@ const DonutChart: React.FC = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getTreemap(eixo + 1, { var: num, uf, prt, ano });
-
-      switch (eixo) {
-        case 0:
-          setData({
-            selectedGroup: cad,
-            // TODO: Pegar formato do backend
-            format: 'percent',
-            entries: parseEntries1(data)
-          });
-          break;
-        default:
-          throw `Eixo ${eixo + 1} não suportado pelo gráfico em donut!`;
-      }
+      const { data } = await getDonut(eixo + 1, { var: num, uf, deg, ano });
+      setData(data);
+      setDataFormat("percent");
     };
 
     getData();
-  }, [uf, prt, num, ano, cad, eixo]);
-
-  const parseEntries1 = (data): Entry[] =>
-    data.map((d): Entry => {
-      return {
-        value: d.Valor,
-        group: d.IDGrupo,
-        groupName: d.NomeGrupo,
-        groupColor: colors["cadeias"][d.IDGrupo.toString() as string]["color"],
-        selectColor: colors.eixo[0].color["2"]
-      };
-    });
+  }, [uf, deg, num, ano, cad, eixo]);
 
   const getSelector = (eixo) => {
     switch (eixo) {
@@ -97,7 +70,7 @@ const DonutChart: React.FC = () => {
   };
 
   useEffect(() => {
-    if (d3Container.current && data && data.entries.length) {
+    if (d3Container.current && data && data.length) {
       if (tooltipContainer.current == null) {
         tooltipContainer.current = new SVGTooltip(d3Container.current, margins);
       }
@@ -110,13 +83,13 @@ const DonutChart: React.FC = () => {
       const svg = d3.select(d3Container.current);
 
       const pie = d3
-        .pie<Entry>()
+        .pie<Data>()
         .padAngle(0.015)
-        .sort((a, b) => b.value - a.value) // Ordenar as fatias pelo valor em ordem decrescente
-        .value((d) => Math.abs(d.value));
-      const arcs = pie(data.entries.filter((d) => d.value !== 0));
+        .sort((a, b) => b.valor - a.valor) // Ordenar as fatias pelo valor em ordem decrescente
+        .value((d) => Math.abs(d.valor));
+      const arcs = pie(data);
       const arc = d3
-        .arc<d3.PieArcDatum<Entry>>()
+        .arc<d3.PieArcDatum<Data>>()
         .innerRadius(radius * (1 - thickness))
         .outerRadius(radius - selectThickness / 2);
 
@@ -128,17 +101,17 @@ const DonutChart: React.FC = () => {
         .attr("transform", `translate(${margins.left + width / 2}, ${margins.top + height / 2})`)
         .style("cursor", "pointer")
         .on("click", (_, d) => {
-          changeSelection(getSelector(eixo), d.data.group);
+          changeSelection("cad", d.data.cadeia_id);
         })
         .on("mouseover", (_, d) => {
           let [x, y] = arc.centroid(d);
           x += margins.left + width / 2;
           y += margins.top + height / 2;
 
-          const value = format(d.data.value, data.format);
+          const value = format(d.value, dataFormat);
 
           tooltip.setXY(x, y);
-          tooltip.setText(`Valor: ${value}\n` + `Grupo: ${d.data.groupName}`);
+          tooltip.setText(`Valor: ${d.data.valor}\n` + `Grupo: ${d.data.cadeia}`);
           tooltip.show();
         })
         .on("mouseleave", () => tooltip.hide())
@@ -146,21 +119,21 @@ const DonutChart: React.FC = () => {
         .duration(300)
         .attr("d", arc)
         .attr("stroke", "black")
-        .attr("stroke-width", (d) => (d.data.group === data.selectedGroup ? selectThickness : 0))
-        .attr("fill", (d) => (d.data.group === data.selectedGroup ? d.data.selectColor : d.data.groupColor));
+        .attr("stroke-width", (d) => (d.data.cadeia_id === cad ? selectThickness : 0))
+        .attr("fill", (d) => d.data.cor);
     }
   }, [d3Container.current, size, data]);
 
-  const getLegend = (data: Data | null): ILegendData[] => {
+  const getLegend = (data: Data[]): ILegendData[] => {
     if (data == null) {
       return [];
     }
 
-    return data.entries.map((d: Entry) => {
+    return data.map((d: Data) => {
       return {
-        label: d.groupName,
-        color: d.groupColor,
-        id: d.group
+        label: d.cadeia,
+        color: d.cor,
+        id: d.cadeia_id
       };
     });
   };
@@ -168,7 +141,7 @@ const DonutChart: React.FC = () => {
   return (
     <DonutChartContainer>
       <svg ref={d3Container} width="100%" height="100%" />
-      <Legend selector={getSelector(eixo)} title="Setores" data={getLegend(data)}></Legend>
+      {/* <Legend selector={getSelector(eixo)} title="Setores" data={getLegend(data)}></Legend> */}
     </DonutChartContainer>
   );
 };

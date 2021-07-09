@@ -1,28 +1,28 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import qs from "query-string";
 
-import SELECTION_JSON from "../assets/json/select.json";
+import { getBreadcrumb } from "services/api";
 
 interface SelectionContextData {
-  options: IOptions;
+  options: ISimpleBreadCrumb[];
   changeSelection(selector: string, value: number): void;
   ano: number;
   eixo: number;
   num: number;
   uf: number;
   cad: number;
-  prt: number;
   deg: number;
 }
 
-export interface ISimpleOptions {
-  name: string;
-  value?: string | number;
-  id?: string | number;
+export interface ISimpleBreadCrumb {
+  id: string;
+  label: string;
+  options: IOptions[];
 }
 
 interface IOptions {
-  [key: string]: ISimpleOptions[] & ISimpleOptions[][];
+  nome: string;
+  id: number;
 }
 
 const SelectionContext = createContext<SelectionContextData>({} as SelectionContextData);
@@ -30,15 +30,14 @@ const SelectionContext = createContext<SelectionContextData>({} as SelectionCont
 const SelectionProvider: React.FC = ({ children }) => {
   const baseURL = "/resultado";
 
-  const [eixo, setEixo] = useState<number>(0);
+  const [eixo, setEixo] = useState<number>(1);
   const [num, setNum] = useState<number>(1);
   const [uf, setUF] = useState<number>(0);
   const [cad, setCad] = useState<number>(0);
-  const [prt, setPrt] = useState<number>(0);
   const [ano, setAno] = useState<number>(2016);
   const [deg, setDeg] = useState<number>(0);
 
-  const [options, setOptions] = useState<IOptions>({});
+  const [options, setOptions] = useState<ISimpleBreadCrumb[]>([]);
 
   const location = window.location.toString();
 
@@ -61,14 +60,20 @@ const SelectionProvider: React.FC = ({ children }) => {
       if (parsed.cad) {
         setCad(Number(parsed.cad));
       }
-      if (parsed.prt) {
-        setPrt(Number(parsed.prt));
-      }
       if (parsed.deg) {
         setDeg(Number(parsed.deg));
       }
     }
   }, [location]);
+
+  useEffect(() => {
+    const getOptions = async (eixo) => {
+      const { data: breadcrumb } = await getBreadcrumb(eixo, num);
+
+      setOptions(breadcrumb);
+    };
+    getOptions(eixo + 1);
+  }, [eixo, num]);
 
   const changeSelection = (selector: string, value: number) => {
     /* Mudando a variável global */
@@ -81,9 +86,6 @@ const SelectionProvider: React.FC = ({ children }) => {
         break;
       case "cad":
         setCad(value);
-        break;
-      case "prt":
-        setPrt(value);
         break;
       case "var":
         setNum(value);
@@ -106,11 +108,6 @@ const SelectionProvider: React.FC = ({ children }) => {
     history.pushState({}, "", `${baseURL}?${stringified}`);
   };
 
-  useEffect(() => {
-    const options = JSON.parse(JSON.stringify(SELECTION_JSON));
-    setOptions(options);
-  }, []);
-
   return (
     <SelectionContext.Provider
       value={{
@@ -120,7 +117,6 @@ const SelectionProvider: React.FC = ({ children }) => {
         num,
         ano,
         cad,
-        prt,
         deg,
         changeSelection
       }}

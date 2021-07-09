@@ -12,14 +12,12 @@ interface IProps {
 }
 
 interface Data {
-  points: DataPoint[];
-  format: string;
-}
-
-interface DataPoint {
-  Ano: number;
-  Valor: number;
-  NomeGrupo: string;
+  ano: number;
+  valor: number;
+  percentual: number;
+  taxa: number;
+  cadeia: string;
+  cor: string;
 }
 
 function getColor(group: string, colors: IColors, eixo: number, deg: number, variable: number): string {
@@ -44,7 +42,8 @@ const LineChart: React.FC<IProps> = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
-  const [data, setData] = useState<Data | null>(null);
+  const [data, setData] = useState<Data[]>([]);
+  const [dataFormat, setDataFormat] = useState("real");
 
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg
@@ -55,18 +54,19 @@ const LineChart: React.FC<IProps> = () => {
     });
   }, []);
 
-  const { eixo, num, uf, cad, deg, prt } = useSelection();
+  const { eixo, num, uf, cad, deg } = useSelection();
 
   const { colors } = useData();
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getLines(eixo + 1, { var: num, uf, cad, prt, deg });
-      setData({ points: data, format: "real" });
+      const { data } = await getLines(eixo + 1, { var: num, uf, cad, deg });
+      setData(data);
+      setDataFormat("real");
     };
 
     getData();
-  }, [eixo, num, uf, cad, prt, deg]);
+  }, [eixo, num, uf, cad, deg]);
 
   useEffect(() => {
     const marginLeft = 40;
@@ -74,7 +74,7 @@ const LineChart: React.FC<IProps> = () => {
     const marginBottom = 20;
     const marginRight = 15;
 
-    if (data && data.points.length && d3Container.current) {
+    if (data && data.length && d3Container.current) {
       if (tooltipContainer.current == null) {
         tooltipContainer.current = new SVGTooltip(d3Container.current, {
           right: marginRight,
@@ -98,7 +98,7 @@ const LineChart: React.FC<IProps> = () => {
       // Make the X axis
       const xScale = d3
         .scaleTime()
-        .domain(d3.extent(data.points, (d) => parseYear(d.Ano)) as [Date, Date])
+        .domain(d3.extent(data, (d) => parseYear(d.ano)) as [Date, Date])
         .rangeRound([0, width]);
       const xAxis = d3
         .axisBottom(xScale)
@@ -112,22 +112,22 @@ const LineChart: React.FC<IProps> = () => {
         .call(xAxis);
 
       // Make the y axis
-      const values = data.points.map((d) => d.Valor);
+      const values = data.map((d) => d.valor);
       const yScale = d3.scaleLinear().rangeRound([height, 0]);
       yScale.domain(d3.extent(values) as [number, number]).nice();
       const yAxis = d3
         .axisLeft(yScale)
         .tickSize(5)
         .tickPadding(5)
-        .tickFormat((d) => format(d.valueOf(), data.format === "percent" ? "percent" : "si"));
+        .tickFormat((d) => format(d.valueOf(), dataFormat === "percent" ? "percent" : "si"));
       svg.append("g").attr("class", "axis").attr("transform", `translate(${marginLeft}, ${marginTop})`).call(yAxis);
 
       // Group each value based on their ID
-      const groups: DataPoint[][] = [];
-      outer: for (const d of data.points) {
+      const groups: Data[][] = [];
+      outer: for (const d of data) {
         // Try to find a group with our id
         for (const group of groups) {
-          if (group[0].NomeGrupo == d.NomeGrupo) {
+          if (group[0].cadeia == d.cadeia) {
             group.push(d);
             continue outer;
           }
@@ -135,10 +135,11 @@ const LineChart: React.FC<IProps> = () => {
         // Found no group, create a new
         groups.push([d]);
       }
+
       // Build a line for each group
-      const getXPos = (d: DataPoint) => xScale(parseYear(d.Ano)) as number;
-      const getYPos = (d: DataPoint) => yScale(d.Valor);
-      const line = d3.line<DataPoint>().x(getXPos).y(getYPos);
+      const getXPos = (d: Data) => xScale(parseYear(d.ano)) as number;
+      const getYPos = (d: Data) => yScale(d.valor);
+      const line = d3.line<Data>().x(getXPos).y(getYPos);
       const lines = svg.selectAll("path.line").data(groups);
       lines
         .join("path")
@@ -146,13 +147,13 @@ const LineChart: React.FC<IProps> = () => {
         .transition()
         .duration(1000)
         .attr("fill", "none")
-        .attr("stroke", (d) => getColor(d[0].NomeGrupo, colors, eixo, deg, num))
+        .attr("stroke", (d) => d[0].cor)
         .attr("stroke-width", 2)
         .attr("transform", `translate(${marginLeft}, ${marginTop})`)
         .attr("d", line);
 
       // Handle the tooltip
-      const positions = data.points.map((d) => {
+      const positions = data.map((d) => {
         return { dx: getXPos(d), dy: getYPos(d), d };
       });
 
@@ -175,9 +176,7 @@ const LineChart: React.FC<IProps> = () => {
           })
           .sort((a, b) => a.distance - b.distance)[0];
 
-        const valor = format(d.Valor, data.format);
-
-        tooltip.setText(`Valor: ${valor}\nAno: ${d.Ano}\nGrupo: ${d.NomeGrupo}`);
+        tooltip.setText(`Valor: ${d.valor}\nAno: ${d.ano}\nGrupo: ${d.cadeia}`);
         tooltip.setXY(dx, dy);
         tooltip.show();
       });

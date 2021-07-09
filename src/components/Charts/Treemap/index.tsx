@@ -9,34 +9,35 @@ import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
 
 interface IParsedData {
-  format: string;
-  tree: {
+  name: string;
+  color: string;
+  id?: string;
+  x0?: number;
+  y0?: number;
+  x1?: number;
+  y1?: number;
+  children: {
+    cadeiaId: number;
+    color: string;
     name: string;
-    id?: string;
-    x0?: number;
-    y0?: number;
-    x1?: number;
-    y1?: number;
     children: {
-      cadeiaId: number;
       name: string;
       children: {
+        color: string;
+        cadeia_id: number;
         name: string;
-        children: {
-          IDGrupo: number;
-          name: string;
-          taxa: number;
-          size: number;
-        }[];
+        taxa: number;
+        size: number;
       }[];
     }[];
-  };
+  }[];
 }
 
 const Treemap: React.FC = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
   const [data, setData] = useState<IParsedData>();
+  const [dataFormat, setDataFormat] = useState("percent");
   const [legendData, setLegendData] = useState<ILegendData[]>([]);
 
   // O tamanho da janela faz parte do nosso estado já que sempre
@@ -50,40 +51,43 @@ const Treemap: React.FC = () => {
 
   const unfocusOpacity = 0.8;
 
-  const { uf, prt, num, ano, cad, changeSelection } = useSelection();
-  const { colors } = useData();
+  const { uf, num, ano, cad, changeSelection } = useSelection();
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getTreemap(1, { var: num, uf, prt, ano });
-      setData(parseData(data.filter((d) => d.Valor !== 0)));
+      const { data } = await getTreemap(1, { var: num, uf, ano });
+      setDataFormat("percent");
+      setData(parseData(data.filter((d) => d.valor !== 0)));
     };
 
     getData();
-  }, [uf, prt, num, ano]);
+  }, [uf, num, ano]);
 
   const parseData = (data): IParsedData => {
     const legend: ILegendData[] = data.map((d) => {
-      return { label: d.NomeGrupo, color: colors.cadeias[d.IDGrupo.toString()].color, id: d.IDGrupo };
+      return { label: d.cadeia, color: d.cor, id: d.cadeia_id };
     });
 
     setLegendData(legend);
 
     const r = data.reduce((r, c) => {
       r.push({
-        cadeiaId: c.IDGrupo,
-        name: c.NomeGrupo,
+        cadeiaId: c.cadeia_id,
+        name: c.cadeia,
+        color: c.cor,
         children: [
           {
-            cadeiaId: c.IDGrupo,
-            name: c.NomeGrupo,
+            cadeiaId: c.cadeia_id,
+            name: c.cadeia,
+            color: c.cor,
             children: [
               {
-                name: c.NomeGrupo,
-                id: c.IDGrupo,
-                percentual: c.Percentual,
-                taxa: c.Taxa,
-                size: Math.abs(c.Valor)
+                name: c.cadeia,
+                id: c.cadeia_id,
+                percentual: c.percentual,
+                taxa: c.taxa,
+                color: c.cor,
+                size: Math.abs(c.valor)
               }
             ]
           }
@@ -92,11 +96,7 @@ const Treemap: React.FC = () => {
 
       return r;
     }, []);
-    return {
-      // TODO: Pegar formato do backend
-      format: "none",
-      tree: { name: "scc", children: r }
-    };
+    return { name: "scc", color: r.color, children: r };
   };
 
   useEffect(() => {
@@ -104,7 +104,7 @@ const Treemap: React.FC = () => {
     const marginTop = 0;
     const marginBottom = 0;
 
-    if (data && data.tree.children && data.tree.children.length && d3Container.current) {
+    if (data && data.children && data.children.length && d3Container.current) {
       if (tooltipContainer.current == null) {
         tooltipContainer.current = new SVGTooltip(d3Container.current, {
           right: 0,
@@ -125,7 +125,7 @@ const Treemap: React.FC = () => {
       const fontScale = d3.scaleThreshold().domain([12, 25, 30, 40]).range([8, 12, 16, 20]);
 
       const root = d3
-        .hierarchy(data.tree)
+        .hierarchy(data)
         .sum((d: any) => {
           return d.size;
         })
@@ -149,7 +149,7 @@ const Treemap: React.FC = () => {
         .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
         .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
         .attr("opacity", (d) => (cad === 0 || cad === Number(d.data.id) ? 1 : unfocusOpacity))
-        .attr("fill", (d) => colors.cadeias[d.data.id || 0].color)
+        .attr("fill", (d) => d.data.color)
         .on("click", (d) => changeSelection("cad", Number(d.target.id)));
 
       g.append("foreignObject")
@@ -188,7 +188,7 @@ const Treemap: React.FC = () => {
         .text((d: any) => {
           const height = d.y1 - d.y0;
           const width = d.x1 - d.x0;
-          return height < 20 || width < 40 ? "" : format(d.value, data.format);
+          return height < 20 || width < 40 ? "" : format(d.value, dataFormat);
         })
         .style("opacity", "1");
 
@@ -228,7 +228,7 @@ const Treemap: React.FC = () => {
         .text((d: any) => {
           const height = d.y1 - d.y0;
           const width = d.x1 - d.x0;
-          return height < 20 || width < 40 ? "" : format(d.value, data.format);
+          return height < 20 || width < 40 ? "" : format(d.value, dataFormat);
         });
 
       cell.exit().remove();
@@ -262,9 +262,9 @@ const Treemap: React.FC = () => {
 
         tooltip.setText(
           `Valor: ${selected.value}\n` +
-            (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
-            `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
-            `Cadeia: ${selected.data.name}`
+          (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
+          `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
+          `Cadeia: ${selected.data.name}`
         );
         tooltip.setXY(x, y);
         tooltip.show();
