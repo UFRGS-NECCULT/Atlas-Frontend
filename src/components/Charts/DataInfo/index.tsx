@@ -45,7 +45,7 @@ const DataInfo: React.FC = () => {
     };
 
     getData();
-  }, [eixo, num, cad, uf, deg]);
+  }, [eixo, num, ano, cad, uf, deg]);
 
   if (!data) {
     return <></>;
@@ -86,7 +86,8 @@ const DataInfo: React.FC = () => {
     const text = d
       .replace(/\[deg\]/gi, data.desag)
       .replace(/\[uf\]/gi, data.state)
-      .replace(/\[cad\]/gi, data.sector);
+      .replace(/\[cad\]/gi, data.sector)
+      .replace(/\[ano\]/gi, ano.toString());
 
     const [value, type] = (
       [
