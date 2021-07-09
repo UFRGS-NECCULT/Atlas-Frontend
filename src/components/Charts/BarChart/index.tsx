@@ -19,6 +19,7 @@ interface RawData {
   ano: number;
   valor: string;
   cor: string;
+  cor_eixo: any;
   sdg_nome: string;
   sdg_cor: string;
 }
@@ -45,20 +46,20 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
   }, []);
 
   // TODO: ocp, subdeg
-  const { eixo, deg, uf, cad, prt, num, ano, changeSelection } = useSelection();
-  const { colors } = useData();
+  const { eixo, deg, uf, cad, num, ano, changeSelection } = useSelection();
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getBars(eixo + 1, { var: num, uf, cad, deg: 10 });
+      const { data } = await getBars(eixo + 1, { var: num, uf, cad, deg });
 
+      console.log(data);
       const parsedData = parseBarsData(data);
       setRawData(data);
       setData(parsedData);
     };
 
     getData();
-  }, [eixo, deg, uf, cad, prt, num, stacked]);
+  }, [eixo, deg, uf, cad, num, stacked]);
 
   const parseBarsData = (data) => {
     const groupedData = data.reduce((r, c) => {
@@ -200,7 +201,7 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
         })
         .on("mouseleave", () => tooltip.hide())
         .style("cursor", "pointer")
-        .attr("fill", (d) => d.dados.sdg_cor || "red")
+        .attr("fill", (d) => (d.selected ? d.dados.cor_eixo || "red" : d.dados.sdg_cor || d.dados.cor))
         .transition()
         .duration(300)
         .attr("x", (d) => x(d.data.ano.toString()) || 0)

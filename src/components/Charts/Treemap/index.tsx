@@ -49,16 +49,16 @@ const Treemap: React.FC = () => {
 
   const unfocusOpacity = 0.8;
 
-  const { uf, prt, num, ano, cad, changeSelection } = useSelection();
+  const { uf, num, ano, cad, changeSelection } = useSelection();
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getTreemap(1, { var: num, uf, prt, ano });
+      const { data } = await getTreemap(1, { var: num, uf, ano });
       setData(parseData(data.filter((d) => d.valor !== 0)));
     };
 
     getData();
-  }, [uf, prt, num, ano]);
+  }, [uf, num, ano]);
 
   const parseData = (data): IParsedData => {
     const legend: ILegendData[] = data.map((d) => {

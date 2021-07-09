@@ -33,7 +33,7 @@ const DonutChart: React.FC = () => {
     });
   }, []);
 
-  const { eixo, uf, prt, num, ano, cad, changeSelection } = useSelection();
+  const { eixo, uf, deg, num, ano, cad, changeSelection } = useSelection();
 
   // Valor entre (0, 1) para o quão grosso devem ser as fatias
   // em % do raio (1 = 100% do raio, 0 = 0% do raio)
@@ -51,12 +51,12 @@ const DonutChart: React.FC = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getDonut(eixo + 1, { var: num, uf, prt, ano });
+      const { data } = await getDonut(eixo + 1, { var: num, uf, deg, ano });
       setData(data);
     };
 
     getData();
-  }, [uf, prt, num, ano, cad, eixo]);
+  }, [uf, deg, num, ano, cad, eixo]);
 
   const getSelector = (eixo) => {
     switch (eixo) {
@@ -137,7 +137,7 @@ const DonutChart: React.FC = () => {
   return (
     <DonutChartContainer>
       <svg ref={d3Container} width="100%" height="100%" />
-      <Legend selector={getSelector(eixo)} title="Setores" data={getLegend(data)}></Legend>
+      {/* <Legend selector={getSelector(eixo)} title="Setores" data={getLegend(data)}></Legend> */}
     </DonutChartContainer>
   );
 };

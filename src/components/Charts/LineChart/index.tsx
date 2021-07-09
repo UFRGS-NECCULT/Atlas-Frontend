@@ -52,18 +52,18 @@ const LineChart: React.FC<IProps> = () => {
     });
   }, []);
 
-  const { eixo, num, uf, cad, deg, prt } = useSelection();
+  const { eixo, num, uf, cad, deg } = useSelection();
 
   const { colors } = useData();
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getLines(eixo + 1, { var: num, uf, cad, prt, deg });
+      const { data } = await getLines(eixo + 1, { var: num, uf, cad, deg });
       setData(data);
     };
 
     getData();
-  }, [eixo, num, uf, cad, prt, deg]);
+  }, [eixo, num, uf, cad, deg]);
 
   useEffect(() => {
     const marginLeft = 30;

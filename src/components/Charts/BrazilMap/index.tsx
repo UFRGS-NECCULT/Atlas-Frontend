@@ -36,12 +36,12 @@ const BrazilMap = () => {
     });
   }, []);
 
-  const { uf, cad, prt, ano, num, changeSelection } = useSelection();
+  const { uf, cad, ano, num, changeSelection } = useSelection();
   const { colors } = useData();
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getMap(1, { var: num, uf, cad, prt, ano });
+      const { data } = await getMap(1, { var: num, uf, cad, ano });
       setData(data);
     };
 
@@ -217,7 +217,7 @@ const BrazilMap = () => {
         .attr("stroke-linecap", "round")
         .attr("stroke", "black")
         .style("cursor", "pointer")
-        .on("click", (d) => changeSelection("uf", d.target.id))
+        .on("click", (d) => changeSelection("uf", Number(d.target.id)))
         .on("mousemove", showTooltip)
         .on("mouseout", () => hideTooltip())
         .transition()

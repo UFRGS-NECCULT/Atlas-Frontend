@@ -7,7 +7,7 @@ const api = axios.create({
 });
 
 export const getBars = async (eixo = 1, params) => {
-  return await api.get(`/eixo/${eixo}/stacked-bars?${qs.stringify(params)}`);
+  return await api.get(`/eixo/${eixo}/bars?${qs.stringify(params)}`);
 };
 
 export const getLines = async (eixo = 1, params) => {
@@ -24,4 +24,8 @@ export const getTreemap = async (eixo = 1, params) => {
 
 export const getDonut = async (eixo = 1, params) => {
   return await api.get(`/eixo/${eixo}/donut?${qs.stringify(params)}`);
+};
+
+export const getBreadcrumb = async (eixo, num) => {
+  return await api.get(`/eixo/${eixo}/breadcrumb?var=${num}`);
 };
