@@ -177,9 +177,6 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
         .selectAll("rect")
         .data((d) => {
           const bar = d.map((barSection) => {
-            console.log(`fora rawData`);
-            console.log(rawData);
-
             const data = rawData.find(
               (r) => r.ano === barSection.data.ano && r.sdg_nome === d.key
               // ||  (r.ano === barSection.data.ano && d.key === "Total")
