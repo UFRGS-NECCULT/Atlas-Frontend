@@ -5,28 +5,14 @@ import { getBars } from "services/api";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
 
-interface Data {
-  bars: Bar[];
-  format: string;
-}
-
-interface Bar {
-  year: number;
-  data: BarSection[];
-}
-
-interface BarSection {
-  name: string;
-  value: number;
-}
-
 interface RawData {
   ano: number;
-  valor: string;
+  valor: number;
   cor: string;
   cor_eixo: any;
   sdg_nome: string;
   sdg_cor: string;
+  formato: string;
 }
 
 interface ParsedData {
@@ -38,7 +24,6 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
-  const [data, setData] = useState<ParsedData[]>([]);
   const [rawData, setRawData] = useState<RawData[]>([]);
 
   // O tamanho da janela faz parte do nosso estado já que sempre
@@ -56,16 +41,13 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
   useEffect(() => {
     const getData = async () => {
       const { data } = await getBars(eixo + 1, { var: num, uf, cad, deg });
-
-      const parsedData = parseBarsData(data);
       setRawData(data);
-      setData(parsedData);
     };
 
     getData();
   }, [eixo, deg, uf, cad, num, stacked]);
 
-  const parseBarsData = (data) => {
+  const parseBarsData = (data): ParsedData[] => {
     const groupedData = data.reduce((r, c) => {
       const index = r.findIndex((d) => d.ano === c.ano);
 
@@ -95,8 +77,11 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
   };
 
   useEffect(() => {
-    if (data && data.length && d3Container.current) {
-      const marginLeft = 35;
+    if (rawData && rawData.length && d3Container.current) {
+      const data = parseBarsData(rawData);
+      const dataFormat = rawData[0].formato;
+
+      const marginLeft = 50;
       const marginTop = 20;
       const marginBottom = 20;
 
@@ -152,7 +137,7 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
         .axisLeft(y)
         .tickSize(5)
         .tickPadding(5)
-        .tickFormat((d) => format(d.valueOf(), "si"));
+        .tickFormat((d) => format(d.valueOf(), dataFormat === 'percent' ? 'percent' : 'si'));
 
       svg.selectAll(".eixo-x").remove();
       svg.selectAll(".eixo-y").remove();
@@ -196,8 +181,9 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
           return changeSelection("ano", d.data.ano);
         })
         .on("mouseenter", (_, d) => {
-          //CHECK
-          tooltip.setText(`Valor: ${d.dados.valor}\nGrupo: ${d.dados.sdg_nome}`);
+          const valor = format(d.dados.valor||0, dataFormat);
+
+          tooltip.setText(`Valor: ${valor}\nGrupo: ${d.dados.sdg_nome}`);
           tooltip.setXY(
             (x(d.dados.ano?.toString() || `2016`) || 0) + x.bandwidth() / 2,
             y(d[0]) - (y(d[0]) - y(d[1])) / 2
@@ -215,7 +201,7 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
         .attr("height", (d) => Math.abs(y(d[0]) - y(d[1])))
         .attr("opacity", (d) => (d.selected ? 1 : 0.65));
     }
-  }, [ano, data, size, d3Container.current]);
+  }, [ano, rawData, size, d3Container.current]);
 
   return <svg ref={d3Container} width={"100%"} height={"100%"} />;
 };

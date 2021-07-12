@@ -37,7 +37,7 @@ const Treemap: React.FC = () => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
   const [data, setData] = useState<IParsedData>();
-  const [dataFormat, setDataFormat] = useState("percent");
+  const [dataFormat, setDataFormat] = useState("none");
   const [legendData, setLegendData] = useState<ILegendData[]>([]);
 
   // O tamanho da janela faz parte do nosso estado já que sempre
@@ -56,7 +56,9 @@ const Treemap: React.FC = () => {
   useEffect(() => {
     const getData = async () => {
       const { data } = await getTreemap(1, { var: num, uf, ano });
-      setDataFormat("percent");
+      if (data.length) {
+        setDataFormat(data[0].formato);
+      }
       setData(parseData(data.filter((d) => d.valor !== 0)));
     };
 
@@ -260,8 +262,10 @@ const Treemap: React.FC = () => {
           return;
         }
 
+        const valor = format(selected.value, dataFormat);
+
         tooltip.setText(
-          `Valor: ${selected.value}\n` +
+          `Valor: ${valor}\n` +
           (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
           `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
           `Cadeia: ${selected.data.name}`
