@@ -51,8 +51,8 @@ const SelectionProvider: React.FC = ({ children }) => {
       if (parsed.ano) {
         setAno(Number(parsed.ano));
       }
-      if (parsed.num) {
-        setNum(Number(parsed.num));
+      if (parsed.var) {
+        setNum(Number(parsed.var));
       }
       if (parsed.uf) {
         setUF(Number(parsed.uf));
