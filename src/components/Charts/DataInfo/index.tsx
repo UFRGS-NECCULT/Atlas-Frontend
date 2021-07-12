@@ -58,6 +58,7 @@ const DataInfo: React.FC = () => {
     }
 
     const [leftButtonText, rightButtonText] = [
+      [undefined, undefined], // Eixo 1 não tem abas
       ["Setor", "Ocupação"],
       ["Recebedor", "Trabalhador"],
       ["Bens", "Serviços"]
@@ -72,12 +73,12 @@ const DataInfo: React.FC = () => {
   };
 
   const displayValue = (which: 0 | 1 | 2) => {
-    if (!desc[eixo][num.toString()][which]) {
+    if (!desc[eixo - 1][num.toString()][which]) {
       return false;
     }
 
     const accessor = (uf === 0 ? "" : "u") + (cad === 0 ? "" : "s") + (deg === 0 ? "" : "d");
-    const d = desc[eixo][num.toString()][which][accessor];
+    const d = desc[eixo - 1][num.toString()][which][accessor];
 
     if (!d) {
       return false;

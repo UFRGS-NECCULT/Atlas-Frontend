@@ -40,7 +40,7 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getBars(eixo + 1, { var: num, uf, cad, deg });
+      const { data } = await getBars(eixo, { var: num, uf, cad, deg });
       setRawData(data);
     };
 

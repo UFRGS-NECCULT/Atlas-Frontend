@@ -72,7 +72,7 @@ const SelectionProvider: React.FC = ({ children }) => {
 
       setOptions(breadcrumb);
     };
-    getOptions(eixo + 1);
+    getOptions(eixo);
   }, [eixo, num]);
 
   const changeSelection = (selector: string, value: number) => {

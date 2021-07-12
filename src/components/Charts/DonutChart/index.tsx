@@ -52,7 +52,7 @@ const DonutChart: React.FC = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getDonut(eixo + 1, { var: num, uf, deg, ano });
+      const { data } = await getDonut(eixo, { var: num, uf, deg, ano });
       setData(data);
     };
 
