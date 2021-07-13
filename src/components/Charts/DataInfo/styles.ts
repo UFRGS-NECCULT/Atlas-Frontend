@@ -14,6 +14,8 @@ export const Flex = styled.div`
 `;
 
 export const Column = styled.div`
+  display: flex;
+  width: 100%;
   flex-direction: column;
   padding-left: 4px;
   padding-right: 4px;
@@ -53,4 +55,12 @@ export const BigNumberDesc = styled.span`
   font-size: 1vw;
   color: gray;
   width: 100%;
+`;
+
+export const Source = styled.div`
+  text-align: right;
+  width: 100%;
+  display: inline-block;
+  color: gray;
+  font-size: 0.8em;
 `;
