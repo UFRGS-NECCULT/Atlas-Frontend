@@ -54,9 +54,9 @@ const DataInfo: React.FC = () => {
     getData();
   }, [eixo, num, ano, cad, uf, deg]);
 
-  const tabs = () => {
+  const tabs = (data: Data) => {
     // Só eixos do Mercado, Fomento e Comércio Internacional têm abas
-    if (![2, 3, 4].includes(eixo)) {
+    if (![2, 3, 4].includes(data.selection.eixo)) {
       return false;
     }
 
@@ -65,7 +65,7 @@ const DataInfo: React.FC = () => {
       ["Setor", "Ocupação"],
       ["Recebedor", "Trabalhador"],
       ["Bens", "Serviços"]
-    ][eixo - 1];
+    ][data.selection.eixo - 1];
 
     return (
       <Flex>
@@ -109,35 +109,38 @@ const DataInfo: React.FC = () => {
 
   const displayValues = () => {
     // Se não há definição para esses valores, não mostre nada
-    if (!data || !(desc[eixo - 1][num.toString()][tab] && desc[eixo - 1][num.toString()][tab][0])) {
+    const descriptions = data ? desc[data.selection.eixo - 1][data.selection.num.toString()][tab] : null;
+    if (!data || !descriptions || !descriptions[0]) {
       return false;
     }
 
-    const accessor = (uf === 0 ? "" : "u") + (cad === 0 ? "" : "s") + (deg === 0 ? "" : "d");
+    const accessor =
+      (data.selection.uf === 0 ? "" : "u") +
+      (data.selection.cad === 0 ? "" : "s") +
+      (data.selection.deg === 0 ? "" : "d");
 
-    const mainStr = desc[eixo - 1][num.toString()][tab][0][accessor];
+    const mainStr = descriptions[0][accessor];
     const main = findCorrectData(mainStr, data);
 
     // Se a variável principal não está definida, não mostre nenhum valor
-    if (!mainStr || mainStr.trim() === '') {
+    if (!mainStr || mainStr.trim() === "") {
       return false;
     }
 
     let scndStr = "";
     let scnd: DataPoint | null = null;
-    if (desc[eixo - 1][num.toString()][tab][1] && desc[eixo - 1][num.toString()][tab][1][accessor]) {
-      scndStr = desc[eixo - 1][num.toString()][tab][1][accessor];
+    if (descriptions[1] && descriptions[1][accessor]) {
+      scndStr = descriptions[1][accessor];
       scnd = findCorrectData(scndStr, data);
     }
 
     let thrdStr = "";
     let thrd: DataPoint | null = null;
-    if (desc[eixo - 1][num.toString()][tab][2] && desc[eixo - 1][num.toString()][tab][2][accessor]) {
-      thrdStr = desc[eixo - 1][num.toString()][tab][2][accessor];
+    if (descriptions[2] && descriptions[2][accessor]) {
+      thrdStr = descriptions[2][accessor];
       thrd = findCorrectData(thrdStr, data);
     }
 
-    console.log(mainStr);
     return [
       <Column key="0">
         <BigNumber>{format(main.valor, main.formato)}</BigNumber>
@@ -168,7 +171,7 @@ const DataInfo: React.FC = () => {
 
   return (
     <>
-      {tabs()}
+      {tabs(data)}
       <MainContainer style={{ color: data.data[0].cor }}>{displayValues()}</MainContainer>
       <Source>Fonte: {data.data[0].fonte ? data.data[0].fonte : "Sem fonte"}</Source>
     </>
