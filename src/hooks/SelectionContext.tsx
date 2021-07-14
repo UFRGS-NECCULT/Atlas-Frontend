@@ -71,6 +71,28 @@ const SelectionProvider: React.FC = ({ children }) => {
       const { data: breadcrumb } = await getBreadcrumb(eixo, num);
 
       setOptions(breadcrumb);
+
+      // Resetar opções inválidas
+      const variables = [
+        ["uf", uf],
+        ["ano", ano],
+        ["var", num],
+        ["cad", cad],
+        ["deg", deg],
+        ["eixo", eixo],
+      ];
+      for (const v of variables) {
+        const [id, value] = v;
+
+        const options = breadcrumb.find(b => b.id === id)?.options.map(o => o.id);
+        if (options) {
+          // Se o valor atualmente selecionado não está disponível,
+          // selecione um valor padrão
+          if (!options.includes(value)) {
+            changeSelection(id, options[0]);
+          }
+        }
+      }
     };
     getOptions(eixo);
   }, [eixo, num]);
