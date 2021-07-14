@@ -91,11 +91,7 @@ const DataInfo: React.FC = () => {
         d.id_subdeg === (has("deg", str) ? data.selection.deg : 0)
     );
 
-    if (!d) {
-      throw "Dado não encontrado!";
-    }
-
-    return d;
+    return d || null;
   };
 
   // Realiza as substituições necessárias na string de descrião
@@ -142,7 +138,7 @@ const DataInfo: React.FC = () => {
     }
 
     return [
-      <Column key="0">
+      main && <Column key="0">
         <BigNumber>{format(main.valor, main.formato)}</BigNumber>
         <BigNumberDesc>{description(mainStr, main)}</BigNumberDesc>
       </Column>,
@@ -150,13 +146,13 @@ const DataInfo: React.FC = () => {
         <Column key="1">
           {scnd && (
             <>
-              <BigNumber>{format(main.valor / scnd.valor, "percent")}</BigNumber>
+              <BigNumber>{format(main?.valor||0 / scnd.valor, "percent")}</BigNumber>
               <BigNumberDesc>{description(scndStr, scnd)}</BigNumberDesc>
             </>
           )}
           {thrd && (
             <>
-              <BigNumber>{format(main.valor / thrd.valor, "percent")}</BigNumber>
+              <BigNumber>{format(main?.valor||0 / thrd.valor, "percent")}</BigNumber>
               <BigNumberDesc>{description(thrdStr, thrd)}</BigNumberDesc>
             </>
           )}
