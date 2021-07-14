@@ -47,7 +47,7 @@ const DataInfo: React.FC = () => {
   useEffect(() => {
     const selection = { eixo, ano, num, cad, uf, deg };
     const getData = async () => {
-      const { data } = await getInfo(eixo, { var: num, ano, cad, uf, deg });
+      const { data } = await getInfo(selection.eixo, { ...selection, var: selection.num });
       setData({ selection, data });
     };
 
@@ -105,7 +105,8 @@ const DataInfo: React.FC = () => {
 
   const displayValues = () => {
     // Se não há definição para esses valores, não mostre nada
-    const descriptions = data ? desc[data.selection.eixo - 1][data.selection.num.toString()][tab] : null;
+    const tabs = data ? desc[data.selection.eixo - 1][data.selection.num.toString()] : null;
+    const descriptions = tabs ? tabs[tab] : null;
     if (!data || !descriptions || !descriptions[0]) {
       return false;
     }
@@ -146,13 +147,13 @@ const DataInfo: React.FC = () => {
         <Column key="1">
           {scnd && (
             <>
-              <BigNumber>{format(main?.valor||0 / scnd.valor, "percent")}</BigNumber>
+              <BigNumber>{format((main?.valor||0) / scnd.valor, "percent")}</BigNumber>
               <BigNumberDesc>{description(scndStr, scnd)}</BigNumberDesc>
             </>
           )}
           {thrd && (
             <>
-              <BigNumber>{format(main?.valor||0 / thrd.valor, "percent")}</BigNumber>
+              <BigNumber>{format((main?.valor||0) / thrd.valor, "percent")}</BigNumber>
               <BigNumberDesc>{description(thrdStr, thrd)}</BigNumberDesc>
             </>
           )}

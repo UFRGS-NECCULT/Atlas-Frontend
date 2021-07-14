@@ -85,7 +85,7 @@ const SelectionProvider: React.FC = ({ children }) => {
         const [id, value] = v;
 
         const options = breadcrumb.find(b => b.id === id)?.options.map(o => o.id);
-        if (options) {
+        if (options && options.length) {
           // Se o valor atualmente selecionado não está disponível,
           // selecione um valor padrão
           if (!options.includes(value)) {

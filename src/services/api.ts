@@ -30,5 +30,5 @@ export const getBreadcrumb = async (eixo = 1, num) => {
   return await api.get(`/eixo/${eixo}/breadcrumb?var=${num}`);
 };
 export const getInfo = async (eixo = 1, params) => {
-  return await api.get(`/eixo/${1}/info?${qs.stringify(params)}`);
+  return await api.get(`/eixo/${eixo}/info?${qs.stringify(params)}`);
 };
