@@ -26,15 +26,20 @@ export const TabButton = styled.div`
   text-align: center;
   width: 50%;
   color: white;
-  background-color: #6dbfc9;
+  background-color: rgba(110, 191, 201, 0.75);
+  cursor: pointer;
 
-  :nth-child(1) {
+  &.active {
+    background-color: rgb(110, 191, 201);
+  }
+
+  &:nth-child(1) {
     margin-right: 2px;
     border-top-left-radius: 25px;
     border-bottom-left-radius: 25px;
   }
 
-  :nth-child(2) {
+  &:nth-child(2) {
     margin-left: 2px;
     border-top-right-radius: 25px;
     border-bottom-right-radius: 25px;

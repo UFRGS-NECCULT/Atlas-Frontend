@@ -14,6 +14,7 @@ interface Data {
     cad: number;
     uf: number;
     deg: number;
+    ocp: number;
   };
   data: DataPoint[];
 }
@@ -30,10 +31,14 @@ interface DataPoint {
   nome_cad: string;
   id_subdeg: number;
   nome_subdeg: string;
+  id_ocupacao?: number;
+  nome_ocupacao?: string;
 }
 
 const DataInfo: React.FC = () => {
   const { eixo, ano, num, cad, uf, deg } = useSelection();
+  // TODO: ocp no useSelection()
+  const ocp = 0;
   const { desc } = useData();
 
   const [data, setData] = useState<Data | null>(null);
@@ -45,7 +50,7 @@ const DataInfo: React.FC = () => {
   }, [eixo]);
 
   useEffect(() => {
-    const selection = { eixo, ano, num, cad, uf, deg };
+    const selection = { eixo, ano, num, cad, uf, deg, ocp };
     const getData = async () => {
       const { data } = await getInfo(selection.eixo, { ...selection, var: selection.num });
       setData({ selection, data });
@@ -69,8 +74,8 @@ const DataInfo: React.FC = () => {
 
     return (
       <Flex>
-        <TabButton>{leftButtonText}</TabButton>
-        <TabButton>{rightButtonText}</TabButton>
+        <TabButton className={tab === 0 ? 'active' : ''} onClick={() => setTab(0)}>{leftButtonText}</TabButton>
+        <TabButton className={tab === 1 ? 'active' : ''} onClick={() => setTab(1)}>{rightButtonText}</TabButton>
       </Flex>
     );
   };
@@ -81,6 +86,20 @@ const DataInfo: React.FC = () => {
     return regex.test(target);
   };
 
+  // Acha a entrada correta para um valor baseando-se na seleção
+  // de valores do breadcrumb
+  const findSelectedData = (data: Data) => {
+    const d = data.data.find(
+      (d) =>
+        d.id_uf === data.selection.uf&&
+        d.id_cad === data.selection.cad&&
+        d.id_subdeg === data.selection.deg &&
+        (d.id_ocupacao ? d.id_ocupacao === data.selection.ocp : true)
+    );
+
+    return d || null;
+  }
+
   // Acha a entrada correta para um valor baseando-se nas expressões
   // de substituição encontradas na string que descreve esse valor
   const findCorrectData = (str: string, data: Data) => {
@@ -88,41 +107,47 @@ const DataInfo: React.FC = () => {
       (d) =>
         d.id_uf === (has("uf", str) ? data.selection.uf : 0) &&
         d.id_cad === (has("cad", str) ? data.selection.cad : 0) &&
-        d.id_subdeg === (has("deg", str) ? data.selection.deg : 0)
+        d.id_subdeg === (has("deg", str) ? data.selection.deg : 0) &&
+        (d.id_ocupacao ? d.id_ocupacao === (has("ocp", str) ? data.selection.ocp : 0) : true)
     );
 
     return d || null;
   };
 
-  // Realiza as substituições necessárias na string de descrião
+  // Realiza as substituições necessárias na string de descrição
   const description = (desc: string, data: DataPoint): string => {
     return desc
       .replace(/\[uf\]/gi, data.nome_uf)
       .replace(/\[cad\]/gi, data.nome_cad)
       .replace(/\[ano\]/gi, data.ano.toString())
-      .replace(/\[deg\]/gi, data.nome_subdeg);
+      .replace(/\[deg\]/gi, data.nome_subdeg)
+      .replace(/\[ocp]/gi, data.nome_ocupacao||'');
   };
 
   const displayValues = () => {
+    if (!data) {
+      return false;
+    }
+
     // Se não há definição para esses valores, não mostre nada
-    const tabs = data ? desc[data.selection.eixo - 1][data.selection.num.toString()] : null;
+    const tabs = desc[data.selection.eixo - 1][data.selection.num.toString()];
     const descriptions = tabs ? tabs[tab] : null;
     if (!data || !descriptions || !descriptions[0]) {
       return false;
     }
 
     const accessor =
-      (data.selection.uf === 0 ? "" : "u") +
-      (data.selection.cad === 0 ? "" : "s") +
-      (data.selection.deg === 0 ? "" : "d");
+      (data.selection.uf !== 0 ? "u" : "") +
+      (data.selection.cad !== 0 ? "s" : "") +
+      (data.selection.ocp !== 0 ? "o" : "") +
+      (data.selection.deg !== 0 ? "d" : "");
 
     const mainStr = descriptions[0][accessor];
-    const main = findCorrectData(mainStr, data);
-
     // Se a variável principal não está definida, não mostre nenhum valor
-    if (!mainStr || mainStr.trim() === "") {
+    if (!mainStr || mainStr === "") {
       return false;
     }
+    const main = mainStr.trim() === "" ? findSelectedData(data) : findCorrectData(mainStr, data);
 
     let scndStr = "";
     let scnd: DataPoint | null = null;
