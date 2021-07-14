@@ -1,7 +1,7 @@
 
 	[
     {
-      "1": [
+      "1": [[
         {
           "": "EMPRESAS CULTURAIS E CRIATIVAS NO BRASIL",
           "u": "EMPRESAS CULTURAIS E CRIATIVAS [uf]",
@@ -34,10 +34,10 @@
           "sd": "",
           "usd": "DO TOTAL DE EMPRESAS DO SETOR [cad] [deg] DO BRASIL"
         }
-      ]
+      ]]
       ,
 
-      "2" : [
+      "2" : [[
         {
           "": "DO TOTAL DE EMPRESAS DO BRASIL",
           "u": "DO TOTAL DE EMPRESAS [uf]",
@@ -48,9 +48,9 @@
           "sd": "DO TOTAL DE EMPRESAS DO BRASIL",
           "usd": "DO TOTAL DE EMPRESAS [uf]"
         }
-      ]
+      ]]
       ,
-      "3" : [
+      "3" : [[
         {
           "": "DE VARIAÇÃO NO TOTAL DE EMPRESAS CULTURAIS E CRIATIVAS DO BRASIL [ano]",
           "u": "DE VARIAÇÃO NO TOTAL DE EMPRESAS CULTURAIS E CRIATIVAS [uf] [ano]",
@@ -61,9 +61,9 @@
           "sd": "DE VARIAÇÃO NO TOTAL DE EMPRESAS DO SETOR [cad] [deg] DO BRASIL [ano]",
           "usd": "DE VARIAÇÃO NO TOTAL DE EMPRESAS DO SETOR [cad] [deg] [uf] [ano]"
         }
-      ]
+      ]]
       ,
-      "4" : [
+      "4" : [[
         {
           "": "DE RECEITA TOTAL BRUTA DAS EMPRESAS CULTURAIS E CRIATIVAS NO BRASIL",
           "u": "DE RECEITA TOTAL BRUTA DAS EMPRESAS CULTURAIS E CRIATIVAS [uf]",
@@ -96,9 +96,9 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
       ,
-      "5" : [
+      "5" : [[
         {
           "": "DE RECEITA OPERACIONAL LÍQUIDA DAS EMPRESAS CULTURAIS E CRIATIVAS NO BRASIL",
           "u": "DE RECEITA OPERACIONAL LÍQUIDA DAS EMPRESAS CULTURAIS E CRIATIVAS [uf]",
@@ -131,9 +131,9 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
       ,
-      "6" : [
+      "6" : [[
         {
           "": "DE CUSTO DAS EMPRESAS CULTURAIS E CRIATIVAS NO BRASIL",
           "u": "DE CUSTO DAS EMPRESAS CULTURAIS E CRIATIVAS [uf]",
@@ -166,10 +166,10 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
 
       ,
-      "7" : [
+      "7" : [[
         {
           "": "DE LUCRO DAS EMPRESAS CULTURAIS E CRIATIVAS NO BRASIL",
           "u": "DE LUCRO DAS EMPRESAS CULTURAIS E CRIATIVAS [uf]",
@@ -202,10 +202,10 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
 
       ,
-      "8" : [
+      "8" : [[
         {
           "": "VALOR ADICIONADO PELAS EMPRESAS CULTURAIS E CRIATIVAS NO BRASIL",
           "u": "VALOR ADICIONADO PELAS EMPRESAS CULTURAIS E CRIATIVAS [uf]",
@@ -238,9 +238,9 @@
           "sd": "",
           "usd": "DO TOTAL DE VALOR ADICIONADO DAS EMPRESAS DO SETOR [cad] DO BRASIL"
         }
-      ]
+      ]]
       ,
-      "9" : [
+      "9" : [[
         {
           "": "DE VALOR ADICIONADO/PIB DO BRASIL PELAS EMPRESAS CULTURAIS E CRIATIVAS DO BRASIL",
           "u": "DE VALOR ADICIONADO/PIB {uf} PELAS EMPRESAS CULTURAIS E CRIATIVAS [uf]",
@@ -262,9 +262,9 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
       ,
-      "10" : [
+      "10" : [[
         {
           "": "IHH DO TOTAL DE EMPRESAS POR UF",
           "u": "",
@@ -287,9 +287,9 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
       ,
-      "11" : [
+      "11" : [[
         {
           "": "IHH DO VALOR ADICIONADO POR UF",
           "u": "",
@@ -311,9 +311,9 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
       ,
-      "12" : [
+      "12" : [[
         {
           "": "C4 DE CONCENTRAÇÃO DO TOTAL DE EMPRESAS POR UF",
           "u": "",
@@ -335,9 +335,9 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
       ,
-      "13" : [
+      "13" : [[
         {
           "": "C4 DE CONCENTRAÇÃO DO VALOR ADICIONADO POR UF",
           "u": "",
@@ -359,7 +359,7 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
     },
     {
       "1" : [

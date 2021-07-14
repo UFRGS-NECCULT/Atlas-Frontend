@@ -13,9 +13,11 @@ interface DataContextData {
 interface IDescriptions {
   [eixo: number]: {
     [num: string]: {
-      [data in 0|1|2]: {
-        [key: string]: string;
-      }
+      [tab in 0|1]: {
+        [data in 0|1|2]: {
+          [key: string]: string;
+        };
+      };
     };
   };
 }

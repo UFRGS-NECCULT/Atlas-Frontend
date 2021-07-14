@@ -7,20 +7,29 @@ import { getInfo } from "services/api";
 import { format } from "utils";
 
 interface Data {
-  val1: number;
-  val1Type: string;
-  val2: number;
-  val2Type: string;
-  val3: number;
-  val3Type: string;
+  selection: {
+    eixo: number;
+    ano: number;
+    num: number;
+    cad: number;
+    uf: number;
+    deg: number;
+  };
+  data: DataPoint[];
+}
 
-  source: string;
-
-  state: string;
-  desag: string;
-  sector: string;
-
-  color: string;
+interface DataPoint {
+  valor: number;
+  ano: number;
+  cor: string;
+  formato: string;
+  fonte: string;
+  id_uf: number;
+  nome_uf: string;
+  id_cad: number;
+  nome_cad: string;
+  id_subdeg: number;
+  nome_subdeg: string;
 }
 
 const DataInfo: React.FC = () => {
@@ -28,7 +37,7 @@ const DataInfo: React.FC = () => {
   const { desc } = useData();
 
   const [data, setData] = useState<Data | null>(null);
-  const [tab, setTab] = useState<0|1>(0);
+  const [tab, setTab] = useState<0 | 1>(0);
 
   // Sempre que o eixo mudar, volte pra aba 0
   useEffect(() => {
@@ -36,29 +45,14 @@ const DataInfo: React.FC = () => {
   }, [eixo]);
 
   useEffect(() => {
+    const selection = { eixo, ano, num, cad, uf, deg };
     const getData = async () => {
       const { data } = await getInfo(eixo, { var: num, ano, cad, uf, deg });
-      setData({
-        val1: data.val1,
-        val1Type: data.tipo_val1,
-        val2: data.val2,
-        val2Type: data.tipo_val2,
-        val3: data.val3,
-        val3Type: data.tipo_val3,
-        source: data.fonte,
-        sector: data.cadeia,
-        state: data.uf,
-        desag: data.desag,
-        color: data.cor
-      });
+      setData({ selection, data });
     };
 
     getData();
   }, [eixo, num, ano, cad, uf, deg]);
-
-  if (!data) {
-    return <></>;
-  }
 
   const tabs = () => {
     // Só eixos do Mercado, Fomento e Comércio Internacional têm abas
@@ -81,60 +75,102 @@ const DataInfo: React.FC = () => {
     );
   };
 
-  // Mostra os valores escolhidos em uma coluna
-  const displayValue = (...values: (0 | 1 | 2)[]) => {
-    const elements = values.map((which) => {
-      if (!desc[eixo - 1][num.toString()][which]) {
-        return false;
-      }
-
-      const accessor = (uf === 0 ? "" : "u") + (cad === 0 ? "" : "s") + (deg === 0 ? "" : "d");
-      const d = desc[eixo - 1][num.toString()][which][accessor];
-
-      if (!d) {
-        return false;
-      }
-
-      const text = d
-        .replace(/\[deg\]/gi, data.desag)
-        .replace(/\[uf\]/gi, data.state)
-        .replace(/\[cad\]/gi, data.sector)
-        .replace(/\[ano\]/gi, ano.toString());
-
-      const [value, type] = (
-        [
-          [data.val1, data.val1Type],
-          [data.val2, data.val2Type],
-          [data.val3, data.val3Type]
-        ] as [number, string][]
-      )[which];
-
-      return (
-        <div key={which}>
-          <BigNumber>{format(value, type)}</BigNumber>
-          <BigNumberDesc>{text}</BigNumberDesc>
-        </div>
-      );
-    })
-    .filter(e => e !== false);
-
-    return elements.length > 0 && (
-      <Column>
-        {elements}
-      </Column>
-    );
+  // Diz se uma string contém uma certa expressão de substituição, como "[cad]" ou "[uf]"
+  const has = (expr: string, target: string): boolean => {
+    const regex = new RegExp(`\\[${expr}\\]`, "gi");
+    return regex.test(target);
   };
+
+  // Acha a entrada correta para um valor baseando-se nas expressões
+  // de substituição encontradas na string que descreve esse valor
+  const findCorrectData = (str: string, data: Data) => {
+    const d = data.data.find(
+      (d) =>
+        d.id_uf === (has("uf", str) ? data.selection.uf : 0) &&
+        d.id_cad === (has("cad", str) ? data.selection.cad : 0) &&
+        d.id_subdeg === (has("deg", str) ? data.selection.deg : 0)
+    );
+
+    if (!d) {
+      throw "Dado não encontrado!";
+    }
+
+    return d;
+  };
+
+  // Realiza as substituições necessárias na string de descrião
+  const description = (desc: string, data: DataPoint): string => {
+    return desc
+      .replace(/\[uf\]/gi, data.nome_uf)
+      .replace(/\[cad\]/gi, data.nome_cad)
+      .replace(/\[ano\]/gi, data.ano.toString())
+      .replace(/\[deg\]/gi, data.nome_subdeg);
+  };
+
+  const displayValues = () => {
+    // Se não há definição para esses valores, não mostre nada
+    if (!data || !(desc[eixo - 1][num.toString()][tab] && desc[eixo - 1][num.toString()][tab][0])) {
+      return false;
+    }
+
+    const accessor = (uf === 0 ? "" : "u") + (cad === 0 ? "" : "s") + (deg === 0 ? "" : "d");
+
+    const mainStr = desc[eixo - 1][num.toString()][tab][0][accessor];
+    const main = findCorrectData(mainStr, data);
+
+    // Se a variável principal não está definida, não mostre nenhum valor
+    if (!mainStr || mainStr.trim() === '') {
+      return false;
+    }
+
+    let scndStr = "";
+    let scnd: DataPoint | null = null;
+    if (desc[eixo - 1][num.toString()][tab][1] && desc[eixo - 1][num.toString()][tab][1][accessor]) {
+      scndStr = desc[eixo - 1][num.toString()][tab][1][accessor];
+      scnd = findCorrectData(scndStr, data);
+    }
+
+    let thrdStr = "";
+    let thrd: DataPoint | null = null;
+    if (desc[eixo - 1][num.toString()][tab][2] && desc[eixo - 1][num.toString()][tab][2][accessor]) {
+      thrdStr = desc[eixo - 1][num.toString()][tab][2][accessor];
+      thrd = findCorrectData(thrdStr, data);
+    }
+
+    console.log(mainStr);
+    return [
+      <Column key="0">
+        <BigNumber>{format(main.valor, main.formato)}</BigNumber>
+        <BigNumberDesc>{description(mainStr, main)}</BigNumberDesc>
+      </Column>,
+      (scnd || thrd) && (
+        <Column key="1">
+          {scnd && (
+            <>
+              <BigNumber>{format(main.valor / scnd.valor, "percent")}</BigNumber>
+              <BigNumberDesc>{description(scndStr, scnd)}</BigNumberDesc>
+            </>
+          )}
+          {thrd && (
+            <>
+              <BigNumber>{format(main.valor / thrd.valor, "percent")}</BigNumber>
+              <BigNumberDesc>{description(thrdStr, thrd)}</BigNumberDesc>
+            </>
+          )}
+        </Column>
+      )
+    ];
+  };
+
+  if (!data || !data.data.length) {
+    return <></>;
+  }
 
   return (
     <>
       {tabs()}
-      <MainContainer style={{ color: data.color }}>
-        {displayValue(0)}
-        {displayValue(1, 2)}
-      </MainContainer>
-      <Source>
-        Fonte: {data.source ? data.source : 'Sem fonte'}
-      </Source>
+      <MainContainer style={{ color: data.data[0].cor }}>{displayValues()}</MainContainer>
+      <Source>Fonte: {data.data[0].fonte ? data.data[0].fonte : "Sem fonte"}</Source>
     </>
   );
 };
