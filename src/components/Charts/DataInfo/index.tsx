@@ -74,8 +74,8 @@ const DataInfo: React.FC = () => {
 
     return (
       <Flex>
-        <TabButton className={tab === 0 ? 'active' : ''} onClick={() => setTab(0)}>{leftButtonText}</TabButton>
-        <TabButton className={tab === 1 ? 'active' : ''} onClick={() => setTab(1)}>{rightButtonText}</TabButton>
+        <TabButton className={tab === 0 ? 'active' : ''} style={{backgroundColor: data.data[0].cor}} onClick={() => setTab(0)}>{leftButtonText}</TabButton>
+        <TabButton className={tab === 1 ? 'active' : ''} style={{backgroundColor: data.data[0].cor}} onClick={() => setTab(1)}>{rightButtonText}</TabButton>
       </Flex>
     );
   };

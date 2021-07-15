@@ -26,11 +26,11 @@ export const TabButton = styled.div`
   text-align: center;
   width: 50%;
   color: white;
-  background-color: rgba(110, 191, 201, 0.75);
   cursor: pointer;
+  opacity: 0.75;
 
   &.active {
-    background-color: rgb(110, 191, 201);
+    opacity: 1;
   }
 
   &:nth-child(1) {
