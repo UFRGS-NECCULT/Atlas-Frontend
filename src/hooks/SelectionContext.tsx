@@ -79,12 +79,14 @@ const SelectionProvider: React.FC = ({ children }) => {
         ["var", num],
         ["cad", cad],
         ["deg", deg],
-        ["eixo", eixo],
+        ["eixo", eixo]
       ];
       for (const v of variables) {
         const [id, value] = v;
 
-        const options = breadcrumb.find(b => b.id === id)?.options.map(o => o.id);
+        const current_breadcrumb = breadcrumb.find((b) => b.id === id);
+
+        const options = current_breadcrumb.options ? current_breadcrumb.options.map((o) => o.id) : [];
         if (options && options.length) {
           // Se o valor atualmente selecionado não está disponível,
           // selecione um valor padrão

@@ -4,7 +4,7 @@ import LandingPage from "pages/Landing";
 import AppProvider from "hooks";
 import DataVisualization from "pages/DataVisualization";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { LibrasDisabler } from 'components/LibrasDisabler';
+import { LibrasDisabler } from "components/LibrasDisabler";
 
 const Routes = () => {
   return (

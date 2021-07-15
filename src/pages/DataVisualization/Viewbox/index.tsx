@@ -54,7 +54,7 @@ export const Viewbox: React.FC<ViewboxProps> = ({ id }) => {
 
   useEffect(() => {
     const getBoxInfo = async () => {
-      const { data } = await getVisualization(1, { var: num, box: id });
+      const { data } = await getVisualization(eixo, { var: num, box: id });
       setViewBox(data);
     };
     getBoxInfo();
