@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
 import { useSelection } from "hooks/SelectionContext";
-import { IColors, useData } from "hooks/DataContext";
 import { getLines } from "services/api";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
@@ -14,24 +13,7 @@ interface Data {
   taxa: number;
   cadeia: string;
   cor: string;
-}
-
-function getColor(group: string, colors: IColors, eixo: number, deg: number, variable: number): string {
-  switch (eixo) {
-    case 0:
-      if (variable >= 10) {
-        // TODO: Receber cores do backend
-        return "red";
-      }
-      return colors["cadeias"][group]["color"];
-    case 1:
-      if (deg === 0) {
-        return colors["cadeias"][group]["color"];
-      }
-      return colors["deg"][deg.toString()]["subdeg"][group];
-  }
-
-  throw "Categoria de cores não encontrada!";
+  formato: string;
 }
 interface ChartProps {
   constants?: {
@@ -44,7 +26,6 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
   const [data, setData] = useState<Data[]>([]);
-  const [dataFormat, setDataFormat] = useState("real");
 
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg
@@ -57,20 +38,17 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
 
   const { eixo, num, uf, cad, deg } = useSelection();
 
-  const { colors } = useData();
-
   useEffect(() => {
     const getData = async () => {
       const { data } = await getLines(eixo + 1, { var: num, uf, cad, deg, ...constants });
       setData(data);
-      setDataFormat("real");
     };
 
     getData();
   }, [eixo, num, uf, cad, deg]);
 
   useEffect(() => {
-    const marginLeft = 40;
+    const marginLeft = 50;
     const marginTop = 20;
     const marginBottom = 20;
     const marginRight = 15;
@@ -91,10 +69,17 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
 
       const svg = d3.select(d3Container.current);
 
+      const dataFormat = data[0].formato;
+
       // Remove previous axes
       svg.selectAll(".axis").remove();
 
       const parseYear = (d: number) => d3.timeParse("%Y")(d.toString()) as Date;
+
+      let step = 1;
+      if (width < 280) {
+        step = 2;
+      }
 
       // Make the X axis
       const xScale = d3
@@ -103,7 +88,7 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
         .rangeRound([0, width]);
       const xAxis = d3
         .axisBottom(xScale)
-        .tickFormat((d) => (d as Date).getFullYear().toString())
+        .tickFormat((d, i) => (i % step === 0 ? (d as Date).getFullYear().toString() : ""))
         .tickSize(5)
         .tickPadding(5);
       svg
@@ -177,7 +162,9 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
           })
           .sort((a, b) => a.distance - b.distance)[0];
 
-        tooltip.setText(`Valor: ${d.valor}\nAno: ${d.ano}\nGrupo: ${d.cadeia}`);
+        const valor = format(d.valor, d.formato);
+
+        tooltip.setText(`Valor: ${valor}\nAno: ${d.ano}\nGrupo: ${d.cadeia}`);
         tooltip.setXY(dx, dy);
         tooltip.show();
       });

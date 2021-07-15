@@ -14,6 +14,8 @@ export const Flex = styled.div`
 `;
 
 export const Column = styled.div`
+  display: flex;
+  width: 100%;
   flex-direction: column;
   padding-left: 4px;
   padding-right: 4px;
@@ -24,15 +26,19 @@ export const TabButton = styled.div`
   text-align: center;
   width: 50%;
   color: white;
-  background-color: #6dbfc9;
+  opacity: 0.75;
 
-  :nth-child(1) {
+  &.active {
+    opacity: 1;
+  }
+
+  &:nth-child(1) {
     margin-right: 2px;
     border-top-left-radius: 25px;
     border-bottom-left-radius: 25px;
   }
 
-  :nth-child(2) {
+  &:nth-child(2) {
     margin-left: 2px;
     border-top-right-radius: 25px;
     border-bottom-right-radius: 25px;
@@ -53,4 +59,12 @@ export const BigNumberDesc = styled.span`
   font-size: 1vw;
   color: gray;
   width: 100%;
+`;
+
+export const Source = styled.div`
+  text-align: right;
+  width: 100%;
+  display: inline-block;
+  color: gray;
+  font-size: 0.8em;
 `;

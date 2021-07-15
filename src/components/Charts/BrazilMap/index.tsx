@@ -10,11 +10,6 @@ import { useData } from "hooks/DataContext";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
 
-interface IData {
-  ufs: { uf: number; valor: number; formato: string }[];
-  format: string;
-}
-
 interface ChartProps {
   constants?: {
     [key: string]: string | number;
@@ -36,10 +31,9 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
       valor: number;
       percentual: number;
       taxa: number;
+      formato: string;
     }[]
   >([]);
-
-  const [dataFormat, setDataFormat] = useState("none");
 
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg
@@ -57,7 +51,6 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
     const getData = async () => {
       const { data } = await getMap(1, { var: num, uf, cad, ano, ...constants });
       setData(data);
-      setDataFormat("percent");
     };
 
     getData();
@@ -82,6 +75,8 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
 
   useEffect(() => {
     if (data && data.length && d3Container.current) {
+      const dataFormat = data[0].formato;
+
       const marginLeft = 30;
       const marginTop = 20;
       const marginBottom = 20;

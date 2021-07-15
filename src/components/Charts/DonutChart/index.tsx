@@ -16,6 +16,7 @@ interface Data {
   cadeia_id: number;
   cor: string;
   cadeia: string;
+  formato: string;
 }
 
 const DonutChart: React.FC = () => {
@@ -23,7 +24,6 @@ const DonutChart: React.FC = () => {
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
   const [data, setData] = useState<Data[]>([]);
-  const [dataFormat, setDataFormat] = useState("percent");
 
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg
@@ -52,25 +52,17 @@ const DonutChart: React.FC = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getDonut(eixo + 1, { var: num, uf, deg, ano });
+      const { data } = await getDonut(eixo, { var: num, uf, deg, ano });
       setData(data);
-      setDataFormat("percent");
     };
 
     getData();
   }, [uf, deg, num, ano, cad, eixo]);
 
-  const getSelector = (eixo) => {
-    switch (eixo) {
-      case 0:
-        return "cad";
-      default:
-        throw `Eixo ${eixo + 1} não suportado pelo gráfico em donut!`;
-    }
-  };
-
   useEffect(() => {
     if (d3Container.current && data && data.length) {
+      const dataFormat = data[0].formato;
+
       if (tooltipContainer.current == null) {
         tooltipContainer.current = new SVGTooltip(d3Container.current, margins);
       }
@@ -108,10 +100,10 @@ const DonutChart: React.FC = () => {
           x += margins.left + width / 2;
           y += margins.top + height / 2;
 
-          const value = format(d.value, dataFormat);
+          const value = format(d.data.valor, dataFormat);
 
           tooltip.setXY(x, y);
-          tooltip.setText(`Valor: ${d.data.valor}\n` + `Grupo: ${d.data.cadeia}`);
+          tooltip.setText(`Valor: ${value}\n` + `Grupo: ${d.data.cadeia}`);
           tooltip.show();
         })
         .on("mouseleave", () => tooltip.hide())

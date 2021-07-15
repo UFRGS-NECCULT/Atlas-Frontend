@@ -34,22 +34,22 @@ const LandingPage = () => {
           </div>
           <div className="separator"></div>
           <div className="eixos">
-            <Link to="/resultado?eixo=0">
+            <Link to="/resultado?eixo=1">
               <div className="eixo">
                 <img src={eixo1} alt="eixo1" />
               </div>
             </Link>
-            <Link to="/resultado?eixo=1">
+            <Link to="/resultado?eixo=2">
               <div className="eixo">
                 <img src={eixo2} alt="eixo2" />
               </div>
             </Link>
-            <Link to="/resultado?eixo=2">
+            <Link to="/resultado?eixo=3">
               <div className="eixo">
                 <img src={eixo3} alt="eixo3" />
               </div>
             </Link>
-            <Link to="/resultado?eixo=3">
+            <Link to="/resultado?eixo=4">
               <div className="eixo">
                 <img src={eixo4} alt="eixo4" />
               </div>

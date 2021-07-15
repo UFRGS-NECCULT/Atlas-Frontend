@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 import DATA_JSON from "../assets/json/pt-br.json";
 import COLOR_JSON from "../assets/json/colors.json";
@@ -13,8 +13,10 @@ interface DataContextData {
 interface IDescriptions {
   [eixo: number]: {
     [num: string]: {
-      [data in 0 | 1 | 2]: {
-        [key: string]: string;
+      [tab in 0 | 1]: {
+        [data in 0 | 1 | 2]: {
+          [key: string]: string;
+        };
       };
     };
   };
