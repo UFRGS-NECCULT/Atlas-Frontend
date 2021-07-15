@@ -44,12 +44,12 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
     });
   }, []);
 
-  const { uf, cad, ano, num, changeSelection } = useSelection();
+  const { eixo, uf, cad, ano, num, changeSelection } = useSelection();
   const { colors } = useData();
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getMap(1, { var: num, uf, cad, ano, ...constants });
+      const { data } = await getMap(eixo, { var: num, uf, cad, ano, ...constants });
       setData(data);
     };
 

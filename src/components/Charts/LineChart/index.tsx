@@ -40,7 +40,7 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getLines(eixo + 1, { var: num, uf, cad, deg, ...constants });
+      const { data } = await getLines(eixo, { var: num, uf, cad, deg, ...constants });
       setData(data);
     };
 

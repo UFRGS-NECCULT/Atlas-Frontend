@@ -56,11 +56,11 @@ const Treemap: React.FC<ChartProps> = ({ constants }) => {
 
   const unfocusOpacity = 0.8;
 
-  const { uf, num, ano, cad, changeSelection } = useSelection();
+  const { eixo, uf, num, ano, cad, changeSelection } = useSelection();
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getTreemap(1, { var: num, uf, ano, ...constants });
+      const { data } = await getTreemap(eixo, { var: num, uf, ano, ...constants });
       if (data.length) {
         setDataFormat(data[0].formato);
       }

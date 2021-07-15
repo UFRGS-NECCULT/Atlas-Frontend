@@ -47,7 +47,7 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getBars(eixo, { var: num, uf, cad, deg });
+      const { data } = await getBars(eixo, { var: num, uf, cad, deg, ...constants });
       setRawData(data);
     };
 
