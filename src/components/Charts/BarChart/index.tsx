@@ -131,7 +131,12 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
         .attr("transform", "translate(" + marginLeft + ", " + marginTop + ")")
         .call(gridLines);
 
-      const xAxis = d3.axisBottom(x).tickSize(5).tickPadding(5);
+      let step = 1;
+      if (width < 320) {
+        step = 2;
+      }
+
+      const xAxis = d3.axisBottom(x).tickSize(5).tickPadding(5).tickFormat((d, i) => i % step === 0 ? d : "");
 
       const yAxis = d3
         .axisLeft(y)

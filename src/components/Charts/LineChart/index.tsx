@@ -76,6 +76,11 @@ const LineChart: React.FC<IProps> = () => {
 
       const parseYear = (d: number) => d3.timeParse("%Y")(d.toString()) as Date;
 
+      let step = 1;
+      if (width < 280) {
+        step = 2;
+      }
+
       // Make the X axis
       const xScale = d3
         .scaleTime()
@@ -83,7 +88,7 @@ const LineChart: React.FC<IProps> = () => {
         .rangeRound([0, width]);
       const xAxis = d3
         .axisBottom(xScale)
-        .tickFormat((d) => (d as Date).getFullYear().toString())
+        .tickFormat((d, i) => i % step === 0 ? (d as Date).getFullYear().toString() : "")
         .tickSize(5)
         .tickPadding(5);
       svg
