@@ -5,7 +5,7 @@ export const LibrasDisabler: React.FC = ({ children }) => {
 
   // Rodar quando este componente for montado
   useEffect(() => {
-    if (VLibras.element) {
+    if (VLibras && VLibras.element) {
       VLibras.element.classList.remove("enabled");
     }
   }, []);
@@ -13,7 +13,7 @@ export const LibrasDisabler: React.FC = ({ children }) => {
   // Rodar quando este componente for desmontado
   useEffect(() => {
     return () => {
-      if (VLibras.element) {
+      if (VLibras && VLibras.element) {
           VLibras.element.classList.add("enabled");
       }
     };
