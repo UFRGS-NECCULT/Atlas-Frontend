@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   Container,
@@ -8,22 +8,15 @@ import {
   Page,
   Title,
   Viewboxes,
-  ChartContainer,
-  ViewOptions
+  ChartContainer
 } from "./styles";
 import Breadcrumbs from "components/Breadcrumbs";
 import Box from "components/Box";
-import BarChart from "components/Charts/BarChart";
-import BrazilMap from "components/Charts/BrazilMap";
-import Treemap from "components/Charts/Treemap";
-import LineChart from "components/Charts/LineChart";
-import DonutChart from "components/Charts/DonutChart";
 import VarDescription from "components/Charts/VarDescription";
-import DataInfo from 'components/Charts/DataInfo';
+import DataInfo from "components/Charts/DataInfo";
+import { Viewbox } from "./Viewbox";
 
 const DataVisualization = () => {
-  const [stacked, setStacked] = useState<boolean>(false);
-
   return (
     <Page>
       <Breadcrumbs />
@@ -31,36 +24,22 @@ const DataVisualization = () => {
         <Title>NÚMERO TOTAL DE EMPRESAS</Title>
         <Viewboxes>
           <Box id={"box-1"} title="Mapa do Brasil">
-            <BrazilMap />
+            <Viewbox id={1} />
           </Box>
           <Box id={"box-2"} title="Dados">
-            <ChartContainer>
-              <LineChart />
-            </ChartContainer>
+            <DataInfo />
           </Box>
           <Box id={"box-3"} title="Descrição da variável">
             <VarDescription />
           </Box>
-          <Box id="box-7" title="Dados">
-            <DataInfo/>
-          </Box>
           <Box id={"box-4"} title="Série histórica">
             <ChartContainer>
-              <BarChart stacked={stacked} />
-              <ViewOptions>
-                <button onClick={() => setStacked(false)}>Agrupados</button>
-                <button onClick={() => setStacked(true)}>Desagregados</button>
-              </ViewOptions>
+              <Viewbox id={2} />
             </ChartContainer>
           </Box>
           <Box id={"box-5"} title="Treemap - Setores Culturais Criativos">
             <ChartContainer direction="row">
-              <Treemap />
-            </ChartContainer>
-          </Box>
-          <Box id="box-6" title="Donut - Setores Culturais Criativos">
-            <ChartContainer direction="row">
-              <DonutChart />
+              <Viewbox id={3} />
             </ChartContainer>
           </Box>
         </Viewboxes>

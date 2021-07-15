@@ -20,7 +20,14 @@ interface ParsedData {
   [deg: string]: number;
 }
 
-const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
+interface BarChartProps {
+  stacked: boolean;
+  constants?: {
+    [key: string]: string | number;
+  };
+}
+
+const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
@@ -40,7 +47,7 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getBars(eixo, { var: num, uf, cad, deg });
+      const { data } = await getBars(eixo, { var: num, uf, cad, deg, ...constants });
       setRawData(data);
     };
 
@@ -136,13 +143,17 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
         step = 2;
       }
 
-      const xAxis = d3.axisBottom(x).tickSize(5).tickPadding(5).tickFormat((d, i) => i % step === 0 ? d : "");
+      const xAxis = d3
+        .axisBottom(x)
+        .tickSize(5)
+        .tickPadding(5)
+        .tickFormat((d, i) => (i % step === 0 ? d : ""));
 
       const yAxis = d3
         .axisLeft(y)
         .tickSize(5)
         .tickPadding(5)
-        .tickFormat((d) => format(d.valueOf(), dataFormat === 'percent' ? 'percent' : 'si'));
+        .tickFormat((d) => format(d.valueOf(), dataFormat === "percent" ? "percent" : "si"));
 
       svg.selectAll(".eixo-x").remove();
       svg.selectAll(".eixo-y").remove();
@@ -186,7 +197,7 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
           return changeSelection("ano", d.data.ano);
         })
         .on("mouseenter", (_, d) => {
-          const valor = format(d.dados.valor||0, dataFormat);
+          const valor = format(d.dados.valor || 0, dataFormat);
 
           tooltip.setText(`Valor: ${valor}\nGrupo: ${d.dados.sdg_nome}`);
           tooltip.setXY(

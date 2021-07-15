@@ -2,14 +2,9 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
 import { useSelection } from "hooks/SelectionContext";
-import { IColors, useData } from "hooks/DataContext";
 import { getLines } from "services/api";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
-
-interface IProps {
-  data?: Data[];
-}
 
 interface Data {
   ano: number;
@@ -20,8 +15,13 @@ interface Data {
   cor: string;
   formato: string;
 }
+interface ChartProps {
+  constants?: {
+    [key: string]: string | number;
+  };
+}
 
-const LineChart: React.FC<IProps> = () => {
+const LineChart: React.FC<ChartProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
@@ -40,7 +40,7 @@ const LineChart: React.FC<IProps> = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getLines(eixo, { var: num, uf, cad, deg });
+      const { data } = await getLines(eixo, { var: num, uf, cad, deg, ...constants });
       setData(data);
     };
 
@@ -88,7 +88,7 @@ const LineChart: React.FC<IProps> = () => {
         .rangeRound([0, width]);
       const xAxis = d3
         .axisBottom(xScale)
-        .tickFormat((d, i) => i % step === 0 ? (d as Date).getFullYear().toString() : "")
+        .tickFormat((d, i) => (i % step === 0 ? (d as Date).getFullYear().toString() : ""))
         .tickSize(5)
         .tickPadding(5);
       svg

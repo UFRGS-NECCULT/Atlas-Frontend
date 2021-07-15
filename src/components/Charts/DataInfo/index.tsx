@@ -43,7 +43,7 @@ const DataInfo: React.FC = () => {
 
   const [data, setData] = useState<Data | null>(null);
 
-  let tab: 0|1 = 0;
+  let tab: 0 | 1 = 0;
 
   // Escolher aba correta
   if (eixo === 2 && ocp !== 0) {
@@ -75,8 +75,12 @@ const DataInfo: React.FC = () => {
 
     return (
       <Flex>
-        <TabButton className={tab === 0 ? 'active' : ''} style={{backgroundColor: data.data[0].cor}}>{leftButtonText}</TabButton>
-        <TabButton className={tab === 1 ? 'active' : ''} style={{backgroundColor: data.data[0].cor}}>{rightButtonText}</TabButton>
+        <TabButton className={tab === 0 ? "active" : ""} style={{ backgroundColor: data.data[0].cor }}>
+          {leftButtonText}
+        </TabButton>
+        <TabButton className={tab === 1 ? "active" : ""} style={{ backgroundColor: data.data[0].cor }}>
+          {rightButtonText}
+        </TabButton>
       </Flex>
     );
   };
@@ -92,14 +96,14 @@ const DataInfo: React.FC = () => {
   const findSelectedData = (data: Data) => {
     const d = data.data.find(
       (d) =>
-        d.id_uf === data.selection.uf&&
-        d.id_cad === data.selection.cad&&
+        d.id_uf === data.selection.uf &&
+        d.id_cad === data.selection.cad &&
         d.id_subdeg === data.selection.deg &&
         (d.id_ocupacao ? d.id_ocupacao === data.selection.ocp : true)
     );
 
     return d || null;
-  }
+  };
 
   // Acha a entrada correta para um valor baseando-se nas expressões
   // de substituição encontradas na string que descreve esse valor
@@ -122,7 +126,7 @@ const DataInfo: React.FC = () => {
       .replace(/\[cad\]/gi, data.nome_cad)
       .replace(/\[ano\]/gi, data.ano.toString())
       .replace(/\[deg\]/gi, data.nome_subdeg)
-      .replace(/\[ocp]/gi, data.nome_ocupacao||'');
+      .replace(/\[ocp]/gi, data.nome_ocupacao || "");
   };
 
   const displayValues = () => {
@@ -165,21 +169,23 @@ const DataInfo: React.FC = () => {
     }
 
     return [
-      main && <Column key="0">
-        <BigNumber style={{color: main.cor}}>{format(main.valor, main.formato)}</BigNumber>
-        <BigNumberDesc>{description(mainStr, main)}</BigNumberDesc>
-      </Column>,
+      main && (
+        <Column key="0">
+          <BigNumber style={{ color: main.cor }}>{format(main.valor, main.formato)}</BigNumber>
+          <BigNumberDesc>{description(mainStr, main)}</BigNumberDesc>
+        </Column>
+      ),
       (scnd || thrd) && (
         <Column key="1">
           {scnd && (
             <>
-              <BigNumber style={{color: scnd.cor}}>{format((main?.valor||0) / scnd.valor, "percent")}</BigNumber>
+              <BigNumber style={{ color: scnd.cor }}>{format((main?.valor || 0) / scnd.valor, "percent")}</BigNumber>
               <BigNumberDesc>{description(scndStr, scnd)}</BigNumberDesc>
             </>
           )}
           {thrd && (
             <>
-              <BigNumber style={{color: thrd.cor}}>{format((main?.valor||0) / thrd.valor, "percent")}</BigNumber>
+              <BigNumber style={{ color: thrd.cor }}>{format((main?.valor || 0) / thrd.valor, "percent")}</BigNumber>
               <BigNumberDesc>{description(thrdStr, thrd)}</BigNumberDesc>
             </>
           )}

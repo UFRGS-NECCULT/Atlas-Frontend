@@ -10,7 +10,13 @@ import { useData } from "hooks/DataContext";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
 
-const BrazilMap = () => {
+interface ChartProps {
+  constants?: {
+    [key: string]: string | number;
+  };
+}
+
+const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
@@ -38,12 +44,12 @@ const BrazilMap = () => {
     });
   }, []);
 
-  const { uf, cad, ano, num, changeSelection } = useSelection();
+  const { eixo, uf, cad, ano, num, changeSelection } = useSelection();
   const { colors } = useData();
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getMap(1, { var: num, uf, cad, ano });
+      const { data } = await getMap(eixo, { var: num, uf, cad, ano, ...constants });
       setData(data);
     };
 

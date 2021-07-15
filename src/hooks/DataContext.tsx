@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 import DATA_JSON from "../assets/json/pt-br.json";
 import COLOR_JSON from "../assets/json/colors.json";
@@ -13,8 +13,8 @@ interface DataContextData {
 interface IDescriptions {
   [eixo: number]: {
     [num: string]: {
-      [tab in 0|1]: {
-        [data in 0|1|2]: {
+      [tab in 0 | 1]: {
+        [data in 0 | 1 | 2]: {
           [key: string]: string;
         };
       };
@@ -51,9 +51,9 @@ export interface IColors {
 const DataContext = createContext<DataContextData>({} as DataContextData);
 
 const DataProvider: React.FC = ({ children }) => {
-  const [data, ] = useState(JSON.parse(JSON.stringify(DATA_JSON)));
-  const [colors, ] = useState(JSON.parse(JSON.stringify(COLOR_JSON)));
-  const [desc, ] = useState(JSON.parse(JSON.stringify(DESC_JSON)));
+  const [data] = useState(JSON.parse(JSON.stringify(DATA_JSON)));
+  const [colors] = useState(JSON.parse(JSON.stringify(COLOR_JSON)));
+  const [desc] = useState(JSON.parse(JSON.stringify(DESC_JSON)));
 
   return <DataContext.Provider value={{ data, colors, desc }}>{children}</DataContext.Provider>;
 };

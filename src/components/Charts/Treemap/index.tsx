@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { useSelection } from "hooks/SelectionContext";
-import { useData } from "hooks/DataContext";
 import { getTreemap } from "services/api";
 import Legend, { ILegendData } from "../Legend";
 import { TreemapContainer } from "./styles";
@@ -33,7 +32,13 @@ interface IParsedData {
   }[];
 }
 
-const Treemap: React.FC = () => {
+interface ChartProps {
+  constants?: {
+    [key: string]: string | number;
+  };
+}
+
+const Treemap: React.FC<ChartProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
   const [data, setData] = useState<IParsedData>();
@@ -51,11 +56,11 @@ const Treemap: React.FC = () => {
 
   const unfocusOpacity = 0.8;
 
-  const { uf, num, ano, cad, changeSelection } = useSelection();
+  const { eixo, uf, num, ano, cad, changeSelection } = useSelection();
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getTreemap(1, { var: num, uf, ano });
+      const { data } = await getTreemap(eixo, { var: num, uf, ano, ...constants });
       if (data.length) {
         setDataFormat(data[0].formato);
       }
