@@ -15,7 +15,13 @@ interface IData {
   format: string;
 }
 
-const BrazilMap = () => {
+interface ChartProps {
+  constants?: {
+    [key: string]: string | number;
+  };
+}
+
+const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
@@ -49,7 +55,7 @@ const BrazilMap = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getMap(1, { var: num, uf, cad, ano });
+      const { data } = await getMap(1, { var: num, uf, cad, ano, ...constants });
       setData(data);
       setDataFormat("percent");
     };

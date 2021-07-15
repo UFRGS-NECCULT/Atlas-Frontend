@@ -13,9 +13,9 @@ interface DataContextData {
 interface IDescriptions {
   [eixo: number]: {
     [num: string]: {
-      [data in 0|1|2]: {
+      [data in 0 | 1 | 2]: {
         [key: string]: string;
-      }
+      };
     };
   };
 }
@@ -49,9 +49,9 @@ export interface IColors {
 const DataContext = createContext<DataContextData>({} as DataContextData);
 
 const DataProvider: React.FC = ({ children }) => {
-  const [data, ] = useState(JSON.parse(JSON.stringify(DATA_JSON)));
-  const [colors, ] = useState(JSON.parse(JSON.stringify(COLOR_JSON)));
-  const [desc, ] = useState(JSON.parse(JSON.stringify(DESC_JSON)));
+  const [data] = useState(JSON.parse(JSON.stringify(DATA_JSON)));
+  const [colors] = useState(JSON.parse(JSON.stringify(COLOR_JSON)));
+  const [desc] = useState(JSON.parse(JSON.stringify(DESC_JSON)));
 
   return <DataContext.Provider value={{ data, colors, desc }}>{children}</DataContext.Provider>;
 };

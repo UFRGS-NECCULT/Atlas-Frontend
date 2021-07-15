@@ -34,7 +34,14 @@ interface ParsedData {
   [deg: string]: number;
 }
 
-const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
+interface BarChartProps {
+  stacked: boolean;
+  constants?: {
+    [key: string]: string | number;
+  };
+}
+
+const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
@@ -55,7 +62,7 @@ const BarChart: React.FC<{ stacked: boolean }> = ({ stacked }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getBars(eixo + 1, { var: num, uf, cad, deg });
+      const { data } = await getBars(eixo + 1, { var: num, uf, cad, deg, ...constants });
 
       const parsedData = parseBarsData(data);
       setRawData(data);

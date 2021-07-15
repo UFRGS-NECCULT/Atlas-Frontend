@@ -33,7 +33,13 @@ interface IParsedData {
   }[];
 }
 
-const Treemap: React.FC = () => {
+interface ChartProps {
+  constants?: {
+    [key: string]: string | number;
+  };
+}
+
+const Treemap: React.FC<ChartProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
   const [data, setData] = useState<IParsedData>();
@@ -55,7 +61,7 @@ const Treemap: React.FC = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getTreemap(1, { var: num, uf, ano });
+      const { data } = await getTreemap(1, { var: num, uf, ano, ...constants });
       setDataFormat("percent");
       setData(parseData(data.filter((d) => d.valor !== 0)));
     };

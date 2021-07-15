@@ -7,10 +7,6 @@ import { getLines } from "services/api";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
 
-interface IProps {
-  data?: Data[];
-}
-
 interface Data {
   ano: number;
   valor: number;
@@ -37,8 +33,13 @@ function getColor(group: string, colors: IColors, eixo: number, deg: number, var
 
   throw "Categoria de cores não encontrada!";
 }
+interface ChartProps {
+  constants?: {
+    [key: string]: string | number;
+  };
+}
 
-const LineChart: React.FC<IProps> = () => {
+const LineChart: React.FC<ChartProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
@@ -60,7 +61,7 @@ const LineChart: React.FC<IProps> = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getLines(eixo + 1, { var: num, uf, cad, deg });
+      const { data } = await getLines(eixo + 1, { var: num, uf, cad, deg, ...constants });
       setData(data);
       setDataFormat("real");
     };
