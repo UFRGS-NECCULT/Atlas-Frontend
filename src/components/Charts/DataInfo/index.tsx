@@ -165,20 +165,20 @@ const DataInfo: React.FC = () => {
 
     return [
       main && <Column key="0">
-        <BigNumber>{format(main.valor, main.formato)}</BigNumber>
+        <BigNumber style={{color: main.cor}}>{format(main.valor, main.formato)}</BigNumber>
         <BigNumberDesc>{description(mainStr, main)}</BigNumberDesc>
       </Column>,
       (scnd || thrd) && (
         <Column key="1">
           {scnd && (
             <>
-              <BigNumber>{format((main?.valor||0) / scnd.valor, "percent")}</BigNumber>
+              <BigNumber style={{color: scnd.cor}}>{format((main?.valor||0) / scnd.valor, "percent")}</BigNumber>
               <BigNumberDesc>{description(scndStr, scnd)}</BigNumberDesc>
             </>
           )}
           {thrd && (
             <>
-              <BigNumber>{format((main?.valor||0) / thrd.valor, "percent")}</BigNumber>
+              <BigNumber style={{color: thrd.cor}}>{format((main?.valor||0) / thrd.valor, "percent")}</BigNumber>
               <BigNumberDesc>{description(thrdStr, thrd)}</BigNumberDesc>
             </>
           )}
@@ -194,7 +194,7 @@ const DataInfo: React.FC = () => {
   return (
     <>
       {tabs(data)}
-      <MainContainer style={{ color: data.data[0].cor }}>{displayValues()}</MainContainer>
+      <MainContainer>{displayValues()}</MainContainer>
       <Source>Fonte: {data.data[0].fonte ? data.data[0].fonte : "Sem fonte"}</Source>
     </>
   );
