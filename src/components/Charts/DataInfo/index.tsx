@@ -42,12 +42,13 @@ const DataInfo: React.FC = () => {
   const { desc } = useData();
 
   const [data, setData] = useState<Data | null>(null);
-  const [tab, setTab] = useState<0 | 1>(0);
 
-  // Sempre que o eixo mudar, volte pra aba 0
-  useEffect(() => {
-    setTab(0);
-  }, [eixo]);
+  let tab: 0|1 = 0;
+
+  // Escolher aba correta
+  if (eixo === 2 && ocp !== 0) {
+    tab = 1;
+  }
 
   useEffect(() => {
     const selection = { eixo, ano, num, cad, uf, deg, ocp };
@@ -74,8 +75,8 @@ const DataInfo: React.FC = () => {
 
     return (
       <Flex>
-        <TabButton className={tab === 0 ? 'active' : ''} style={{backgroundColor: data.data[0].cor}} onClick={() => setTab(0)}>{leftButtonText}</TabButton>
-        <TabButton className={tab === 1 ? 'active' : ''} style={{backgroundColor: data.data[0].cor}} onClick={() => setTab(1)}>{rightButtonText}</TabButton>
+        <TabButton className={tab === 0 ? 'active' : ''} style={{backgroundColor: data.data[0].cor}}>{leftButtonText}</TabButton>
+        <TabButton className={tab === 1 ? 'active' : ''} style={{backgroundColor: data.data[0].cor}}>{rightButtonText}</TabButton>
       </Flex>
     );
   };

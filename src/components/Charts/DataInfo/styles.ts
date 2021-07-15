@@ -26,7 +26,6 @@ export const TabButton = styled.div`
   text-align: center;
   width: 50%;
   color: white;
-  cursor: pointer;
   opacity: 0.75;
 
   &.active {
