@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
+import * as debounce from "debounce";
 import { useSelection } from "hooks/SelectionContext";
 import { getTreemap } from "services/api";
 import Legend, { ILegendData } from "../Legend";
@@ -157,7 +158,7 @@ const Treemap: React.FC<ChartProps> = ({ constants }) => {
         .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
         .attr("opacity", (d) => (cad === 0 || cad === Number(d.data.id) ? 1 : unfocusOpacity))
         .attr("fill", (d) => d.data.color)
-        .on("click", (d) => changeSelection("cad", Number(d.target.id)));
+        .on("click", debounce((d) => changeSelection("cad", Number(d.target.id)), 250));
 
       g.append("foreignObject")
         .style("pointer-events", "none")

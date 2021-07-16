@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
+import * as debounce from "debounce";
 
 import SVGTooltip from "components/SVGTooltip";
 import { useSelection } from "hooks/SelectionContext";
@@ -98,9 +99,7 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
         .attr("class", "slice")
         .attr("transform", `translate(${margins.left + width / 2}, ${margins.top + height / 2})`)
         .style("cursor", "pointer")
-        .on("click", (_, d) => {
-          changeSelection("cad", d.data.cadeia_id);
-        })
+        .on("click", debounce((_, d) => changeSelection("cad", d.data.cadeia_id), 250))
         .on("mouseover", (_, d) => {
           let [x, y] = arc.centroid(d);
           x += margins.left + width / 2;

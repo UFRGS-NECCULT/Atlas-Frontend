@@ -4,6 +4,7 @@ import { useSelection } from "hooks/SelectionContext";
 import { getBars } from "services/api";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
+import * as debounce from "debounce";
 
 interface RawData {
   ano: number;
@@ -193,9 +194,7 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
           return bar;
         })
         .join("rect")
-        .on("click", (_, d) => {
-          return changeSelection("ano", d.data.ano);
-        })
+        .on("click", debounce((_, d) => changeSelection("ano", d.data.ano), 250))
         .on("mouseenter", (_, d) => {
           const valor = format(d.dados.valor || 0, dataFormat);
 
