@@ -1,5 +1,6 @@
 import BarChart from "components/Charts/BarChart";
 import BrazilMap from "components/Charts/BrazilMap";
+import DonutChart from 'components/Charts/DonutChart';
 import { EmptyChart } from "components/Charts/EmptyChart";
 import LineChart from "components/Charts/LineChart";
 import Treemap from "components/Charts/Treemap";
@@ -33,6 +34,7 @@ const Chart: React.FC<{ chart?: Chart }> = ({ chart }) => {
   else if (chart.id === "lines") return <LineChart constants={chart.constants} />;
   else if (chart.id === "treemap_scc") return <Treemap constants={chart.constants} />;
   else if (chart.id === "bars") return <BarChart stacked={false} constants={chart.constants} />;
+  else if (chart.id === "donut") return <DonutChart constants={chart.constants} />;
 
   return <EmptyChart />;
 };

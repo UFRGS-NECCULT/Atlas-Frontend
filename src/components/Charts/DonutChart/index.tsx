@@ -19,7 +19,13 @@ interface Data {
   formato: string;
 }
 
-const DonutChart: React.FC = () => {
+interface IProps {
+  constants?: {
+    [key: string]: string | number;
+  };
+}
+
+const DonutChart: React.FC<IProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
@@ -52,7 +58,7 @@ const DonutChart: React.FC = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getDonut(eixo, { var: num, uf, deg, ano });
+      const { data } = await getDonut(eixo, { var: num, uf, deg, ano, ...constants });
       setData(data);
     };
 
