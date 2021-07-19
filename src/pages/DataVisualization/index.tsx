@@ -38,7 +38,7 @@ const DataVisualization = () => {
             </ChartContainer>
           </Box>
           <Box id={"box-5"} title="Treemap - Setores Culturais Criativos">
-            <ChartContainer direction="row">
+            <ChartContainer>
               <Viewbox id={3} />
             </ChartContainer>
           </Box>

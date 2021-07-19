@@ -30,9 +30,15 @@ export const Viewboxes = styled.div`
     "box-3 box-4"
     "box-3 box-4"
     "box-5 box-5";
-
   column-gap: 20px;
   row-gap: 20px;
+
+  @media(max-width: 768px) {
+    padding: 8px;
+
+    display: flex;
+    flex-direction: column;
+  }
 `;
 
 export const Footer = styled.div`
@@ -47,6 +53,7 @@ export const DownloadOptions = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
   max-width: 500px;
 `;
 
@@ -75,7 +82,6 @@ export const Button = styled.div`
   line-height: 12px;
   vertical-align: middle;
   width: 100%;
-  min-width: 150px;
   height: 18px;
 
   display: flex;
@@ -83,15 +89,9 @@ export const Button = styled.div`
   align-items: center;
 `;
 
-interface ChartContainerProps {
-  direction?: "column" | "row";
-}
 export const ChartContainer = styled.div`
   flex: 1 1 auto;
   padding: 15px;
-
-  display: flex;
-  flex-direction: ${(props: ChartContainerProps) => props.direction || "column"};
 `;
 
 export const ViewOptions = styled.div`

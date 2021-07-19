@@ -1,9 +1,13 @@
 import styled from "styled-components";
 
-export const MainContainer = styled.div`
+export const Container = styled.div`
   display: flex;
   height: 100%;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  padding-top: 8px;
+  padding-bottom: 8px;
 `;
 
 export const Flex = styled.div`
@@ -13,12 +17,20 @@ export const Flex = styled.div`
   width: 100%;
 `;
 
+export const Row = styled.div`
+  display: flex;
+  width: 100%;
+  padding-left: 4px;
+  padding-right: 4px;
+  flex-direction: row;
+`;
+
 export const Column = styled.div`
   display: flex;
   width: 100%;
-  flex-direction: column;
   padding-left: 4px;
   padding-right: 4px;
+  flex-direction: column;
 `;
 
 export const TabButton = styled.div`
@@ -46,17 +58,21 @@ export const TabButton = styled.div`
 `;
 
 export const BigNumber = styled.span`
-  font-size: 4vw;
+  font-size: 3rem;
   display: inline-block;
   text-align: center;
   width: 100%;
+
+  @media(max-width: 768px) {
+    font-size: 2rem;
+  }
 `;
 
 export const BigNumberDesc = styled.span`
   text-transform: uppercase;
   display: inline-block;
   text-align: center;
-  font-size: 1vw;
+  font-size: 0.75rem;
   color: gray;
   width: 100%;
 `;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelection } from "hooks/SelectionContext";
 import { useData } from "hooks/DataContext";
-import { TabButton, Flex, Column, BigNumber, BigNumberDesc, MainContainer, Source } from "./styles";
+import { TabButton, Flex, Column, BigNumber, BigNumberDesc, Container, Source, Row } from "./styles";
 import { getInfo } from "services/api";
 
 import { format } from "utils";
@@ -176,20 +176,20 @@ const DataInfo: React.FC = () => {
         </Column>
       ),
       (scnd || thrd) && (
-        <Column key="1">
+        <Row key="1">
           {scnd && (
-            <>
+            <Column>
               <BigNumber style={{ color: scnd.cor }}>{format((main?.valor || 0) / scnd.valor, "percent")}</BigNumber>
               <BigNumberDesc>{description(scndStr, scnd)}</BigNumberDesc>
-            </>
+            </Column>
           )}
           {thrd && (
-            <>
+            <Column>
               <BigNumber style={{ color: thrd.cor }}>{format((main?.valor || 0) / thrd.valor, "percent")}</BigNumber>
               <BigNumberDesc>{description(thrdStr, thrd)}</BigNumberDesc>
-            </>
+            </Column>
           )}
-        </Column>
+        </Row>
       )
     ];
   };
@@ -201,7 +201,7 @@ const DataInfo: React.FC = () => {
   return (
     <>
       {tabs(data)}
-      <MainContainer>{displayValues()}</MainContainer>
+      <Container>{displayValues()}</Container>
       <Source>Fonte: {data.data[0].fonte ? data.data[0].fonte : "Sem fonte"}</Source>
     </>
   );

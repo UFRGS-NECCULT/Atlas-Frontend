@@ -9,6 +9,7 @@ import { getMap } from "services/api";
 import { useData } from "hooks/DataContext";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
+import { Map } from './styles';
 
 interface ChartProps {
   constants?: {
@@ -239,7 +240,7 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
     }
   }, [uf, data, size, d3Container]);
 
-  return <svg ref={d3Container} width={"100%"} height={"100%"} />;
+  return <Map ref={d3Container} width={"100%"} height={"100%"} />;
 };
 
 export default BrazilMap;
