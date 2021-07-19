@@ -27,6 +27,7 @@ interface DataPoint {
   fonte: string;
   id_uf: number;
   nome_uf: string;
+  preposicao_uf: string;
   id_cad: number;
   nome_cad: string;
   id_subdeg: number;
@@ -122,7 +123,7 @@ const DataInfo: React.FC = () => {
   // Realiza as substituições necessárias na string de descrição
   const description = (desc: string, data: DataPoint): string => {
     return desc
-      .replace(/\[uf\]/gi, data.nome_uf)
+      .replace(/\[uf\]/gi, data.preposicao_uf + ' ' +  data.nome_uf)
       .replace(/\[cad\]/gi, data.nome_cad)
       .replace(/\[ano\]/gi, data.ano.toString())
       .replace(/\[deg\]/gi, data.nome_subdeg)
