@@ -39,6 +39,26 @@ interface ChartProps {
   };
 }
 
+const scaleFont = (d: any, i, g) => {
+  const el = d3.select(g[i]);
+
+  const width = d.x1 - d.x0;
+  const padding = 8;
+
+  let textLength = el.node()?.getComputedTextLength()||0;
+  let fontSize = Number(el.attr("font-size"))
+  while (textLength > (width - 2 * padding) && fontSize > 0) {
+    fontSize -= 1;
+    el.attr('font-size', fontSize);
+    textLength = el.node()?.getComputedTextLength()||0;
+  }
+
+  // Se a fonte estiver muito pequena, nem mostre
+  if (fontSize < 10) {
+    el.attr('font-size', 0);
+  }
+};
+
 const Treemap: React.FC<ChartProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
@@ -166,7 +186,7 @@ const Treemap: React.FC<ChartProps> = ({ constants }) => {
         .attr("x", 0)
         .attr("y", 0)
         .attr("width", (d: any) => d.x1 - d.x0)
-        .attr("height", (d: any) => d.y1 - d.y0)
+        .attr("height", (d: any) => d.y1 - d.y0 - 20)
         .append("xhtml:span")
         .attr("class", "title")
         .style("padding", "0.8em")
@@ -198,7 +218,8 @@ const Treemap: React.FC<ChartProps> = ({ constants }) => {
           const width = d.x1 - d.x0;
           return height < 20 || width < 40 ? "" : format(d.value, dataFormat);
         })
-        .style("opacity", "1");
+        .style("opacity", "1")
+        .each(scaleFont);
 
       cell
         .transition()
@@ -237,7 +258,8 @@ const Treemap: React.FC<ChartProps> = ({ constants }) => {
           const height = d.y1 - d.y0;
           const width = d.x1 - d.x0;
           return height < 20 || width < 40 ? "" : format(d.value, dataFormat);
-        });
+        })
+        .each(scaleFont);
 
       cell.exit().remove();
 
