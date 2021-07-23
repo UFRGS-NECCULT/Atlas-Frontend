@@ -1,6 +1,6 @@
 import BarChart from "components/Charts/BarChart";
 import BrazilMap from "components/Charts/BrazilMap";
-import DonutChart from 'components/Charts/DonutChart';
+import DonutChart from "components/Charts/DonutChart";
 import { EmptyChart } from "components/Charts/EmptyChart";
 import LineChart from "components/Charts/LineChart";
 import Treemap from "components/Charts/Treemap";
