@@ -5,20 +5,35 @@ import { useSelection } from "hooks/SelectionContext";
 import BreadcrumbSelect from "./Select";
 
 const Breadcrumbs = () => {
-  const { num, uf, ano, cad, prt, eixo } = useSelection();
-  const { options: selectOptions } = useSelection();
+  const { num, uf, ano, cad, deg, eixo } = useSelection();
+  const { options } = useSelection();
+
+  const getValueById = (id): number => {
+    switch (id) {
+      case "var":
+        return num;
+      case "uf":
+        return uf;
+      case "ano":
+        return ano;
+      case "cad":
+        return cad;
+      case "deg":
+        return deg;
+      case "eixo":
+        return eixo;
+      default:
+        return 1;
+    }
+  };
 
   return (
     <Container>
-      {!!selectOptions && !!selectOptions.var && (
-        <>
-          <BreadcrumbSelect defaultValue={num} id="var" label="Variável" options={selectOptions.var[eixo]} />
-          <BreadcrumbSelect defaultValue={uf} id="uf" label="UF" options={selectOptions.uf} />
-          <BreadcrumbSelect defaultValue={ano} id="ano" label="Ano" options={selectOptions.ano} />
-          <BreadcrumbSelect defaultValue={cad} id="cad" label="Setor" options={selectOptions.cad} />
-          <BreadcrumbSelect defaultValue={prt} id="prt" label="Porte" options={selectOptions.prt} />
-        </>
-      )}
+      {options.map((opt, i) => {
+        return (
+          <BreadcrumbSelect key={i} value={getValueById(opt.id)} id={opt.id} label={opt.label} options={opt.options} />
+        );
+      })}
     </Container>
   );
 };

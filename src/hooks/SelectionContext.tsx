@@ -1,28 +1,28 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import qs from "query-string";
 
-import SELECTION_JSON from "../assets/json/select.json";
+import { getBreadcrumb } from "services/api";
 
 interface SelectionContextData {
-  options: IOptions;
+  options: ISimpleBreadCrumb[];
   changeSelection(selector: string, value: number): void;
   ano: number;
   eixo: number;
   num: number;
   uf: number;
   cad: number;
-  prt: number;
   deg: number;
 }
 
-export interface ISimpleOptions {
-  name: string;
-  value?: string | number;
-  id?: string | number;
+export interface ISimpleBreadCrumb {
+  id: string;
+  label: string;
+  options: IOptions[];
 }
 
 interface IOptions {
-  [key: string]: ISimpleOptions[] & ISimpleOptions[][];
+  nome: string;
+  id: number;
 }
 
 const SelectionContext = createContext<SelectionContextData>({} as SelectionContextData);
@@ -30,31 +30,92 @@ const SelectionContext = createContext<SelectionContextData>({} as SelectionCont
 const SelectionProvider: React.FC = ({ children }) => {
   const baseURL = "/resultado";
 
-  const [eixo] = useState<number>(0);
+  const [eixo, setEixo] = useState<number>(1);
   const [num, setNum] = useState<number>(1);
   const [uf, setUF] = useState<number>(0);
   const [cad, setCad] = useState<number>(0);
-  const [prt, setPrt] = useState<number>(0);
-  const [ano, setAno] = useState<number>(2017);
+  const [ano, setAno] = useState<number>(2016);
   const [deg, setDeg] = useState<number>(0);
-  // const history = useHistory();
+  const [prc, setPrc] = useState<number>(0);
+  const [tpo, setTpo] = useState<number>(1);
+  const [cns, setCns] = useState<number>(0);
 
-  const [options, setOptions] = useState<IOptions>({});
+  const [options, setOptions] = useState<ISimpleBreadCrumb[]>([]);
+
+  const location = window.location.toString();
 
   useEffect(() => {
-    if (!window.location.search) {
-      history.pushState({}, "", `${baseURL}?${"var=1&chg=0&uf=0&deg=0&cad=0&ano=2016"}`);
-    } else {
+    if (window.location.search) {
       const parsed = qs.parse(window.location.search);
 
-      parsed.ano ? setAno(Number(parsed.ano)) : setAno(2017);
-      parsed.num ? setNum(Number(parsed.num)) : setUF(0);
-      parsed.uf ? setUF(Number(parsed.uf)) : setUF(0);
-      parsed.cad ? setCad(Number(parsed.cad)) : setCad(0);
-      parsed.prt ? setPrt(Number(parsed.prt)) : setPrt(0);
-      parsed.deg ? setDeg(Number(parsed.deg)) : setDeg(0);
+      if (parsed.eixo) {
+        setEixo(Number(parsed.eixo));
+      }
+      if (parsed.ano) {
+        setAno(Number(parsed.ano));
+      }
+      if (parsed.var) {
+        setNum(Number(parsed.var));
+      }
+      if (parsed.uf) {
+        setUF(Number(parsed.uf));
+      }
+      if (parsed.cad) {
+        setCad(Number(parsed.cad));
+      }
+      if (parsed.deg) {
+        setDeg(Number(parsed.deg));
+      }
+      if (parsed.tpo) {
+        setTpo(Number(parsed.tpo));
+      }
+      if (parsed.cns) {
+        setCns(Number(parsed.cns));
+      }
+      if (parsed.prc) {
+        setPrc(Number(parsed.prc));
+      }
     }
-  }, []);
+  }, [location]);
+
+  useEffect(() => {
+    const getOptions = async (eixo) => {
+      const { data: breadcrumb } = await getBreadcrumb(eixo, num);
+
+      setOptions(breadcrumb);
+
+      // Resetar opções inválidas
+      const variables = [
+        ["uf", uf],
+        ["ano", ano],
+        ["var", num],
+        ["cad", cad],
+        ["deg", deg],
+        ["prc", prc],
+        ["tpo", tpo],
+        ["cns", cns],
+        ["eixo", eixo]
+      ];
+      for (const v of variables) {
+        const [id, value] = v;
+
+        const current_breadcrumb = breadcrumb.find((b) => {
+          return b.id === id;
+        });
+
+        const options =
+          current_breadcrumb && current_breadcrumb.options ? current_breadcrumb.options.map((o) => o.id) : [];
+        if (options && options.length) {
+          // Se o valor atualmente selecionado não está disponível,
+          // selecione um valor padrão
+          if (!options.includes(value)) {
+            changeSelection(id, options[0]);
+          }
+        }
+      }
+    };
+    getOptions(eixo);
+  }, [eixo, num]);
 
   const changeSelection = (selector: string, value: number) => {
     /* Mudando a variável global */
@@ -68,14 +129,14 @@ const SelectionProvider: React.FC = ({ children }) => {
       case "cad":
         setCad(value);
         break;
-      case "prt":
-        setPrt(value);
-        break;
       case "var":
         setNum(value);
         break;
       case "deg":
         setDeg(value);
+        break;
+      case "eixo":
+        setEixo(value);
         break;
       default:
         console.error("Seletor não existe");
@@ -89,11 +150,6 @@ const SelectionProvider: React.FC = ({ children }) => {
     history.pushState({}, "", `${baseURL}?${stringified}`);
   };
 
-  useEffect(() => {
-    const options = JSON.parse(JSON.stringify(SELECTION_JSON));
-    setOptions(options);
-  }, []);
-
   return (
     <SelectionContext.Provider
       value={{
@@ -103,7 +159,6 @@ const SelectionProvider: React.FC = ({ children }) => {
         num,
         ano,
         cad,
-        prt,
         deg,
         changeSelection
       }}

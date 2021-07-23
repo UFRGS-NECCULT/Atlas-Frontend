@@ -1,25 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
+import * as debounce from "debounce";
 import { useSelection } from "hooks/SelectionContext";
-import { useData } from "hooks/DataContext";
 import { getTreemap } from "services/api";
 import Legend, { ILegendData } from "../Legend";
 import { TreemapContainer } from "./styles";
 import SVGTooltip from "components/SVGTooltip";
-
-interface IProps {
-  data?: {
-    idCadeia: number;
-    CadeiaNome: string;
-    UFNome: string;
-    Percentual: number;
-    Taxa: number;
-    Valor: number;
-  }[];
-}
+import { format } from "utils";
 
 interface IParsedData {
   name: string;
+  color: string;
   id?: string;
   x0?: number;
   y0?: number;
@@ -27,11 +18,13 @@ interface IParsedData {
   y1?: number;
   children: {
     cadeiaId: number;
+    color: string;
     name: string;
     children: {
       name: string;
       children: {
-        idCadeia: number;
+        color: string;
+        cadeia_id: number;
         name: string;
         taxa: number;
         size: number;
@@ -40,48 +33,89 @@ interface IParsedData {
   }[];
 }
 
-const Treemap: React.FC<IProps> = () => {
+interface ChartProps {
+  constants?: {
+    [key: string]: string | number;
+  };
+}
+
+const scaleFont = (d: any, i, g) => {
+  const el = d3.select(g[i]);
+
+  const width = d.x1 - d.x0;
+  const padding = 8;
+
+  let textLength = el.node()?.getComputedTextLength()||0;
+  let fontSize = Number(el.attr("font-size"))
+  while (textLength > (width - 2 * padding) && fontSize > 0) {
+    fontSize -= 1;
+    el.attr('font-size', fontSize);
+    textLength = el.node()?.getComputedTextLength()||0;
+  }
+
+  // Se a fonte estiver muito pequena, nem mostre
+  if (fontSize < 10) {
+    el.attr('font-size', 0);
+  }
+};
+
+const Treemap: React.FC<ChartProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
   const [data, setData] = useState<IParsedData>();
+  const [dataFormat, setDataFormat] = useState("none");
   const [legendData, setLegendData] = useState<ILegendData[]>([]);
+
+  // O tamanho da janela faz parte do nosso estado já que sempre
+  // que a janela muda de tamanho, temos que redesenhar o svg
+  const [size, setSize] = useState<[number, number]>([0, 0]);
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      setSize([window.innerWidth, window.innerHeight]);
+    });
+  }, []);
 
   const unfocusOpacity = 0.8;
 
-  const { uf, prt, num, ano, cad, changeSelection } = useSelection();
-  const { colors } = useData();
+  const { eixo, uf, num, ano, cad, changeSelection } = useSelection();
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getTreemap(1, { var: num, uf, prt, ano });
-      setData(parseData(data));
+      const { data } = await getTreemap(eixo, { var: num, uf, ano, ...constants });
+      if (data.length) {
+        setDataFormat(data[0].formato);
+      }
+      setData(parseData(data.filter((d) => d.valor !== 0)));
     };
 
     getData();
-  }, [uf, prt, num, ano]);
+  }, [uf, num, ano]);
 
   const parseData = (data): IParsedData => {
     const legend: ILegendData[] = data.map((d) => {
-      return { label: d.CadeiaNome, color: colors.cadeias[d.idCadeia].color, id: d.idCadeia };
+      return { label: d.cadeia, color: d.cor, id: d.cadeia_id };
     });
 
     setLegendData(legend);
 
     const r = data.reduce((r, c) => {
       r.push({
-        cadeiaId: c.idCadeia,
-        name: c.CadeiaNome,
+        cadeiaId: c.cadeia_id,
+        name: c.cadeia,
+        color: c.cor,
         children: [
           {
-            cadeiaId: c.idCadeia,
-            name: c.CadeiaNome,
+            cadeiaId: c.cadeia_id,
+            name: c.cadeia,
+            color: c.cor,
             children: [
               {
-                name: c.CadeiaNome,
-                id: c.idCadeia,
-                percentual: c.Percentual,
-                taxa: c.Taxa,
-                size: c.Valor
+                name: c.cadeia,
+                id: c.cadeia_id,
+                percentual: c.percentual,
+                taxa: c.taxa,
+                color: c.cor,
+                size: Math.abs(c.valor)
               }
             ]
           }
@@ -90,7 +124,7 @@ const Treemap: React.FC<IProps> = () => {
 
       return r;
     }, []);
-    return { name: "scc", children: r };
+    return { name: "scc", color: r.color, children: r };
   };
 
   useEffect(() => {
@@ -143,8 +177,8 @@ const Treemap: React.FC<IProps> = () => {
         .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
         .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
         .attr("opacity", (d) => (cad === 0 || cad === Number(d.data.id) ? 1 : unfocusOpacity))
-        .attr("fill", (d) => colors.cadeias[d.data.id || 0].color)
-        .on("click", (d) => changeSelection("cad", Number(d.target.id)));
+        .attr("fill", (d) => d.data.color)
+        .on("click", debounce((d) => changeSelection("cad", Number(d.target.id)), 250));
 
       g.append("foreignObject")
         .style("pointer-events", "none")
@@ -152,13 +186,13 @@ const Treemap: React.FC<IProps> = () => {
         .attr("x", 0)
         .attr("y", 0)
         .attr("width", (d: any) => d.x1 - d.x0)
-        .attr("height", (d: any) => d.y1 - d.y0)
+        .attr("height", (d: any) => d.y1 - d.y0 - 20)
         .append("xhtml:span")
         .attr("class", "title")
         .style("padding", "0.8em")
         .style("text-overflow", "ellipsis")
         .style("display", "inline-block")
-        .style("overflow-x", "hidden")
+        .style("overflow", "hidden")
         .style("width", "100%")
         .style("height", "100%")
         .style("font-size", "12px")
@@ -182,9 +216,10 @@ const Treemap: React.FC<IProps> = () => {
         .text((d: any) => {
           const height = d.y1 - d.y0;
           const width = d.x1 - d.x0;
-          return height < 20 || width < 40 ? "" : d.value;
+          return height < 20 || width < 40 ? "" : format(d.value, dataFormat);
         })
-        .style("opacity", "1");
+        .style("opacity", "1")
+        .each(scaleFont);
 
       cell
         .transition()
@@ -222,8 +257,9 @@ const Treemap: React.FC<IProps> = () => {
         .text((d: any) => {
           const height = d.y1 - d.y0;
           const width = d.x1 - d.x0;
-          return height < 20 || width < 40 ? "" : d.value;
-        });
+          return height < 20 || width < 40 ? "" : format(d.value, dataFormat);
+        })
+        .each(scaleFont);
 
       cell.exit().remove();
 
@@ -254,19 +290,21 @@ const Treemap: React.FC<IProps> = () => {
           return;
         }
 
+        const valor = format(selected.value, dataFormat);
+
         tooltip.setText(
-          `Valor: ${selected.value}\n` +
+          `Valor: ${valor}\n` +
           (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
           `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
           `Cadeia: ${selected.data.name}`
         );
-        tooltip.setXY((selected.x0 + selected.x1) / 2, (selected.y0 + selected.y1) / 2); // Middle of the rectangle
+        tooltip.setXY(x, y);
         tooltip.show();
       });
 
       svg.on("touchend mouseleave", () => tooltip.hide());
     }
-  }, [data, cad, d3Container]);
+  }, [data, size, cad, d3Container]);
 
   return (
     <TreemapContainer>

@@ -8,18 +8,13 @@ import {
   Page,
   Title,
   Viewboxes,
-  ChartContainer,
-  ViewOptions
+  ChartContainer
 } from "./styles";
 import Breadcrumbs from "components/Breadcrumbs";
 import Box from "components/Box";
-import BarChart from "components/Charts/BarChart";
-import BrazilMap from "components/Charts/BrazilMap";
-import Treemap from "components/Charts/Treemap";
-// import TreemapLegend from "components/Charts/Treemap/Legend";
-import LineChart from "components/Charts/LineChart";
 import VarDescription from "components/Charts/VarDescription";
-import WorldMap from "components/Charts/WorldMap";
+import DataInfo from "components/Charts/DataInfo";
+import { Viewbox } from "./Viewbox";
 
 const DataVisualization = () => {
   return (
@@ -29,29 +24,22 @@ const DataVisualization = () => {
         <Title>NÚMERO TOTAL DE EMPRESAS</Title>
         <Viewboxes>
           <Box id={"box-1"} title="Mapa do Brasil">
-            {/* <BrazilMap /> */}
-            <WorldMap />
+            <Viewbox id={1} />
           </Box>
           <Box id={"box-2"} title="Dados">
-            <ChartContainer>
-              <LineChart />
-            </ChartContainer>
+            <DataInfo />
           </Box>
           <Box id={"box-3"} title="Descrição da variável">
             <VarDescription />
           </Box>
           <Box id={"box-4"} title="Série histórica">
             <ChartContainer>
-              <BarChart />
-              <ViewOptions>
-                <button>x</button>
-                <button>x</button>
-              </ViewOptions>
+              <Viewbox id={2} />
             </ChartContainer>
           </Box>
           <Box id={"box-5"} title="Treemap - Setores Culturais Criativos">
-            <ChartContainer direction="row">
-              <Treemap />
+            <ChartContainer>
+              <Viewbox id={3} />
             </ChartContainer>
           </Box>
         </Viewboxes>

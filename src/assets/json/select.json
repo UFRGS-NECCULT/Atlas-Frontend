@@ -2,19 +2,19 @@
   "eixo": [
     {
       "name": "Empreendimentos Culturais",
-      "value": 1
+      "value": 0
     },
     {
       "name": "Mercado de Trabalho",
-      "value": 2
+      "value": 1
     },
     {
       "name": "Fomento Público",
-      "value": 3
+      "value": 2
     },
     {
       "name": "Comércio Internacional",
-      "value": 4
+      "value": 3
     }
   ],
   "consumo": [

@@ -11,9 +11,9 @@ interface IProps {
 export interface ILegendData {
   label: string;
   color: string;
-  id: string;
+  id: number;
 }
-const TreemapLegend: React.FC<IProps> = ({ data, title, selector }) => {
+const Legend: React.FC<IProps> = ({ data, title, selector }) => {
   const { changeSelection } = useSelection();
 
   const handleClick = (id) => {
@@ -35,4 +35,4 @@ const TreemapLegend: React.FC<IProps> = ({ data, title, selector }) => {
   );
 };
 
-export default TreemapLegend;
+export default Legend;

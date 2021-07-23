@@ -11,6 +11,7 @@ import logoFinal from "../../assets/images/atlas_dark.png";
 import { Separator } from "components/Separator1";
 import MapIndex from "components/MapIndex";
 import Footer from "components/Footer";
+import { Link } from "react-router-dom";
 
 const LandingPage = () => {
   return (
@@ -33,18 +34,26 @@ const LandingPage = () => {
           </div>
           <div className="separator"></div>
           <div className="eixos">
-            <div className="eixo">
-              <img src={eixo1} alt="eixo1" />
-            </div>
-            <div className="eixo">
-              <img src={eixo2} alt="eixo2" />
-            </div>
-            <div className="eixo">
-              <img src={eixo3} alt="eixo3" />
-            </div>
-            <div className="eixo">
-              <img src={eixo4} alt="eixo4" />
-            </div>
+            <Link to="/resultado?eixo=1">
+              <div className="eixo">
+                <img src={eixo1} alt="eixo1" />
+              </div>
+            </Link>
+            <Link to="/resultado?eixo=2">
+              <div className="eixo">
+                <img src={eixo2} alt="eixo2" />
+              </div>
+            </Link>
+            <Link to="/resultado?eixo=3">
+              <div className="eixo">
+                <img src={eixo3} alt="eixo3" />
+              </div>
+            </Link>
+            <Link to="/resultado?eixo=4">
+              <div className="eixo">
+                <img src={eixo4} alt="eixo4" />
+              </div>
+            </Link>
           </div>
           <div className="text-atlas">
             <p className="question-title">

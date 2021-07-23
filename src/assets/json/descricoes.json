@@ -1,7 +1,7 @@
 
 	[
     {
-      "1": [
+      "1": [[
         {
           "": "EMPRESAS CULTURAIS E CRIATIVAS NO BRASIL",
           "u": "EMPRESAS CULTURAIS E CRIATIVAS [uf]",
@@ -34,10 +34,10 @@
           "sd": "",
           "usd": "DO TOTAL DE EMPRESAS DO SETOR [cad] [deg] DO BRASIL"
         }
-      ]
+      ]]
       ,
 
-      "2" : [
+      "2" : [[
         {
           "": "DO TOTAL DE EMPRESAS DO BRASIL",
           "u": "DO TOTAL DE EMPRESAS [uf]",
@@ -48,9 +48,9 @@
           "sd": "DO TOTAL DE EMPRESAS DO BRASIL",
           "usd": "DO TOTAL DE EMPRESAS [uf]"
         }
-      ]
+      ]]
       ,
-      "3" : [
+      "3" : [[
         {
           "": "DE VARIAÇÃO NO TOTAL DE EMPRESAS CULTURAIS E CRIATIVAS DO BRASIL [ano]",
           "u": "DE VARIAÇÃO NO TOTAL DE EMPRESAS CULTURAIS E CRIATIVAS [uf] [ano]",
@@ -61,9 +61,9 @@
           "sd": "DE VARIAÇÃO NO TOTAL DE EMPRESAS DO SETOR [cad] [deg] DO BRASIL [ano]",
           "usd": "DE VARIAÇÃO NO TOTAL DE EMPRESAS DO SETOR [cad] [deg] [uf] [ano]"
         }
-      ]
+      ]]
       ,
-      "4" : [
+      "4" : [[
         {
           "": "DE RECEITA TOTAL BRUTA DAS EMPRESAS CULTURAIS E CRIATIVAS NO BRASIL",
           "u": "DE RECEITA TOTAL BRUTA DAS EMPRESAS CULTURAIS E CRIATIVAS [uf]",
@@ -96,9 +96,9 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
       ,
-      "5" : [
+      "5" : [[
         {
           "": "DE RECEITA OPERACIONAL LÍQUIDA DAS EMPRESAS CULTURAIS E CRIATIVAS NO BRASIL",
           "u": "DE RECEITA OPERACIONAL LÍQUIDA DAS EMPRESAS CULTURAIS E CRIATIVAS [uf]",
@@ -131,9 +131,9 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
       ,
-      "6" : [
+      "6" : [[
         {
           "": "DE CUSTO DAS EMPRESAS CULTURAIS E CRIATIVAS NO BRASIL",
           "u": "DE CUSTO DAS EMPRESAS CULTURAIS E CRIATIVAS [uf]",
@@ -166,10 +166,10 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
 
       ,
-      "7" : [
+      "7" : [[
         {
           "": "DE LUCRO DAS EMPRESAS CULTURAIS E CRIATIVAS NO BRASIL",
           "u": "DE LUCRO DAS EMPRESAS CULTURAIS E CRIATIVAS [uf]",
@@ -202,10 +202,10 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
 
       ,
-      "8" : [
+      "8" : [[
         {
           "": "VALOR ADICIONADO PELAS EMPRESAS CULTURAIS E CRIATIVAS NO BRASIL",
           "u": "VALOR ADICIONADO PELAS EMPRESAS CULTURAIS E CRIATIVAS [uf]",
@@ -238,9 +238,9 @@
           "sd": "",
           "usd": "DO TOTAL DE VALOR ADICIONADO DAS EMPRESAS DO SETOR [cad] DO BRASIL"
         }
-      ]
+      ]]
       ,
-      "9" : [
+      "9" : [[
         {
           "": "DE VALOR ADICIONADO/PIB DO BRASIL PELAS EMPRESAS CULTURAIS E CRIATIVAS DO BRASIL",
           "u": "DE VALOR ADICIONADO/PIB {uf} PELAS EMPRESAS CULTURAIS E CRIATIVAS [uf]",
@@ -262,9 +262,9 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
       ,
-      "10" : [
+      "10" : [[
         {
           "": "IHH DO TOTAL DE EMPRESAS POR UF",
           "u": "",
@@ -287,9 +287,9 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
       ,
-      "11" : [
+      "11" : [[
         {
           "": "IHH DO VALOR ADICIONADO POR UF",
           "u": "",
@@ -311,9 +311,9 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
       ,
-      "12" : [
+      "12" : [[
         {
           "": "C4 DE CONCENTRAÇÃO DO TOTAL DE EMPRESAS POR UF",
           "u": "",
@@ -335,9 +335,9 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
       ,
-      "13" : [
+      "13" : [[
         {
           "": "C4 DE CONCENTRAÇÃO DO VALOR ADICIONADO POR UF",
           "u": "",
@@ -359,7 +359,7 @@
           "sd": "",
           "usd": ""
         }
-      ]
+      ]]
     },
     {
       "1" : [
@@ -402,34 +402,34 @@
           {
             "": "OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS DO BRASIL",
             "u": "OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS [uf]",
-            "s": "OCUPADOS [cad] NO BRASIL",
+            "o": "OCUPADOS [ocp] NO BRASIL",
             "d": "OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS [deg] DO BRASIL",
-            "us": "OCUPADOS [cad] [uf]",
+            "uo": "OCUPADOS [ocp] [uf]",
             "ud": "OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS [deg] DO BRASIL",
-            "sd": "OCUPADOS [cad] [deg] NO BRASIL",
-            "usd": "OCUPADOS [cad] [deg] [uf]"
+            "od": "OCUPADOS [ocp] [deg] NO BRASIL",
+            "uod": "OCUPADOS [ocp] [deg] [uf]"
           }
           ,
           {
             "": "DO TOTAL DE OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS DO BRASIL",
             "u": "DO TOTAL DE OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS DO BRASIL",
-            "s": "DO TOTAL DE OCUPADOS [cad] NO BRASIL",
+            "o": "DO TOTAL DE OCUPADOS [ocp] NO BRASIL",
             "d": "DO TOTAL DE OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS DO BRASIL",
-            "us": "DO TOTAL DE OCUPADOS [cad] NO BRASIL",
+            "uo": "DO TOTAL DE OCUPADOS [ocp] NO BRASIL",
             "ud": "DO TOTAL DE OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS DO BRASIL",
-            "sd": "DO TOTAL DE OCUPADOS [cad] NO BRASIL",
-            "usd": "DO TOTAL DE OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS [uf]"
+            "od": "DO TOTAL DE OCUPADOS [ocp] NO BRASIL",
+            "uod": "DO TOTAL DE OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS [uf]"
           }
           ,
           {
             "": "",
             "u": "",
-            "s": "",
+            "o": "",
             "d": "",
-            "us": "DO TOTAL DE OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS DO BRASIL",
+            "uo": "DO TOTAL DE OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS DO BRASIL",
             "ud": "",
-            "sd": "",
-            "usd": "DO TOTAL DE OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS DO BRASIL"
+            "od": "",
+            "uod": "DO TOTAL DE OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS DO BRASIL"
           }
         ]
       ]
@@ -452,12 +452,12 @@
           {
             "": "DE PARTICIPAÇÃO DOS OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS NO EMPREGO TOTAL",
             "u": "DE PARTICIPAÇÃO DOS OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS NO EMPREGO TOTAL",
-            "s": "DE PARTICIPAÇÃO DOS OCUPADOS [cad] NO EMPREGO TOTAL",
+            "o": "DE PARTICIPAÇÃO DOS OCUPADOS [ocp] NO EMPREGO TOTAL",
             "d": "DE PARTICIPAÇÃO DOS OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS NO EMPREGO TOTAL",
-            "us": "DE PARTICIPAÇÃO DOS OCUPADOS [cad] NO EMPREGO TOTAL",
+            "uo": "DE PARTICIPAÇÃO DOS OCUPADOS [ocp] NO EMPREGO TOTAL",
             "ud": "DE PARTICIPAÇÃO DOS OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS NO EMPREGO TOTAL",
-            "sd": "DE PARTICIPAÇÃO DOS OCUPADOS [cad] NO EMPREGO TOTAL",
-            "usd": "DE PARTICIPAÇÃO DOS OCUPADOS [cad] NO EMPREGO TOTAL"
+            "od": "DE PARTICIPAÇÃO DOS OCUPADOS [ocp] NO EMPREGO TOTAL",
+            "uod": "DE PARTICIPAÇÃO DOS OCUPADOS [ocp] NO EMPREGO TOTAL"
           }
         ]
       ]
@@ -481,12 +481,12 @@
           {
             "": "",
             "u": "",
-            "s": "DE REMUNERAÇÃO MÉDIA DOS OCUPADOS [cad] NO BRASIL",
-            "d": "DE REMUNERAÇÃO MÉDIA DOS OCUPADOS [deg] [cad]  NO BRASIL",
-            "us": "DE REMUNERAÇÃO MÉDIA DOS OCUPADOS [cad] [uf]",
-            "ud": "DE REMUNERAÇÃO MÉDIA DOS OCUPADOS [deg] [cad] NO BRASIL",
-            "sd": "DE REMUNERAÇÃO MÉDIA DOS OCUPADOS [deg] [cad] NO BRASIL",
-            "usd": "DE REMUNERAÇÃO MÉDIA DOS OCUPADOS [deg] [cad] [uf]"
+            "o": "DE REMUNERAÇÃO MÉDIA DOS OCUPADOS [ocp] NO BRASIL",
+            "d": "DE REMUNERAÇÃO MÉDIA DOS OCUPADOS [deg] [ocp]  NO BRASIL",
+            "uo": "DE REMUNERAÇÃO MÉDIA DOS OCUPADOS [ocp] [uf]",
+            "ud": "DE REMUNERAÇÃO MÉDIA DOS OCUPADOS [deg] [ocp] NO BRASIL",
+            "od": "DE REMUNERAÇÃO MÉDIA DOS OCUPADOS [deg] [ocp] NO BRASIL",
+            "uod": "DE REMUNERAÇÃO MÉDIA DOS OCUPADOS [deg] [ocp] [uf]"
           }
         ]
       ]
@@ -509,12 +509,12 @@
           {
             "": "",
             "u": "",
-            "s": "POR HORA TRABALHADA [cad] NO BRASIL",
+            "o": "POR HORA TRABALHADA [ocp] NO BRASIL",
             "d": "",
-            "us": "POR HORA TRABALHADA [cad] [uf]",
-            "ud": "POR HORA TRABALHADA [cad] [deg] NO BRASIL",
-            "sd": "POR HORA TRABALHADA [cad] [deg] NO BRASIL",
-            "usd": "POR HORA TRABALHADA [cad] [deg] [uf]"
+            "uo": "POR HORA TRABALHADA [ocp] [uf]",
+            "ud": "POR HORA TRABALHADA [ocp] [deg] NO BRASIL",
+            "od": "POR HORA TRABALHADA [ocp] [deg] NO BRASIL",
+            "uod": "POR HORA TRABALHADA [ocp] [deg] [uf]"
           }
         ]
       ]
@@ -537,12 +537,12 @@
           {
             "": "",
             "u": "",
-            "s": "HORAS SEMANAIS MÉDIAS DE TRABALHO [cad] NO BRASIL",
+            "o": "HORAS SEMANAIS MÉDIAS DE TRABALHO [ocp] NO BRASIL",
             "d": "",
-            "us": "HORAS SEMANAIS MÉDIAS DE TRABALHO [cad] [uf]",
+            "uo": "HORAS SEMANAIS MÉDIAS DE TRABALHO [ocp] [uf]",
             "ud": "",
-            "sd": "HORAS SEMANAIS MÉDIAS DE TRABALHADORES [deg] [cad] NO BRASIL",
-            "usd": "HORAS SEMANAIS MÉDIAS DE TRABALHADORES [deg] [cad] [uf]"
+            "od": "HORAS SEMANAIS MÉDIAS DE TRABALHADORES [deg] [ocp] NO BRASIL",
+            "uod": "HORAS SEMANAIS MÉDIAS DE TRABALHADORES [deg] [ocp] [uf]"
           }
         ]
       ]
@@ -576,23 +576,23 @@
           {
             "": "  ",
             "u": "  ",
-            "s": "  ",
+            "o": "  ",
             "d": "  ",
-            "us": "  ",
+            "uo": "  ",
             "ud": "  ",
-            "sd": "  ",
-            "usd": "  "
+            "od": "  ",
+            "uod": "  "
           }
           ,
           {
             "": "DA SOMA DE REMUNERAÇÕES PAGAS AOS OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS DO BRASIL",
             "u": "DA SOMA DE REMUNERAÇÕES PAGAS AOS OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS DO BRASIL",
-            "s": "DA SOMA DE REMUNERAÇÕES PAGAS AOS OCUPADOS [cad] DO BRASIL",
+            "o": "DA SOMA DE REMUNERAÇÕES PAGAS AOS OCUPADOS [ocp] DO BRASIL",
             "d": "DA SOMA DE REMUNERAÇÕES PAGAS AOS OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS DO BRASIL",
-            "us": "DA SOMA DE REMUNERAÇÕES PAGAS AOS OCUPADOS [cad] [uf]",
+            "uo": "DA SOMA DE REMUNERAÇÕES PAGAS AOS OCUPADOS [ocp] [uf]",
             "ud": "DA SOMA DE REMUNERAÇÕES PAGAS AOS OCUPADOS EM ATIVIDADES CULTURAIS E CRIATIVAS [uf]",
-            "sd": "DA SOMA DE REMUNERAÇÕES PAGAS AOS OCUPADOS [cad] DO BRASIL",
-            "usd": "DA SOMA DE REMUNERAÇÕES PAGAS AOS OCUPADOS [cad] [uf]"
+            "od": "DA SOMA DE REMUNERAÇÕES PAGAS AOS OCUPADOS [ocp] DO BRASIL",
+            "uod": "DA SOMA DE REMUNERAÇÕES PAGAS AOS OCUPADOS [ocp] [uf]"
           }
         ]
       ]
@@ -691,23 +691,23 @@
           {
             "": "CONCENTRAÇÃO DO EMPREGO POR ATIVIDADES RELACIONADAS",
             "u": "",
-            "s": "",
+            "o": "",
             "d": "",
-            "us": "",
+            "uo": "",
             "ud": "",
-            "sd": "",
-            "usd": ""
+            "od": "",
+            "uod": ""
           }
           ,
           {
             "": "CONCENTRAÇÃO DO EMPREGO POR ATIVIDADES CULTURAIS",
             "u": "",
-            "s": "",
+            "o": "",
             "d": "",
-            "us": "",
+            "uo": "",
             "ud": "",
-            "sd": "",
-            "usd": ""
+            "od": "",
+            "uod": ""
           }
         ]
       ]
@@ -741,23 +741,23 @@
           {
             "": "CONCENTRAÇÃO DE MASSA SALARIAL POR ATIVIDADES RELACIONADAS",
             "u": "",
-            "s": "",
+            "o": "",
             "d": "",
-            "us": "",
+            "uo": "",
             "ud": "",
-            "sd": "",
-            "usd": ""
+            "od": "",
+            "uod": ""
           }
           ,
           {
             "": "CONCENTRAÇÃO DE MASSA SALARIAL POR ATIVIDADES CULTURAIS",
             "u": "",
-            "s": "",
+            "o": "",
             "d": "",
-            "us": "",
+            "uo": "",
             "ud": "",
-            "sd": "",
-            "usd": ""
+            "od": "",
+            "uod": ""
           }
 
         ]
@@ -793,23 +793,23 @@
           {
             "": "IHH DE NÚMERO DOS TRABALHADORES POR ATIVIDADES RELACIONADAS",
             "u": "",
-            "s": "",
+            "o": "",
             "d": "",
-            "us": "",
+            "uo": "",
             "ud": "",
-            "sd": "",
-            "usd": ""
+            "od": "",
+            "uod": ""
           }
           ,
           {
             "": "IHH DE NÚMERO DOS TRABALHADORES POR ATIVIDADES CULTURAIS",
             "u": "",
-            "s": "",
+            "o": "",
             "d": "",
-            "us": "",
+            "uo": "",
             "ud": "",
-            "sd": "",
-            "usd": ""
+            "od": "",
+            "uod": ""
           }
         ]
       ]
@@ -844,23 +844,23 @@
           {
             "": "IHH DA MASSA DE RENDIMENTOS POR ATIVIDADES RELACIONADAS",
             "u": "",
-            "s": "",
+            "o": "",
             "d": "",
-            "us": "",
+            "uo": "",
             "ud": "",
-            "sd": "",
-            "usd": ""
+            "od": "",
+            "uod": ""
           }
           ,
           {
             "": "IHH DA MASSA DE RENDIMENTOS POR ATIVIDADES CULTURAIS",
             "u": "",
-            "s": "",
+            "o": "",
             "d": "",
-            "us": "",
+            "uo": "",
             "ud": "",
-            "sd": "",
-            "usd": ""
+            "od": "",
+            "uod": ""
           }
 
         ]
