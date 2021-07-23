@@ -36,6 +36,9 @@ const SelectionProvider: React.FC = ({ children }) => {
   const [cad, setCad] = useState<number>(0);
   const [ano, setAno] = useState<number>(2016);
   const [deg, setDeg] = useState<number>(0);
+  const [prc, setPrc] = useState<number>(0);
+  const [tpo, setTpo] = useState<number>(1);
+  const [cns, setCns] = useState<number>(0);
 
   const [options, setOptions] = useState<ISimpleBreadCrumb[]>([]);
 
@@ -63,6 +66,15 @@ const SelectionProvider: React.FC = ({ children }) => {
       if (parsed.deg) {
         setDeg(Number(parsed.deg));
       }
+      if (parsed.tpo) {
+        setTpo(Number(parsed.tpo));
+      }
+      if (parsed.cns) {
+        setCns(Number(parsed.cns));
+      }
+      if (parsed.prc) {
+        setPrc(Number(parsed.prc));
+      }
     }
   }, [location]);
 
@@ -79,14 +91,20 @@ const SelectionProvider: React.FC = ({ children }) => {
         ["var", num],
         ["cad", cad],
         ["deg", deg],
+        ["prc", prc],
+        ["tpo", tpo],
+        ["cns", cns],
         ["eixo", eixo]
       ];
       for (const v of variables) {
         const [id, value] = v;
 
-        const current_breadcrumb = breadcrumb.find((b) => b.id === id);
+        const current_breadcrumb = breadcrumb.find((b) => {
+          return b.id === id;
+        });
 
-        const options = current_breadcrumb.options ? current_breadcrumb.options.map((o) => o.id) : [];
+        const options =
+          current_breadcrumb && current_breadcrumb.options ? current_breadcrumb.options.map((o) => o.id) : [];
         if (options && options.length) {
           // Se o valor atualmente selecionado não está disponível,
           // selecione um valor padrão
