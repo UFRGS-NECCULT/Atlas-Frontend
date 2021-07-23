@@ -1,6 +1,8 @@
+import qs from "query-string";
+
 import BarChart from "components/Charts/BarChart";
 import BrazilMap from "components/Charts/BrazilMap";
-import DonutChart from 'components/Charts/DonutChart';
+import DonutChart from "components/Charts/DonutChart";
 import { EmptyChart } from "components/Charts/EmptyChart";
 import LineChart from "components/Charts/LineChart";
 import Treemap from "components/Charts/Treemap";
@@ -42,10 +44,38 @@ const Chart: React.FC<{ chart?: Chart }> = ({ chart }) => {
 export const Viewbox: React.FC<ViewboxProps> = ({ id }) => {
   const { num, eixo } = useSelection();
   const [chart, setChart] = useState<Chart>();
-  const [viewBox, setViewBox] = useState<ViewCharts>({
+  const [viewBox, _setViewBox] = useState<ViewCharts>({
     display: "none",
     charts: []
   });
+
+  const setViewBox = (data) => {
+    const box = `box-${id}`;
+    const parsed = qs.parse(window.location.search);
+
+    const result = parsed[box];
+
+    if (!data.display) {
+      data.display = "none";
+      if (data.charts.length) {
+        data.display = data.charts[0].id;
+      }
+      if (result && data.charts.map((c) => c.id).includes(result)) {
+        data.display = result.toString();
+      }
+
+      parsed[box] = result;
+      const stringified = qs.stringify(parsed);
+      history.pushState({}, "", `/resultado?${stringified}`);
+    }
+
+    parsed[box] = data.display;
+    const stringified = qs.stringify(parsed);
+
+    history.pushState({}, "", `/resultado?${stringified}`);
+
+    _setViewBox(data);
+  };
 
   useEffect(() => {
     const { display } = viewBox;
