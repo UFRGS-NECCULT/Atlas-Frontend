@@ -18,8 +18,8 @@ const enable = () => {
 
 const onDocumentReadyStateChange = () => {
   if (document.readyState === "complete") {
-    // HACK: Esperar 200 ms para desabilitar
-    setTimeout(disable, 200);
+    // HACK: Esperar 1 ms para desabilitar (para dar tempo pro script do VLibras acabar de rodar)
+    setTimeout(disable, 1);
   }
 };
 

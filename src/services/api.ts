@@ -1,8 +1,10 @@
 import axios from "axios";
 import qs from "query-string";
 
+const baseURL = process.env.REACT_APP_API_HOST || "http://localhost:8080/api";
+
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_HOST || "http://localhost:8080/api"
+  baseURL,
   // baseURL: "http://ec2-18-231-176-22.sa-east-1.compute.amazonaws.com:3333/api"
 });
 
@@ -39,4 +41,9 @@ export const getInfo = async (eixo = 1, params) => {
 
 export const getVisualization = async (eixo = 1, params) => {
   return await api.get(`/eixo/${eixo}/visualization?${qs.stringify(params)}`);
+};
+
+export const getScreenshotURL = (format) => {
+  const params = qs.parse(window.location.search);
+  return baseURL + `/screenshot/${format}?${qs.stringify(params)}`
 };

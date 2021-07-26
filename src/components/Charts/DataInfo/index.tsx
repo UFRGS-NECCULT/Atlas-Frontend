@@ -40,6 +40,7 @@ interface DataPoint {
   id_consumo?: number;
   id_tipo?: number;
   nome_ocupacao?: string;
+  display_subdeg?: string;
 }
 
 const DataInfo: React.FC = () => {
@@ -92,7 +93,7 @@ const DataInfo: React.FC = () => {
     );
   };
 
-  // Diz se uma string contém uma certa expressão de substituição, como "[cad]" ou "[uf]"
+  // Diz se uma string contém uma certa expressão de substituição, como "[cad]" ou "{uf}"
   const has = (expr: string, target: string): boolean => {
     const regex = new RegExp(`\\[${expr}\\]`, "gi");
     return regex.test(target);
@@ -138,12 +139,23 @@ const DataInfo: React.FC = () => {
 
   // Realiza as substituições necessárias na string de descrição
   const description = (desc: string, data: DataPoint): string => {
+    const pronoumMap = {
+      de: "em",
+      do: "no",
+      da: "na"
+    };
+
+    let ufPronome = data.preposicao_uf;
+    if (eixo === 3) {
+      ufPronome = pronoumMap[data.preposicao_uf];
+    }
+
     return desc
       .replace(/\[uf\]/gi, data.preposicao_uf + " " + data.nome_uf)
       .replace(/\[cad\]/gi, data.nome_cad)
       .replace(/\[ano\]/gi, data.ano.toString())
-      .replace(/\[deg\]/gi, data.nome_subdeg)
-      .replace(/\[ocp]/gi, data.nome_ocupacao || "");
+      .replace(/\[deg\]/gi, data.display_subdeg ? data.display_subdeg : data.nome_subdeg)
+      .replace(/\[ocp]/gi, data.nome_ocupacao || "undefined");
   };
 
   const displayValues = () => {
