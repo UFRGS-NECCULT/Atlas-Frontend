@@ -5,7 +5,7 @@ import { useSelection } from "hooks/SelectionContext";
 import BreadcrumbSelect from "./Select";
 
 const Breadcrumbs = () => {
-  const { num, uf, ano, cad, deg, eixo } = useSelection();
+  const { num, uf, ano, cad, deg, prc, cns, tpo, eixo } = useSelection();
   const { options } = useSelection();
 
   const getValueById = (id): number => {
@@ -22,6 +22,12 @@ const Breadcrumbs = () => {
         return deg;
       case "eixo":
         return eixo;
+      case "prc":
+        return prc;
+      case "tpo":
+        return tpo;
+      case "cns":
+        return cns;
       default:
         return 1;
     }

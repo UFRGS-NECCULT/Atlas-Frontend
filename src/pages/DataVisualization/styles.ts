@@ -33,7 +33,7 @@ export const Viewboxes = styled.div`
   column-gap: 20px;
   row-gap: 20px;
 
-  @media(max-width: 768px) {
+  @media (max-width: 768px) {
     padding: 8px;
 
     display: flex;

@@ -77,7 +77,6 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
       bar.dados.forEach((deg) => {
         obj[deg.sdg_nome || "Total"] = deg.valor;
       });
-
       return obj;
     });
 
@@ -180,7 +179,7 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
         .data((d) => {
           const bar = d.map((barSection) => {
             const data = rawData.find(
-              (r) => r.ano === barSection.data.ano && r.sdg_nome === d.key
+              (r) => r.ano === barSection.data.ano && (r.sdg_nome === d.key || !r.sdg_nome)
               // ||  (r.ano === barSection.data.ano && d.key === "Total")
             );
             return {
@@ -194,11 +193,14 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
           return bar;
         })
         .join("rect")
-        .on("click", debounce((_, d) => changeSelection("ano", d.data.ano), 250))
+        .on(
+          "click",
+          debounce((_, d) => changeSelection("ano", d.data.ano), 250)
+        )
         .on("mouseenter", (_, d) => {
           const valor = format(d.dados.valor || 0, dataFormat);
 
-          tooltip.setText(`Valor: ${valor}\nGrupo: ${d.dados.sdg_nome}`);
+          tooltip.setText(`Valor: ${valor}\nGrupo: ${d.dados.sdg_nome || "-"}`);
           tooltip.setXY(
             (x(d.dados.ano?.toString() || `2016`) || 0) + x.bandwidth() / 2,
             y(d[0]) - (y(d[0]) - y(d[1])) / 2
@@ -207,7 +209,9 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
         })
         .on("mouseleave", () => tooltip.hide())
         .style("cursor", "pointer")
-        .attr("fill", (d) => (d.selected ? d.dados.cor_eixo || "red" : d.dados.sdg_cor || d.dados.cor))
+        .attr("fill", (d) => {
+          return d.selected ? d.dados.cor_eixo || "red" : d.dados.sdg_cor || d.dados.cor;
+        })
         .transition()
         .duration(300)
         .attr("x", (d) => x(d.data.ano.toString()) || 0)

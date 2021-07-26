@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import * as debounce from "debounce";
@@ -45,17 +46,17 @@ const scaleFont = (d: any, i, g) => {
   const width = d.x1 - d.x0;
   const padding = 8;
 
-  let textLength = el.node()?.getComputedTextLength()||0;
-  let fontSize = Number(el.attr("font-size"))
-  while (textLength > (width - 2 * padding) && fontSize > 0) {
+  let textLength = el.node()?.getComputedTextLength() || 0;
+  let fontSize = Number(el.attr("font-size"));
+  while (textLength > width - 2 * padding && fontSize > 0) {
     fontSize -= 1;
-    el.attr('font-size', fontSize);
-    textLength = el.node()?.getComputedTextLength()||0;
+    el.attr("font-size", fontSize);
+    textLength = el.node()?.getComputedTextLength() || 0;
   }
 
   // Se a fonte estiver muito pequena, nem mostre
   if (fontSize < 10) {
-    el.attr('font-size', 0);
+    el.attr("font-size", 0);
   }
 };
 
@@ -149,7 +150,6 @@ const Treemap: React.FC<ChartProps> = ({ constants }) => {
       const height = d3Container.current.clientHeight - marginTop - marginBottom;
 
       const treemap = d3.treemap().tile(d3.treemapResquarify).size([width, height]).round(true).paddingInner(1);
-
       const fontScale = d3.scaleThreshold().domain([12, 25, 30, 40]).range([8, 12, 16, 20]);
 
       const root = d3
@@ -178,7 +178,10 @@ const Treemap: React.FC<ChartProps> = ({ constants }) => {
         .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
         .attr("opacity", (d) => (cad === 0 || cad === Number(d.data.id) ? 1 : unfocusOpacity))
         .attr("fill", (d) => d.data.color)
-        .on("click", debounce((d) => changeSelection("cad", Number(d.target.id)), 250));
+        .on(
+          "click",
+          debounce((d) => changeSelection("cad", Number(d.target.id)), 250)
+        );
 
       g.append("foreignObject")
         .style("pointer-events", "none")

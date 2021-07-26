@@ -9,7 +9,7 @@ import { getMap } from "services/api";
 import { useData } from "hooks/DataContext";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
-import { Map } from './styles';
+import { Map } from "./styles";
 
 interface ChartProps {
   constants?: {
@@ -96,7 +96,6 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
       const height = d3Container.current.clientHeight - marginTop - marginBottom;
 
       const jsonFile = JSON.parse(JSON.stringify(brStates));
-
       const svg = d3.select(d3Container.current);
 
       const projection = d3
