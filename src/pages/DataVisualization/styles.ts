@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const Page = styled.div`
-  height: 100vh;
+  margin-bottom: 8px;
 `;
 
 export const Container = styled.div``;
@@ -87,6 +87,8 @@ export const Button = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+
+  cursor: pointer;
 `;
 
 export const ChartContainer = styled.div`

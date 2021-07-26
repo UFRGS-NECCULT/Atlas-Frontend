@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
   Button,
   Container,
@@ -15,6 +16,7 @@ import Box from "components/Box";
 import VarDescription from "components/Charts/VarDescription";
 import DataInfo from "components/Charts/DataInfo";
 import { Viewbox } from "./Viewbox";
+import { getScreenshotURL } from 'services/api';
 
 const DataVisualization = () => {
   return (
@@ -47,8 +49,10 @@ const DataVisualization = () => {
         <Footer>
           <FooterTitle>Download</FooterTitle>
           <DownloadOptions>
-            <Button>PDF</Button>
-            <Button>PDF</Button>
+            <Button onClick={async () => {
+              window.open(getScreenshotURL('png'), '_blank');
+            }}>PNG</Button>
+            <Button>CSV</Button>
             <Button>PDF</Button>
           </DownloadOptions>
         </Footer>
