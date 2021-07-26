@@ -11,6 +11,9 @@ interface SelectionContextData {
   num: number;
   uf: number;
   cad: number;
+  cns: number;
+  prc: number;
+  tpo: number;
   deg: number;
 }
 
@@ -135,6 +138,15 @@ const SelectionProvider: React.FC = ({ children }) => {
       case "deg":
         setDeg(value);
         break;
+      case "cns":
+        setCns(value);
+        break;
+      case "tpo":
+        setTpo(value);
+        break;
+      case "prc":
+        setPrc(value);
+        break;
       case "eixo":
         setEixo(value);
         break;
@@ -160,6 +172,9 @@ const SelectionProvider: React.FC = ({ children }) => {
         ano,
         cad,
         deg,
+        cns,
+        prc,
+        tpo,
         changeSelection
       }}
     >

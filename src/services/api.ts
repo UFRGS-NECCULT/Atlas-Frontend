@@ -20,6 +20,10 @@ export const getMap = async (eixo = 1, params) => {
   return await api.get(`/eixo/${eixo}/map?${qs.stringify(params)}`);
 };
 
+export const getWorld = async (eixo = 4, params) => {
+  return await api.get(`/eixo/${eixo}/world?${qs.stringify(params)}`);
+};
+
 export const getTreemap = async (eixo = 1, params) => {
   return await api.get(`/eixo/${eixo}/treemap?${qs.stringify(params)}`);
 };

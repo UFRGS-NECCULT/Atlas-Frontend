@@ -6,7 +6,6 @@ import SVGTooltip from "components/SVGTooltip";
 import { useSelection } from "hooks/SelectionContext";
 import { getDonut } from "services/api";
 import { DonutChartContainer } from "./styles";
-import { ILegendData } from "../Legend";
 import { format } from "utils";
 
 interface Data {
@@ -41,7 +40,7 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
     });
   }, []);
 
-  const { eixo, uf, deg, num, ano, cad, changeSelection } = useSelection();
+  const { eixo, uf, deg, num, ano, cad, prc, cns, tpo, changeSelection } = useSelection();
 
   // Valor entre (0, 1) para o quão grosso devem ser as fatias
   // em % do raio (1 = 100% do raio, 0 = 0% do raio)
@@ -59,12 +58,12 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getDonut(eixo, { var: num, uf, deg, ano, ...constants });
+      const { data } = await getDonut(eixo, { var: num, uf, deg, ano, prc, cns, tpo, ...constants });
       setData(data);
     };
 
     getData();
-  }, [uf, deg, num, ano, cad, eixo]);
+  }, [uf, deg, num, ano, cad, prc, cns, tpo, eixo]);
 
   useEffect(() => {
     if (d3Container.current && data && data.length) {
@@ -99,7 +98,10 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
         .attr("class", "slice")
         .attr("transform", `translate(${margins.left + width / 2}, ${margins.top + height / 2})`)
         .style("cursor", "pointer")
-        .on("click", debounce((_, d) => changeSelection("cad", d.data.cadeia_id), 250))
+        .on(
+          "click",
+          debounce((_, d) => changeSelection("cad", d.data.cadeia_id), 250)
+        )
         .on("mouseover", (_, d) => {
           let [x, y] = arc.centroid(d);
           x += margins.left + width / 2;
@@ -120,20 +122,6 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
         .attr("fill", (d) => d.data.cor);
     }
   }, [d3Container.current, size, data]);
-
-  const getLegend = (data: Data[]): ILegendData[] => {
-    if (data == null) {
-      return [];
-    }
-
-    return data.map((d: Data) => {
-      return {
-        label: d.cadeia,
-        color: d.cor,
-        id: d.cadeia_id
-      };
-    });
-  };
 
   return (
     <DonutChartContainer>

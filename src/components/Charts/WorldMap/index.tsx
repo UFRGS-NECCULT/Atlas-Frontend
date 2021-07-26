@@ -2,14 +2,14 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
 
-import brStates from "../../../assets/json/br-min.json";
+import worldMap from "../../../assets/json/world-110m.json";
 import { GeometryCollection } from "topojson-specification";
-import { useSelection } from "hooks/SelectionContext";
-import { getMap } from "services/api";
-import { useData } from "hooks/DataContext";
-import SVGTooltip from "components/SVGTooltip";
+
+import { World } from "./styles";
 import { format } from "utils";
-import { Map } from "./styles";
+import { useSelection } from "hooks/SelectionContext";
+import { getWorld } from "services/api";
+import { useData } from "hooks/DataContext";
 
 interface ChartProps {
   constants?: {
@@ -17,9 +17,8 @@ interface ChartProps {
   };
 }
 
-const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
+const WorldMap: React.FC<ChartProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
-  const tooltipContainer = useRef<SVGTooltip | null>(null);
 
   const [data, setData] = useState<
     {
@@ -27,8 +26,14 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
       cadeia_id: number;
       uf: string;
       uf_id: number;
+      parceiro: string;
+      parceiro_id: number;
+      consumo_id: number;
+      tipo_id: number;
       cor: string;
       cor_eixo: string;
+      cor_superior: string;
+      cor_inferior: string;
       valor: number;
       percentual: number;
       taxa: number;
@@ -36,8 +41,9 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
     }[]
   >([]);
 
-  // O tamanho da janela faz parte do nosso estado já que sempre
-  // que a janela muda de tamanho, temos que redesenhar o svg
+  const { eixo, uf, prc, tpo, cns, cad, ano, num, changeSelection } = useSelection();
+  const { colors } = useData();
+
   const [size, setSize] = useState<[number, number]>([0, 0]);
   useEffect(() => {
     window.addEventListener("resize", () => {
@@ -45,57 +51,42 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
     });
   }, []);
 
-  const { eixo, uf, cad, ano, num, changeSelection } = useSelection();
-  const { colors } = useData();
-
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getMap(eixo, { var: num, uf, cad, ano, ...constants });
+      const { data } = await getWorld(eixo, { var: num, uf, cad, ano, cns, prc, tpo, ...constants });
       setData(data);
     };
 
     getData();
-  }, [cad, ano, num]);
-
-  const getValueByUf = (uf: number) => {
-    return data.find((x) => x.uf_id === uf)?.valor || 0;
-  };
+  }, [cad, ano, num, prc, cns, tpo]);
 
   useEffect(() => {
-    const svg = d3.select(d3Container.current);
-    svg
-      .append("defs")
-      .attr("id", "defsgrad")
-      .append("linearGradient")
-      .attr("id", "grad")
-      .attr("x1", "0%")
-      .attr("y1", "100%")
-      .attr("x2", "90%")
-      .attr("y2", "100%");
-  }, []);
+    if (d3Container.current) {
+      const svg = d3.select(d3Container.current);
+      svg
+        .append("defs")
+        .attr("id", "defsgrad")
+        .append("linearGradient")
+        .attr("id", "grad")
+        .attr("x1", "0%")
+        .attr("y1", "100%")
+        .attr("x2", "90%")
+        .attr("y2", "100%");
+    }
+  }, [d3Container]);
 
   useEffect(() => {
     if (data && data.length && d3Container.current) {
       const dataFormat = data[0].formato;
-
       const marginLeft = 30;
       const marginTop = 20;
       const marginBottom = 20;
 
-      if (tooltipContainer.current == null) {
-        tooltipContainer.current = new SVGTooltip(d3Container.current, {
-          right: 0,
-          left: marginLeft,
-          top: marginTop,
-          bottom: marginBottom
-        });
-      }
-      const tooltip = tooltipContainer.current;
-
       const width = d3Container.current.clientWidth - marginLeft;
       const height = d3Container.current.clientHeight - marginTop - marginBottom;
 
-      const jsonFile = JSON.parse(JSON.stringify(brStates));
+      const jsonFile = JSON.parse(JSON.stringify(worldMap));
+
       const svg = d3.select(d3Container.current);
 
       const projection = d3
@@ -105,32 +96,23 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
 
       const path = d3.geoPath().projection(projection);
 
-      const states: GeoJSON.FeatureCollection = topojson.feature(
+      const continents: GeoJSON.FeatureCollection = topojson.feature(
         jsonFile,
-        jsonFile.objects.states as GeometryCollection
+        jsonFile.objects.continent as GeometryCollection
       );
 
-      projection.fitExtent(
-        [
-          [0, 0],
-          [width, height]
-        ],
-        states
-      );
-
-      const values = data.filter((d) => d.uf_id !== 0).map((d) => d.valor);
+      const values = data.filter((d) => d.parceiro_id !== 0).map((d) => d.valor);
+      const [minValue, maxValue] = d3.extent(values);
+      const { cor_inferior, cor_superior } = data[0];
 
       const colorScale = d3
         .scaleLinear<string>()
         .domain(d3.extent(values) as [number, number])
-        .range([colors.cadeias[cad].gradient["2"], colors.cadeias[cad].gradient["6"]]); // TODO: change color dynamically
-
-      const [minValue, maxValue] = d3.extent(values);
-      const [lowColor, highColor] = d3.extent(values).map((v) => colorScale(v));
+        .range([cor_inferior, cor_superior]);
 
       d3.select("#grad")
         .selectAll("stop")
-        .data([lowColor, highColor])
+        .data([cor_inferior, cor_superior])
         .join("stop")
         .attr("class", (d, i) => (i === 0 ? "begin" : "end"))
         .attr("offset", (d, i) => (i === 0 ? "0%" : "90%"))
@@ -193,53 +175,39 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
         .duration(800)
         .text((d) => format(d || 0, dataFormat === "percent" ? "percent" : "si"));
 
-      const showTooltip = (e, d) => {
-        let [x, y] = d3.pointer(e);
-        // Adjust for margins
-        x -= marginLeft;
-        y -= marginTop;
+      projection.fitExtent(
+        [
+          [0, 0],
+          [width, height]
+        ],
+        continents
+      );
 
-        const name = d.properties.name
-          .split(" ")
-          .map((n) => n[0].toUpperCase() + n.slice(1).toLowerCase())
-          .join(" ");
-
-        const valor = getValueByUf(Number(d.id));
-
-        tooltip.setXY(x, y);
-        tooltip.setText(`Estado: ${name}\nValor: ${format(valor, dataFormat)}`);
-        tooltip.show();
-      };
-      const hideTooltip = () => {
-        tooltip.hide();
-      };
-
-      const parsedStates = states.features.map((s) => {
-        const d = data.find((x) => x.uf_id === Number(s.id));
-
-        return { ...s, ...d, id: Number(s.id), color: colorScale(d?.valor || 0) };
+      const parsedContinents = continents.features.map((s) => {
+        const d = data.find((x) => String(x.parceiro_id) === s.id);
+        return { ...s, ...d, cor: colorScale(d?.valor || 0) };
       });
 
       svg
-        .selectAll("path.uf")
-        .data(parsedStates)
+        .selectAll("path.country")
+        .data(parsedContinents)
         .join("path")
-        .attr("class", "uf")
+        .attr("class", "country")
         .attr("id", (d) => Number(d.id) || 0)
         .attr("stroke-linecap", "round")
         .attr("stroke", "black")
         .style("cursor", "pointer")
-        .on("click", (d) => changeSelection("uf", Number(d.target.id)))
-        .on("mousemove", showTooltip)
-        .on("mouseout", () => hideTooltip())
+        .on("click", (d) => changeSelection("prc", Number(d.target.id)))
+        // .on("mousemove", showTooltip)
+        // .on("mouseout", () => hideTooltip())
         .transition()
         .duration(800)
         .attr("d", path)
-        .attr("fill", (d) => (uf === d.id ? d.cor_eixo || d.color : d.color));
+        .attr("fill", (d) => (d.id === String(prc) ? d.cor_eixo : d.cor) || `red`);
     }
-  }, [uf, data, size, d3Container]);
+  }, [d3Container, data, size, prc]);
 
-  return <Map ref={d3Container} width={"100%"} height={"100%"} />;
+  return <World ref={d3Container} width={"100%"} height={"100%"} />;
 };
 
-export default BrazilMap;
+export default WorldMap;

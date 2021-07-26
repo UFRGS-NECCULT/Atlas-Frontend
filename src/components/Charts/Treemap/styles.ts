@@ -5,7 +5,7 @@ export const TreemapContainer = styled.div`
   display: flex;
   flex-direction: row;
 
-  @media(max-width: 768px) {
+  @media (max-width: 768px) {
     flex-direction: column;
   }
 `;

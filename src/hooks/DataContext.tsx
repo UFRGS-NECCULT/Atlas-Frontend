@@ -13,7 +13,9 @@ interface DataContextData {
 interface IDescriptions {
   [eixo: number]: {
     [num: string]: {
+      // eslint-disable-next-line no-unused-vars
       [tab in 0 | 1]: {
+        // eslint-disable-next-line no-unused-vars
         [data in 0 | 1 | 2]: {
           [key: string]: string;
         };
