@@ -1,10 +1,15 @@
 import styled from "styled-components";
 
 export const Page = styled.div`
+  overflow-x: hidden;
   margin-bottom: 8px;
 `;
 
-export const Container = styled.div``;
+export const Container = styled.div`
+  width: 100vw;
+  overflow-x: hidden;
+  padding: 0 15%;
+`;
 
 export const Title = styled.div`
   width: 100%;
@@ -14,12 +19,17 @@ export const Title = styled.div`
   letter-spacing: 10px;
   line-height: 40px;
   text-align: center;
+
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const Viewboxes = styled.div`
   display: grid;
-  padding: 0 15%;
 
+  overflow-x: hidden;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: repeat(6, 100px) 450px;
   grid-template-areas:

@@ -43,6 +43,10 @@ export const getVisualization = async (eixo = 1, params) => {
   return await api.get(`/eixo/${eixo}/visualization?${qs.stringify(params)}`);
 };
 
+export const getVariable = async (eixo = 1, num) => {
+  return await api.get(`/eixo/${eixo}/variable?var=${num}`);
+};
+
 export const getScreenshotURL = (format) => {
   const params = qs.parse(window.location.search);
   return baseURL + `/screenshot/${format}?${qs.stringify(params)}`;

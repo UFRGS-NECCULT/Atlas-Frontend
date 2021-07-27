@@ -83,6 +83,7 @@ export const Viewbox: React.FC<ViewboxProps> = ({ id }) => {
     const { display } = viewBox;
 
     const chart = viewBox.charts.find((chart) => chart.id === display);
+
     if (chart) setChart(chart);
   }, [viewBox.display]);
 

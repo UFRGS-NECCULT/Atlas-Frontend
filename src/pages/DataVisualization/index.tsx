@@ -17,13 +17,15 @@ import VarDescription from "components/Charts/VarDescription";
 import DataInfo from "components/Charts/DataInfo";
 import { Viewbox } from "./Viewbox";
 import { getScreenshotURL } from "services/api";
+import { useSelection } from "hooks/SelectionContext";
 
 const DataVisualization = () => {
+  const { variableInfo } = useSelection();
   return (
     <Page>
       <Breadcrumbs>
         <Container>
-          <Title>NÚMERO TOTAL DE EMPRESAS</Title>
+          <Title>{variableInfo.titulo}</Title>
           <Viewboxes>
             <Box id={"box-1"} title="Mapa do Brasil">
               <Viewbox id={1} />
