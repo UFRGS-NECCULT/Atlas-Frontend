@@ -9,7 +9,6 @@ import { World } from "./styles";
 import { format } from "utils";
 import { useSelection } from "hooks/SelectionContext";
 import { getWorld } from "services/api";
-import { useData } from "hooks/DataContext";
 
 interface ChartProps {
   constants?: {
@@ -42,7 +41,6 @@ const WorldMap: React.FC<ChartProps> = ({ constants }) => {
   >([]);
 
   const { eixo, uf, prc, tpo, cns, cad, ano, num, changeSelection } = useSelection();
-  const { colors } = useData();
 
   const [size, setSize] = useState<[number, number]>([0, 0]);
   useEffect(() => {

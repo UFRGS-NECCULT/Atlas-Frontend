@@ -139,16 +139,16 @@ const DataInfo: React.FC = () => {
 
   // Realiza as substituições necessárias na string de descrição
   const description = (desc: string, data: DataPoint): string => {
-    const pronoumMap = {
-      de: "em",
-      do: "no",
-      da: "na"
-    };
+    // const pronoumMap = {
+    //   de: "em",
+    //   do: "no",
+    //   da: "na"
+    // };
 
-    let ufPronome = data.preposicao_uf;
-    if (eixo === 3) {
-      ufPronome = pronoumMap[data.preposicao_uf];
-    }
+    // const ufPronome = data.preposicao_uf;
+    // if (eixo === 3) {
+    //   ufPronome = pronoumMap[data.preposicao_uf];
+    // }
 
     return desc
       .replace(/\[uf\]/gi, data.preposicao_uf + " " + data.nome_uf)
@@ -170,20 +170,20 @@ const DataInfo: React.FC = () => {
       return false;
     }
 
-    const getTpoAccessor = (value) => {
-      switch (value) {
-        case 1:
-          return "e";
-        case 2:
-          return "i";
-        case 3:
-          return "s";
-        case 4:
-          return "c";
-        default:
-          return "";
-      }
-    };
+    // const getTpoAccessor = (value) => {
+    //   switch (value) {
+    //     case 1:
+    //       return "e";
+    //     case 2:
+    //       return "i";
+    //     case 3:
+    //       return "s";
+    //     case 4:
+    //       return "c";
+    //     default:
+    //       return "";
+    //   }
+    // };
 
     const accessor =
       (data.selection.uf !== 0 ? "u" : "") +
