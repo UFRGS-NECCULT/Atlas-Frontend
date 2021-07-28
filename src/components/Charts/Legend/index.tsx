@@ -5,7 +5,7 @@ import { Container, List, Setor, Title } from "./styles";
 interface IProps {
   data: ILegendData[];
   title: string;
-  selector: string;
+  selector?: string;
 }
 
 export interface ILegendData {
@@ -17,7 +17,9 @@ const Legend: React.FC<IProps> = ({ data, title, selector }) => {
   const { changeSelection } = useSelection();
 
   const handleClick = (id) => {
-    changeSelection(selector, id);
+    if (selector) {
+      changeSelection(selector, id);
+    }
   };
 
   return (
@@ -25,7 +27,7 @@ const Legend: React.FC<IProps> = ({ data, title, selector }) => {
       <Title>{title}</Title>
       <List>
         {data?.map((setor) => (
-          <Setor key={setor.id} onClick={() => handleClick(setor.id)}>
+          <Setor className={selector ? "clickable" : ""} key={setor.id} onClick={() => handleClick(setor.id)}>
             <i style={{ backgroundColor: setor.color }}></i>
             <span>{setor.label}</span>
           </Setor>

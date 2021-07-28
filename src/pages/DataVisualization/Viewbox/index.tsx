@@ -34,7 +34,8 @@ const Chart: React.FC<{ chart?: Chart }> = ({ chart }) => {
   if (!chart) return <EmptyChart />;
   else if (chart.id === "map") return <BrazilMap constants={chart.constants} />;
   else if (chart.id === "lines") return <LineChart constants={chart.constants} />;
-  else if (chart.id === "treemap_scc") return <Treemap constants={chart.constants} />;
+  else if (chart.id === "treemap_scc") return <Treemap group="scc" constants={chart.constants} />;
+  else if (chart.id === "treemap_uf") return <Treemap group="uf" constants={chart.constants} />;
   else if (chart.id === "bars") return <BarChart stacked={false} constants={chart.constants} />;
   else if (chart.id === "donut") return <DonutChart constants={chart.constants} />;
 

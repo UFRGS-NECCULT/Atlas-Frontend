@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import * as debounce from "debounce";
 import { useSelection } from "hooks/SelectionContext";
-import { getTreemap } from "services/api";
+import { getTreemapCad, getTreemapUF } from "services/api";
 import Legend, { ILegendData } from "../Legend";
 import { TreemapContainer } from "./styles";
 import SVGTooltip from "components/SVGTooltip";
@@ -17,14 +17,14 @@ interface IParsedData {
   x1?: number;
   y1?: number;
   children: {
-    cadeiaId: number;
+    grupoID: number;
     color: string;
     name: string;
     children: {
       name: string;
       children: {
         color: string;
-        cadeia_id: number;
+        grupo_id: number;
         name: string;
         taxa: number;
         size: number;
@@ -37,6 +37,7 @@ interface ChartProps {
   constants?: {
     [key: string]: string | number;
   };
+  group: "uf" | "scc";
 }
 
 const scaleFont = (d: any, i, g) => {
@@ -45,21 +46,21 @@ const scaleFont = (d: any, i, g) => {
   const width = d.x1 - d.x0;
   const padding = 8;
 
-  let textLength = el.node()?.getComputedTextLength()||0;
-  let fontSize = Number(el.attr("font-size"))
-  while (textLength > (width - 2 * padding) && fontSize > 0) {
+  let textLength = el.node()?.getComputedTextLength() || 0;
+  let fontSize = Number(el.attr("font-size"));
+  while (textLength > width - 2 * padding && fontSize > 0) {
     fontSize -= 1;
-    el.attr('font-size', fontSize);
-    textLength = el.node()?.getComputedTextLength()||0;
+    el.attr("font-size", fontSize);
+    textLength = el.node()?.getComputedTextLength() || 0;
   }
 
   // Se a fonte estiver muito pequena, nem mostre
   if (fontSize < 10) {
-    el.attr('font-size', 0);
+    el.attr("font-size", 0);
   }
 };
 
-const Treemap: React.FC<ChartProps> = ({ constants }) => {
+const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
   const [data, setData] = useState<IParsedData>();
@@ -79,9 +80,30 @@ const Treemap: React.FC<ChartProps> = ({ constants }) => {
 
   const { eixo, uf, num, ano, cad, changeSelection } = useSelection();
 
+  const endpoints = {
+    scc: getTreemapCad,
+    uf: getTreemapUF
+  };
+  const selectors = {
+    scc: "cad",
+    uf: "uf"
+  };
+  const legendTitles = {
+    scc: "Setores",
+    uf: "Regiões"
+  };
+  const selectorValues = {
+    scc: cad,
+    uf: uf
+  };
+
+  const selector = selectors[group];
+
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getTreemap(eixo, { var: num, uf, ano, ...constants });
+      const endpoint = endpoints[group];
+
+      const { data } = await endpoint(eixo, { var: num, uf, cad, ano, ...constants });
       if (data.length) {
         setDataFormat(data[0].formato);
       }
@@ -89,42 +111,44 @@ const Treemap: React.FC<ChartProps> = ({ constants }) => {
     };
 
     getData();
-  }, [uf, num, ano]);
+  }, [uf, num, ano, cad, group]);
 
   const parseData = (data): IParsedData => {
-    const legend: ILegendData[] = data.map((d) => {
-      return { label: d.cadeia, color: d.cor, id: d.cadeia_id };
-    });
+    const groups = {};
+    for (const d of data) {
+      // Inicializar grupo
+      if (!groups[d.grupo_id]) {
+        groups[d.grupo_id] = {
+          grupoID: d.grupo_id,
+          name: d.grupo_nome,
+          color: d.cor,
+          children: [{
+            grupoID: d.grupo_id,
+            name: d.grupo_nome,
+            color: d.cor,
+            children: []
+          }]
+        };
+      }
 
+      groups[d.grupo_id].children[0].children.push({
+        name: d.item_nome,
+        id: d.item_id,
+        percentual: d.percentual,
+        taxa: d.taxa,
+        color: d.cor,
+        size: Math.abs(d.valor)
+      });
+    }
+
+    const groupsArray = Object.keys(groups).map(k => groups[k]);
+
+    console.log({groupsArray});
+
+    const legend: ILegendData[] = groupsArray.map((g) => ({ label: g.name, color: g.color, id: g.grupoID }));
     setLegendData(legend);
 
-    const r = data.reduce((r, c) => {
-      r.push({
-        cadeiaId: c.cadeia_id,
-        name: c.cadeia,
-        color: c.cor,
-        children: [
-          {
-            cadeiaId: c.cadeia_id,
-            name: c.cadeia,
-            color: c.cor,
-            children: [
-              {
-                name: c.cadeia,
-                id: c.cadeia_id,
-                percentual: c.percentual,
-                taxa: c.taxa,
-                color: c.cor,
-                size: Math.abs(c.valor)
-              }
-            ]
-          }
-        ]
-      });
-
-      return r;
-    }, []);
-    return { name: "scc", color: r.color, children: r };
+    return { name: "scc", color: '#ff0000', children: groupsArray };
   };
 
   useEffect(() => {
@@ -169,16 +193,15 @@ const Treemap: React.FC<ChartProps> = ({ constants }) => {
         .enter()
         .append("g")
         .attr("class", "cell") // TODO: descobrir a tipagem correta
-        .attr("transform", (d: any) => `translate(${d.x0}, ${d.y0})`) // TODO: descobrir a tipagem correta
-        .style("cursor", "pointer");
+        .attr("transform", (d: any) => `translate(${d.x0}, ${d.y0})`); // TODO: descobrir a tipagem correta
 
-      g.append("rect")
+      const rects = g
+        .append("rect")
         .attr("id", (d) => d.data.id || "")
         .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
         .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
         .attr("opacity", (d) => (cad === 0 || cad === Number(d.data.id) ? 1 : unfocusOpacity))
-        .attr("fill", (d) => d.data.color)
-        .on("click", debounce((d) => changeSelection("cad", Number(d.target.id)), 250));
+        .attr("fill", (d) => d.data.color);
 
       g.append("foreignObject")
         .style("pointer-events", "none")
@@ -221,15 +244,14 @@ const Treemap: React.FC<ChartProps> = ({ constants }) => {
         .style("opacity", "1")
         .each(scaleFont);
 
-      cell
-        .transition()
-        .duration(300)
+      const transition = cell.transition().duration(300);
+
+      transition
         .attr("transform", (d: any) => `translate(${d.x0}, ${d.y0})`)
         .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
         .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
         .select("rect")
         .attr("id", (d) => d.data.id || "")
-        .style("opacity", (d) => (cad === 0 || cad === Number(d.data.id) ? 1 : unfocusOpacity))
         .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
         .attr("height", (d: any) => d.y1 - d.y0); // TODO: descobrir a tipagem correta
 
@@ -260,6 +282,17 @@ const Treemap: React.FC<ChartProps> = ({ constants }) => {
           return height < 20 || width < 40 ? "" : format(d.value, dataFormat);
         })
         .each(scaleFont);
+
+      if (selector) {
+        const val = selectorValues[group];
+
+        rects.style("cursor", "pointer").on(
+          "click",
+          debounce((d) => changeSelection(selector, Number(d.target.id)), 250)
+        );
+
+        transition.style("opacity", (d) => (val === 0 || val === Number(d.data.id) ? 1 : unfocusOpacity));
+      }
 
       cell.exit().remove();
 
@@ -294,9 +327,9 @@ const Treemap: React.FC<ChartProps> = ({ constants }) => {
 
         tooltip.setText(
           `Valor: ${valor}\n` +
-          (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
-          `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
-          `Cadeia: ${selected.data.name}`
+            (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
+            `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
+            `Grupo: ${selected.data.name}`
         );
         tooltip.setXY(x, y);
         tooltip.show();
@@ -309,7 +342,7 @@ const Treemap: React.FC<ChartProps> = ({ constants }) => {
   return (
     <TreemapContainer>
       <svg ref={d3Container} width={"100%"} height={"100%"} />
-      <Legend selector="cad" title="Setores" data={legendData} />
+      <Legend selector={selector} title={legendTitles[group]} data={legendData} />
     </TreemapContainer>
   );
 };
