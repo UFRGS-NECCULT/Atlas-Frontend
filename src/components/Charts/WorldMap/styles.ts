@@ -1,5 +1,5 @@
 import styled from "styled-components";
 
-export const Map = styled.svg`
+export const World = styled.svg`
   min-height: 300px;
 `;

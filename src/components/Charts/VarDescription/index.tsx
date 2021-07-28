@@ -12,7 +12,7 @@ const VarDescription: React.FC = () => {
 
   useEffect(() => {
     if (data.var) {
-      setDescription((data.var[eixo - 1] as any).find(d => d.id === num).desc);
+      setDescription((data.var[eixo - 1] as any).find((d) => d.id === num).desc);
     }
   }, [data, eixo, num]);
 

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import qs from "query-string";
 
-import { getBreadcrumb } from "services/api";
+import { getBreadcrumb, getVariable } from "services/api";
 
 interface SelectionContextData {
   options: ISimpleBreadCrumb[];
@@ -11,7 +11,11 @@ interface SelectionContextData {
   num: number;
   uf: number;
   cad: number;
+  cns: number;
+  prc: number;
+  tpo: number;
   deg: number;
+  variableInfo: IVariableInfo;
 }
 
 export interface ISimpleBreadCrumb {
@@ -23,6 +27,13 @@ export interface ISimpleBreadCrumb {
 interface IOptions {
   nome: string;
   id: number;
+}
+
+interface IVariableInfo {
+  descricao: string;
+  fonte: string;
+  formato: string;
+  titulo: string;
 }
 
 const SelectionContext = createContext<SelectionContextData>({} as SelectionContextData);
@@ -39,6 +50,12 @@ const SelectionProvider: React.FC = ({ children }) => {
   const [prc, setPrc] = useState<number>(0);
   const [tpo, setTpo] = useState<number>(1);
   const [cns, setCns] = useState<number>(0);
+  const [variableInfo, setVariableInfo] = useState<IVariableInfo>({
+    descricao: "",
+    fonte: "",
+    formato: "",
+    titulo: ""
+  });
 
   const [options, setOptions] = useState<ISimpleBreadCrumb[]>([]);
 
@@ -79,7 +96,7 @@ const SelectionProvider: React.FC = ({ children }) => {
   }, [location]);
 
   useEffect(() => {
-    const getOptions = async (eixo) => {
+    const getOptions = async (eixo, num) => {
       const { data: breadcrumb } = await getBreadcrumb(eixo, num);
 
       setOptions(breadcrumb);
@@ -114,7 +131,13 @@ const SelectionProvider: React.FC = ({ children }) => {
         }
       }
     };
-    getOptions(eixo);
+
+    const getNum = async (eixo, num) => {
+      const { data } = await getVariable(eixo, num);
+      setVariableInfo(data);
+    };
+    getNum(eixo, num);
+    getOptions(eixo, num);
   }, [eixo, num]);
 
   const changeSelection = (selector: string, value: number) => {
@@ -134,6 +157,15 @@ const SelectionProvider: React.FC = ({ children }) => {
         break;
       case "deg":
         setDeg(value);
+        break;
+      case "cns":
+        setCns(value);
+        break;
+      case "tpo":
+        setTpo(value);
+        break;
+      case "prc":
+        setPrc(value);
         break;
       case "eixo":
         setEixo(value);
@@ -160,6 +192,10 @@ const SelectionProvider: React.FC = ({ children }) => {
         ano,
         cad,
         deg,
+        cns,
+        prc,
+        tpo,
+        variableInfo,
         changeSelection
       }}
     >

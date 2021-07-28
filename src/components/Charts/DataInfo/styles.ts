@@ -63,7 +63,7 @@ export const BigNumber = styled.span`
   text-align: center;
   width: 100%;
 
-  @media(max-width: 768px) {
+  @media (max-width: 768px) {
     font-size: 2rem;
   }
 `;

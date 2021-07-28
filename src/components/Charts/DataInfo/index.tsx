@@ -15,6 +15,9 @@ interface Data {
     uf: number;
     deg: number;
     ocp: number;
+    prc: number;
+    tpo: number;
+    cns: number;
   };
   data: DataPoint[];
 }
@@ -33,12 +36,15 @@ interface DataPoint {
   id_subdeg: number;
   nome_subdeg: string;
   id_ocupacao?: number;
+  id_parceiro?: number;
+  id_consumo?: number;
+  id_tipo?: number;
   nome_ocupacao?: string;
   display_subdeg?: string;
 }
 
 const DataInfo: React.FC = () => {
-  const { eixo, ano, num, cad, uf, deg } = useSelection();
+  const { eixo, ano, num, cad, uf, deg, prc, cns, tpo } = useSelection();
   // TODO: ocp no useSelection()
   const ocp = 0;
   const { desc } = useData();
@@ -53,14 +59,14 @@ const DataInfo: React.FC = () => {
   }
 
   useEffect(() => {
-    const selection = { eixo, ano, num, cad, uf, deg, ocp };
+    const selection = { eixo, ano, num, cad, uf, deg, ocp, prc, cns, tpo };
     const getData = async () => {
       const { data } = await getInfo(selection.eixo, { ...selection, var: selection.num });
       setData({ selection, data });
     };
 
     getData();
-  }, [eixo, num, ano, cad, uf, deg]);
+  }, [eixo, num, ano, cad, uf, deg, prc, cns, tpo]);
 
   const tabs = (data: Data) => {
     // Só eixos do Mercado, Fomento e Comércio Internacional têm abas
@@ -101,7 +107,12 @@ const DataInfo: React.FC = () => {
         d.id_uf === data.selection.uf &&
         d.id_cad === data.selection.cad &&
         d.id_subdeg === data.selection.deg &&
+        // (d.id_subdeg ? d.id_subdeg === data.selection.deg : true) &&
         (d.id_ocupacao ? d.id_ocupacao === data.selection.ocp : true)
+      // &&
+      // (d.id_parceiro ? d.id_parceiro === data.selection.prc : true) &&
+      // (d.id_tipo ? d.id_tipo === data.selection.tpo : true) &&
+      // (d.id_consumo ? d.id_consumo === data.selection.cns : true)
     );
 
     return d || null;
@@ -115,7 +126,12 @@ const DataInfo: React.FC = () => {
         d.id_uf === (has("uf", str) ? data.selection.uf : 0) &&
         d.id_cad === (has("cad", str) ? data.selection.cad : 0) &&
         d.id_subdeg === (has("deg", str) ? data.selection.deg : 0) &&
+        // (d.id_subdeg ? d.id_subdeg === (has("deg", str) ? data.selection.deg : 0) : true) &&
         (d.id_ocupacao ? d.id_ocupacao === (has("ocp", str) ? data.selection.ocp : 0) : true)
+      // &&
+      // (d.id_parceiro ? d.id_parceiro === (has("prc", str) ? data.selection.prc : 0) : true) &&
+      // (d.id_tipo ? d.id_tipo === (has("tpo", str) ? data.selection.tpo : 0) : true) &&
+      // (d.id_consumo ? d.id_consumo === (has("cns", str) ? data.selection.cns : 0) : true)
     );
 
     return d || null;
@@ -123,19 +139,19 @@ const DataInfo: React.FC = () => {
 
   // Realiza as substituições necessárias na string de descrição
   const description = (desc: string, data: DataPoint): string => {
-    const pronoumMap = {
-      de: "em",
-      do: "no",
-      da: "na"
-    };
+    // const pronoumMap = {
+    //   de: "em",
+    //   do: "no",
+    //   da: "na"
+    // };
 
-    let ufPronome = data.preposicao_uf;
-    if (eixo === 3) {
-      ufPronome = pronoumMap[data.preposicao_uf];
-    }
+    // const ufPronome = data.preposicao_uf;
+    // if (eixo === 3) {
+    //   ufPronome = pronoumMap[data.preposicao_uf];
+    // }
 
     return desc
-      .replace(/\[uf\]/gi, ufPronome + " " + data.nome_uf)
+      .replace(/\[uf\]/gi, data.preposicao_uf + " " + data.nome_uf)
       .replace(/\[cad\]/gi, data.nome_cad)
       .replace(/\[ano\]/gi, data.ano.toString())
       .replace(/\[deg\]/gi, data.display_subdeg ? data.display_subdeg : data.nome_subdeg)
@@ -154,10 +170,26 @@ const DataInfo: React.FC = () => {
       return false;
     }
 
+    // const getTpoAccessor = (value) => {
+    //   switch (value) {
+    //     case 1:
+    //       return "e";
+    //     case 2:
+    //       return "i";
+    //     case 3:
+    //       return "s";
+    //     case 4:
+    //       return "c";
+    //     default:
+    //       return "";
+    //   }
+    // };
+
     const accessor =
       (data.selection.uf !== 0 ? "u" : "") +
       (data.selection.cad !== 0 ? "s" : "") +
       (data.selection.ocp !== 0 ? "o" : "") +
+      // (data.selection.tpo !== 0 ? getTpoAccessor(data.selection.tpo) : "") +
       (data.selection.deg !== 0 ? "d" : "");
 
     const mainStr = descriptions[0][accessor];
@@ -165,6 +197,7 @@ const DataInfo: React.FC = () => {
     if (!mainStr || mainStr === "") {
       return false;
     }
+
     const main = mainStr.trim() === "" ? findSelectedData(data) : findCorrectData(mainStr, data);
 
     let scndStr = "";

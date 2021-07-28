@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import * as debounce from "debounce";
@@ -122,12 +123,14 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
           grupoID: d.grupo_id,
           name: d.grupo_nome,
           color: d.cor,
-          children: [{
-            grupoID: d.grupo_id,
-            name: d.grupo_nome,
-            color: d.cor,
-            children: []
-          }]
+          children: [
+            {
+              grupoID: d.grupo_id,
+              name: d.grupo_nome,
+              color: d.cor,
+              children: []
+            }
+          ]
         };
       }
 
@@ -141,14 +144,14 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
       });
     }
 
-    const groupsArray = Object.keys(groups).map(k => groups[k]);
+    const groupsArray = Object.keys(groups).map((k) => groups[k]);
 
-    console.log({groupsArray});
+    console.log({ groupsArray });
 
     const legend: ILegendData[] = groupsArray.map((g) => ({ label: g.name, color: g.color, id: g.grupoID }));
     setLegendData(legend);
 
-    return { name: "scc", color: '#ff0000', children: groupsArray };
+    return { name: "scc", color: "#ff0000", children: groupsArray };
   };
 
   useEffect(() => {
@@ -173,7 +176,6 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
       const height = d3Container.current.clientHeight - marginTop - marginBottom;
 
       const treemap = d3.treemap().tile(d3.treemapResquarify).size([width, height]).round(true).paddingInner(1);
-
       const fontScale = d3.scaleThreshold().domain([12, 25, 30, 40]).range([8, 12, 16, 20]);
 
       const root = d3

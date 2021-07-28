@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import * as d3 from "d3";
 
 export default class SVGTooltip {

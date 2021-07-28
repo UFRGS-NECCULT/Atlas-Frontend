@@ -11,7 +11,7 @@ interface Data {
   valor: number;
   percentual: number;
   taxa: number;
-  cadeia: string;
+  grupo: string;
   cor: string;
   formato: string;
 }
@@ -113,7 +113,7 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
       outer: for (const d of data) {
         // Try to find a group with our id
         for (const group of groups) {
-          if (group[0].cadeia == d.cadeia) {
+          if (group[0].grupo == d.grupo) {
             group.push(d);
             continue outer;
           }
@@ -164,7 +164,7 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
 
         const valor = format(d.valor, d.formato);
 
-        tooltip.setText(`Valor: ${valor}\nAno: ${d.ano}\nGrupo: ${d.cadeia}`);
+        tooltip.setText(`Valor: ${valor}\nAno: ${d.ano}\nGrupo: ${d.grupo}`);
         tooltip.setXY(dx, dy);
         tooltip.show();
       });

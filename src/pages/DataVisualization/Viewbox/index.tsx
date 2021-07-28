@@ -5,6 +5,7 @@ import BrazilMap from "components/Charts/BrazilMap";
 import DonutChart from "components/Charts/DonutChart";
 import { EmptyChart } from "components/Charts/EmptyChart";
 import LineChart from "components/Charts/LineChart";
+import WorldMap from "components/Charts/WorldMap";
 import Treemap from "components/Charts/Treemap";
 import { useSelection } from "hooks/SelectionContext";
 import React, { useEffect, useState } from "react";
@@ -15,7 +16,7 @@ interface ViewboxProps {
   id: number;
 }
 
-type ChartType = "none" | "map" | "treemap_scc" | "treemap_uf" | "lines" | "bars" | "donut" | "world_map";
+type ChartType = "none" | "map" | "treemap_scc" | "treemap_uf" | "lines" | "bars" | "donut" | "world";
 
 interface Chart {
   id: ChartType;
@@ -32,6 +33,7 @@ interface ViewCharts {
 
 const Chart: React.FC<{ chart?: Chart }> = ({ chart }) => {
   if (!chart) return <EmptyChart />;
+  else if (chart.id === "world") return <WorldMap constants={chart.constants} />;
   else if (chart.id === "map") return <BrazilMap constants={chart.constants} />;
   else if (chart.id === "lines") return <LineChart constants={chart.constants} />;
   else if (chart.id === "treemap_scc") return <Treemap group="scc" constants={chart.constants} />;
@@ -82,6 +84,7 @@ export const Viewbox: React.FC<ViewboxProps> = ({ id }) => {
     const { display } = viewBox;
 
     const chart = viewBox.charts.find((chart) => chart.id === display);
+
     if (chart) setChart(chart);
   }, [viewBox.display]);
 

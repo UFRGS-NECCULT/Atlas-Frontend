@@ -1,13 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { MobileButton, Selects, MobileBar, Children, Container } from "./styles";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 
 import { useSelection } from "hooks/SelectionContext";
 import BreadcrumbSelect from "./Select";
-import { useState } from "react";
 
-const Breadcrumbs: React.FC = ({ children }) => {
-  const { num, uf, ano, cad, deg, eixo } = useSelection();
+const Breadcrumbs = ({ children }) => {
+  const { num, uf, ano, cad, deg, prc, cns, tpo, eixo } = useSelection();
   const { options } = useSelection();
 
   // Controla se a barra lateral está visivel no mobile
@@ -27,6 +26,12 @@ const Breadcrumbs: React.FC = ({ children }) => {
         return deg;
       case "eixo":
         return eixo;
+      case "prc":
+        return prc;
+      case "tpo":
+        return tpo;
+      case "cns":
+        return cns;
       default:
         return 1;
     }
