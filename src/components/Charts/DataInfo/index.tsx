@@ -33,17 +33,26 @@ interface DataPoint {
   preposicao_uf: string;
   id_cad: number;
   nome_cad: string;
-  id_subdeg: number;
-  nome_subdeg: string;
+  id_subdeg?: number;
+  nome_subdeg?: string;
   id_ocupacao?: number;
-  id_parceiro?: number;
-  id_consumo?: number;
-  id_tipo?: number;
   nome_ocupacao?: string;
+  id_parceiro?: number;
+  nome_parceiro?: string;
+  id_consumo?: number;
+  nome_consumo?: string;
+  id_tipo?: number;
+  nome_tipo?: string;
   display_subdeg?: string;
 }
 
-const DataInfo: React.FC = () => {
+interface ChartProps {
+  constants?: {
+    [key: string]: string | number;
+  };
+}
+
+const DataInfo: React.FC<ChartProps> = ({ constants }) => {
   const { eixo, ano, num, cad, uf, deg, prc, cns, tpo } = useSelection();
   // TODO: ocp no useSelection()
   const ocp = 0;
@@ -59,7 +68,7 @@ const DataInfo: React.FC = () => {
   }
 
   useEffect(() => {
-    const selection = { eixo, ano, num, cad, uf, deg, ocp, prc, cns, tpo };
+    const selection = { eixo, ano, num, cad, uf, deg, ocp, prc, cns, tpo, ...constants };
     const getData = async () => {
       const { data } = await getInfo(selection.eixo, { ...selection, var: selection.num });
       setData({ selection, data });
@@ -93,7 +102,7 @@ const DataInfo: React.FC = () => {
     );
   };
 
-  // Diz se uma string contém uma certa expressão de substituição, como "[cad]" ou "{uf}"
+  // Diz se uma string contém uma certa expressão de substituição, como "[cad]" ou "[uf]"
   const has = (expr: string, target: string): boolean => {
     const regex = new RegExp(`\\[${expr}\\]`, "gi");
     return regex.test(target);
@@ -107,12 +116,11 @@ const DataInfo: React.FC = () => {
         d.id_uf === data.selection.uf &&
         d.id_cad === data.selection.cad &&
         d.id_subdeg === data.selection.deg &&
-        // (d.id_subdeg ? d.id_subdeg === data.selection.deg : true) &&
-        (d.id_ocupacao ? d.id_ocupacao === data.selection.ocp : true)
-      // &&
-      // (d.id_parceiro ? d.id_parceiro === data.selection.prc : true) &&
-      // (d.id_tipo ? d.id_tipo === data.selection.tpo : true) &&
-      // (d.id_consumo ? d.id_consumo === data.selection.cns : true)
+        (d.id_subdeg ? d.id_subdeg === data.selection.deg : true) &&
+        (d.id_ocupacao ? d.id_ocupacao === data.selection.ocp : true) &&
+        (d.id_parceiro ? d.id_parceiro === data.selection.prc : true) &&
+        (d.id_tipo ? d.id_tipo === data.selection.tpo : true) &&
+        (d.id_consumo ? d.id_consumo === data.selection.cns : true)
     );
 
     return d || null;
@@ -125,13 +133,11 @@ const DataInfo: React.FC = () => {
       (d) =>
         d.id_uf === (has("uf", str) ? data.selection.uf : 0) &&
         d.id_cad === (has("cad", str) ? data.selection.cad : 0) &&
-        d.id_subdeg === (has("deg", str) ? data.selection.deg : 0) &&
-        // (d.id_subdeg ? d.id_subdeg === (has("deg", str) ? data.selection.deg : 0) : true) &&
-        (d.id_ocupacao ? d.id_ocupacao === (has("ocp", str) ? data.selection.ocp : 0) : true)
-      // &&
-      // (d.id_parceiro ? d.id_parceiro === (has("prc", str) ? data.selection.prc : 0) : true) &&
-      // (d.id_tipo ? d.id_tipo === (has("tpo", str) ? data.selection.tpo : 0) : true) &&
-      // (d.id_consumo ? d.id_consumo === (has("cns", str) ? data.selection.cns : 0) : true)
+        (d.id_subdeg ? d.id_subdeg === (has("deg", str) ? data.selection.deg : 0) : true) &&
+        (d.id_ocupacao ? d.id_ocupacao === (has("ocp", str) ? data.selection.ocp : 0) : true) &&
+        (d.id_parceiro ? d.id_parceiro === (has("prc", str) ? data.selection.prc : 0) : true) &&
+        (d.id_consumo ? d.id_consumo === (has("cns", str) ? data.selection.cns : 0) : true) &&
+        (d.id_tipo && has("tpo", str) ? d.id_tipo === data.selection.tpo : true) // Tipo não tem um "filtro total"
     );
 
     return d || null;
@@ -139,23 +145,24 @@ const DataInfo: React.FC = () => {
 
   // Realiza as substituições necessárias na string de descrição
   const description = (desc: string, data: DataPoint): string => {
-    // const pronoumMap = {
-    //   de: "em",
-    //   do: "no",
-    //   da: "na"
-    // };
+    const pronoumMap = {
+      "de": "em",
+      "do": "no",
+      "da": "na"
+    };
 
-    // const ufPronome = data.preposicao_uf;
-    // if (eixo === 3) {
-    //   ufPronome = pronoumMap[data.preposicao_uf];
-    // }
+    let ufPronome = data.preposicao_uf;
+    if (eixo === 3) {
+      ufPronome = pronoumMap[data.preposicao_uf];
+    }
 
     return desc
       .replace(/\[uf\]/gi, data.preposicao_uf + " " + data.nome_uf)
       .replace(/\[cad\]/gi, data.nome_cad)
       .replace(/\[ano\]/gi, data.ano.toString())
-      .replace(/\[deg\]/gi, data.display_subdeg ? data.display_subdeg : data.nome_subdeg)
-      .replace(/\[ocp]/gi, data.nome_ocupacao || "undefined");
+      .replace(/\[deg\]/gi, data.display_subdeg || data.nome_subdeg || "undefined")
+      .replace(/\[ocp]/gi, data.nome_ocupacao || "undefined")
+      .replace(/\[prc\]/gi, data.nome_parceiro || "undefined");
   };
 
   const displayValues = () => {
@@ -166,31 +173,32 @@ const DataInfo: React.FC = () => {
     // Se não há definição para esses valores, não mostre nada
     const tabs = desc[data.selection.eixo - 1][data.selection.num.toString()];
     const descriptions = tabs ? tabs[tab] : null;
-    if (!data || !descriptions || !descriptions[0]) {
+    if (!descriptions || !descriptions[0]) {
       return false;
     }
 
-    // const getTpoAccessor = (value) => {
-    //   switch (value) {
-    //     case 1:
-    //       return "e";
-    //     case 2:
-    //       return "i";
-    //     case 3:
-    //       return "s";
-    //     case 4:
-    //       return "c";
-    //     default:
-    //       return "";
-    //   }
-    // };
-
-    const accessor =
+    const getStandardAccessor = () =>
       (data.selection.uf !== 0 ? "u" : "") +
       (data.selection.cad !== 0 ? "s" : "") +
       (data.selection.ocp !== 0 ? "o" : "") +
-      // (data.selection.tpo !== 0 ? getTpoAccessor(data.selection.tpo) : "") +
       (data.selection.deg !== 0 ? "d" : "");
+
+    const getEixo4Accessor = () => {
+      switch (data.selection.tpo) {
+        case 1:
+          return "e";
+        case 2:
+          return "i";
+        case 3:
+          return "s";
+        case 4:
+          return "c";
+        default:
+          return "";
+      }
+    };
+
+    const accessor = eixo === 4 ? getEixo4Accessor() : getStandardAccessor();
 
     const mainStr = descriptions[0][accessor];
     // Se a variável principal não está definida, não mostre nenhum valor
