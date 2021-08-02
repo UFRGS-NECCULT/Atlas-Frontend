@@ -89,13 +89,17 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
     scc: "cad",
     uf: "uf"
   };
-  const legendTitles = {
-    scc: "Setores",
-    uf: "Regiões"
+  const legendSelectors = {
+    scc: "cad",
+    uf: undefined // No treemap-uf a legenda mostra as regiões, que não são clicáveis
   };
   const selectorValues = {
     scc: cad,
     uf: uf
+  };
+  const legendTitles = {
+    scc: "Setores",
+    uf: "Regiões"
   };
 
   const selector = selectors[group];
@@ -344,7 +348,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
   return (
     <TreemapContainer>
       <svg ref={d3Container} width={"100%"} height={"100%"} />
-      <Legend selector={selector} title={legendTitles[group]} data={legendData} />
+      <Legend selector={legendSelectors[group]} title={legendTitles[group]} data={legendData} />
     </TreemapContainer>
   );
 };
