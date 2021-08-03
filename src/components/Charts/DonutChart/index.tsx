@@ -13,9 +13,9 @@ interface Data {
   percentual: number;
   taxa: number;
   ano: number;
-  cadeia_id: number;
+  item_id: number;
+  item_nome: string;
   cor: string;
-  cadeia: string;
   formato: string;
 }
 
@@ -83,13 +83,34 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
       const pie = d3
         .pie<Data>()
         .padAngle(0.015)
-        .sort((a, b) => b.valor - a.valor) // Ordenar as fatias pelo valor em ordem decrescente
+        .sort(null)
         .value((d) => Math.abs(d.valor));
       const arcs = pie(data);
       const arc = d3
         .arc<d3.PieArcDatum<Data>>()
         .innerRadius(radius * (1 - thickness))
         .outerRadius(radius - selectThickness / 2);
+
+      // Animação especial para as fatias do donut (o d3 não sabe animar tão bem elas)
+      const tweenDonut = function(this, finish: any) {
+        // Se for necessário, inicializar os dados da transição
+        this._tweenPie = this._tweenPie || {
+          startAngle: 0,
+          endAngle: 0
+        };
+
+        // Construir uma animação que vai do ponto em que estamos até o ponto desejado
+        const interpolator = d3.interpolate(this._tweenPie, finish);
+
+        // Se lembrar em que ponto terminamos para
+        // poder saber onde começar a próxima animação
+        this._tweenPie = {
+          startAngle: finish.startAngle,
+          endAngle: finish.endAngle
+        };
+
+        return (d) => arc(interpolator(d));
+      }
 
       svg
         .selectAll("path.slice")
@@ -100,7 +121,7 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
         .style("cursor", "pointer")
         .on(
           "click",
-          debounce((_, d) => changeSelection("cad", d.data.cadeia_id), 250)
+          debounce((_, d) => changeSelection("tpo", d.data.item_id), 250)
         )
         .on("mouseover", (_, d) => {
           let [x, y] = arc.centroid(d);
@@ -110,16 +131,17 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
           const value = format(d.data.valor, dataFormat);
 
           tooltip.setXY(x, y);
-          tooltip.setText(`Valor: ${value}\n` + `Grupo: ${d.data.cadeia}`);
+          tooltip.setText(`Valor: ${value}\n` + `Tipo: ${d.data.item_nome}`);
           tooltip.show();
         })
         .on("mouseleave", () => tooltip.hide())
         .transition()
         .duration(300)
-        .attr("d", arc)
         .attr("stroke", "black")
-        .attr("stroke-width", (d) => (d.data.cadeia_id === cad ? selectThickness : 0))
-        .attr("fill", (d) => d.data.cor);
+        .attr("stroke-width", (d) => (d.data.item_id === tpo ? selectThickness : 0))
+        .attr("fill", (d) => d.data.cor)
+        .attrTween("d", tweenDonut as any);
+
     }
   }, [d3Container.current, size, data]);
 

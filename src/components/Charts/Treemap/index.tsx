@@ -150,8 +150,6 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
 
     const groupsArray = Object.keys(groups).map((k) => groups[k]);
 
-    console.log({ groupsArray });
-
     const legend: ILegendData[] = groupsArray.map((g) => ({ label: g.name, color: g.color, id: g.grupoID }));
     setLegendData(legend);
 
