@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
+import debounce from "debounce";
 
 import { useSelection } from "hooks/SelectionContext";
 import { getLines } from "services/api";
@@ -31,9 +32,10 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
   // que a janela muda de tamanho, temos que redesenhar o svg
   const [size, setSize] = useState<[number, number]>([0, 0]);
   useEffect(() => {
-    window.addEventListener("resize", () => {
-      setSize([window.innerWidth, window.innerHeight]);
-    });
+    window.addEventListener(
+      "resize",
+      debounce(() => setSize([window.innerWidth, window.innerHeight]), 100)
+    );
   }, []);
 
   const { eixo, num, uf, cad, deg } = useSelection();

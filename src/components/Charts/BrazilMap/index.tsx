@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
+import debounce from "debounce";
 
 import brStates from "../../../assets/json/br-min.json";
 import { GeometryCollection } from "topojson-specification";
@@ -40,9 +41,10 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
   // que a janela muda de tamanho, temos que redesenhar o svg
   const [size, setSize] = useState<[number, number]>([0, 0]);
   useEffect(() => {
-    window.addEventListener("resize", () => {
-      setSize([window.innerWidth, window.innerHeight]);
-    });
+    window.addEventListener(
+      "resize",
+      debounce(() => setSize([window.innerWidth, window.innerHeight]), 100)
+    );
   }, []);
 
   const { eixo, uf, cad, ano, num, changeSelection } = useSelection();

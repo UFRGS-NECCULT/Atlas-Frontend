@@ -72,9 +72,10 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
   // que a janela muda de tamanho, temos que redesenhar o svg
   const [size, setSize] = useState<[number, number]>([0, 0]);
   useEffect(() => {
-    window.addEventListener("resize", () => {
-      setSize([window.innerWidth, window.innerHeight]);
-    });
+    window.addEventListener(
+      "resize",
+      debounce(() => setSize([window.innerWidth, window.innerHeight]), 100)
+    );
   }, []);
 
   const unfocusOpacity = 0.8;
