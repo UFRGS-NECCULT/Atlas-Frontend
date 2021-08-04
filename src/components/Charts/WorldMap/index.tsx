@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
+import debounce from "debounce";
 
 import worldMap from "../../../assets/json/world-110m.json";
 import { GeometryCollection } from "topojson-specification";
@@ -44,9 +45,10 @@ const WorldMap: React.FC<ChartProps> = ({ constants }) => {
 
   const [size, setSize] = useState<[number, number]>([0, 0]);
   useEffect(() => {
-    window.addEventListener("resize", () => {
-      setSize([window.innerWidth, window.innerHeight]);
-    });
+    window.addEventListener(
+      "resize",
+      debounce(() => setSize([window.innerWidth, window.innerHeight]), 100)
+    );
   }, []);
 
   useEffect(() => {

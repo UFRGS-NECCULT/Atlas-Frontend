@@ -35,9 +35,10 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
   // que a janela muda de tamanho, temos que redesenhar o svg
   const [size, setSize] = useState<[number, number]>([0, 0]);
   useEffect(() => {
-    window.addEventListener("resize", () => {
-      setSize([window.innerWidth, window.innerHeight]);
-    });
+    window.addEventListener(
+      "resize",
+      debounce(() => setSize([window.innerWidth, window.innerHeight]), 100)
+    );
   }, []);
 
   const { eixo, uf, deg, num, ano, cad, prc, cns, tpo, changeSelection } = useSelection();
