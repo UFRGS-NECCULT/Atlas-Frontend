@@ -53,5 +53,17 @@ export const getVariable = async (eixo = 1, num) => {
 
 export const getScreenshotURL = (format) => {
   const params = qs.parse(window.location.search);
+
   return baseURL + `/screenshot/${format}?${qs.stringify(params)}`;
+};
+
+export const getScreenshot = (format) => {
+  const params = qs.parse(window.location.search);
+
+  return api.get(baseURL + `/screenshot/${format}?${qs.stringify(params)}`, {
+    responseType: "arraybuffer",
+    headers: {
+      Accept: "application/pdf"
+    }
+  });
 };

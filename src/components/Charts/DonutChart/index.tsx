@@ -92,7 +92,7 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
         .outerRadius(radius - selectThickness / 2);
 
       // Animação especial para as fatias do donut (o d3 não sabe animar tão bem elas)
-      const tweenDonut = function(this, finish: any) {
+      const tweenDonut = function (this, finish: any) {
         // Se for necessário, inicializar os dados da transição
         this._tweenPie = this._tweenPie || {
           startAngle: 0,
@@ -110,7 +110,7 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
         };
 
         return (d) => arc(interpolator(d));
-      }
+      };
 
       svg
         .selectAll("path.slice")
@@ -141,7 +141,6 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
         .attr("stroke-width", (d) => (d.data.item_id === tpo ? selectThickness : 0))
         .attr("fill", (d) => d.data.cor)
         .attrTween("d", tweenDonut as any);
-
     }
   }, [d3Container.current, size, data]);
 

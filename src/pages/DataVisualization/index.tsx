@@ -16,11 +16,27 @@ import Box from "components/Box";
 import VarDescription from "components/Charts/VarDescription";
 import DataInfo from "components/Charts/DataInfo";
 import { Viewbox } from "./Viewbox";
-import { getScreenshotURL } from "services/api";
+import { getScreenshot } from "services/api";
 import { useSelection } from "hooks/SelectionContext";
 
 const DataVisualization = () => {
   const { variableInfo } = useSelection();
+
+  const handleDownload = (format) => {
+    const getType = () => {
+      if (format === "pdf") return "application/pdf";
+      else if (format === "png") return "image/png";
+    };
+
+    getScreenshot(format).then((res) => {
+      const blob = new Blob([res.data], { type: getType() });
+      const link = document.createElement("a");
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `data.${format}`;
+      link.click();
+    });
+  };
+
   return (
     <Page>
       <Breadcrumbs>
@@ -51,15 +67,9 @@ const DataVisualization = () => {
         <Footer>
           <FooterTitle>Download</FooterTitle>
           <DownloadOptions>
-            <Button
-              onClick={async () => {
-                window.open(getScreenshotURL("png"), "_blank");
-              }}
-            >
-              PNG
-            </Button>
+            <Button onClick={() => handleDownload("png")}>PNG</Button>
             <Button>CSV</Button>
-            <Button>PDF</Button>
+            <Button onClick={() => handleDownload("pdf")}>PDF</Button>
           </DownloadOptions>
         </Footer>
       </Breadcrumbs>
