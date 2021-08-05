@@ -41,15 +41,59 @@ const SelectionContext = createContext<SelectionContextData>({} as SelectionCont
 const SelectionProvider: React.FC = ({ children }) => {
   const baseURL = "/resultado";
 
-  const [eixo, setEixo] = useState<number>(1);
-  const [num, setNum] = useState<number>(1);
-  const [uf, setUF] = useState<number>(0);
-  const [cad, setCad] = useState<number>(0);
-  const [ano, setAno] = useState<number>(2016);
-  const [deg, setDeg] = useState<number>(0);
-  const [prc, setPrc] = useState<number>(0);
-  const [tpo, setTpo] = useState<number>(1);
-  const [cns, setCns] = useState<number>(0);
+  // Valores padrões iniciais
+  let _eixo = 1;
+  let _num = 1;
+  let _uf = 0;
+  let _cad = 0;
+  let _ano = 2016;
+  let _deg = 0;
+  let _prc = 0;
+  let _tpo = 1;
+  let _cns = 0;
+
+  // Verificar se não há valores iniciais já informados na url
+  if (window.location.search) {
+    const parsed = qs.parse(window.location.search);
+
+    if (parsed.eixo) {
+      _eixo = Number(parsed.eixo);
+    }
+    if (parsed.ano) {
+      _ano = Number(parsed.ano);
+    }
+    if (parsed.var) {
+      _num = Number(parsed.var);
+    }
+    if (parsed.uf) {
+      _uf = Number(parsed.uf);
+    }
+    if (parsed.cad) {
+      _cad = Number(parsed.cad);
+    }
+    if (parsed.deg) {
+      _deg = Number(parsed.deg);
+    }
+    if (parsed.tpo) {
+      _tpo = Number(parsed.tpo);
+    }
+    if (parsed.cns) {
+      _cns = Number(parsed.cns);
+    }
+    if (parsed.prc) {
+      _prc = Number(parsed.prc);
+    }
+  }
+
+  const [eixo, setEixo] = useState<number>(_eixo);
+  const [num, setNum] = useState<number>(_num);
+  const [uf, setUF] = useState<number>(_uf);
+  const [cad, setCad] = useState<number>(_cad);
+  const [ano, setAno] = useState<number>(_ano);
+  const [deg, setDeg] = useState<number>(_deg);
+  const [prc, setPrc] = useState<number>(_prc);
+  const [tpo, setTpo] = useState<number>(_tpo);
+  const [cns, setCns] = useState<number>(_cns);
   const [variableInfo, setVariableInfo] = useState<IVariableInfo>({
     descricao: "",
     fonte: "",
@@ -60,40 +104,6 @@ const SelectionProvider: React.FC = ({ children }) => {
   const [options, setOptions] = useState<ISimpleBreadCrumb[]>([]);
 
   const location = window.location.toString();
-
-  useEffect(() => {
-    if (window.location.search) {
-      const parsed = qs.parse(window.location.search);
-
-      if (parsed.eixo) {
-        setEixo(Number(parsed.eixo));
-      }
-      if (parsed.ano) {
-        setAno(Number(parsed.ano));
-      }
-      if (parsed.var) {
-        setNum(Number(parsed.var));
-      }
-      if (parsed.uf) {
-        setUF(Number(parsed.uf));
-      }
-      if (parsed.cad) {
-        setCad(Number(parsed.cad));
-      }
-      if (parsed.deg) {
-        setDeg(Number(parsed.deg));
-      }
-      if (parsed.tpo) {
-        setTpo(Number(parsed.tpo));
-      }
-      if (parsed.cns) {
-        setCns(Number(parsed.cns));
-      }
-      if (parsed.prc) {
-        setPrc(Number(parsed.prc));
-      }
-    }
-  }, [location]);
 
   useEffect(() => {
     const getOptions = async (eixo, num) => {
