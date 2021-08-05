@@ -11,8 +11,9 @@ interface RawData {
   valor: number;
   cor: string;
   cor_eixo: any;
-  sdg_nome: string;
-  sdg_cor: string;
+  sdg_id?: number;
+  sdg_nome?: string;
+  sdg_cor?: string;
   formato: string;
 }
 
@@ -185,7 +186,6 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
             );
             return {
               ...barSection,
-              selected: barSection.data.ano === ano,
               dados: { ...data },
               data: { ...barSection.data }
             };
@@ -196,7 +196,12 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
         .join("rect")
         .on(
           "click",
-          debounce((_, d) => changeSelection("ano", d.data.ano), 250)
+          debounce((_, d) => {
+            changeSelection("ano", d.dados.ano);
+            if (d.dados.sdg_id) {
+              changeSelection("deg", d.dados.sdg_id);
+            }
+          }, 250)
         )
         .on("mouseenter", (_, d) => {
           const valor = format(d.dados.valor || 0, dataFormat);
@@ -210,16 +215,16 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
         })
         .on("mouseleave", () => tooltip.hide())
         .style("cursor", "pointer")
-        .attr("fill", (d) => {
-          return d.selected ? d.dados.cor_eixo || "red" : d.dados.sdg_cor || d.dados.cor;
-        })
         .transition()
         .duration(300)
+        .attr("fill", (d) =>
+          d.dados.ano === ano && d.dados.sdg_id === deg ? d.dados.cor_eixo || "red" : d.dados.sdg_cor || d.dados.cor
+        )
         .attr("x", (d) => x(d.data.ano.toString()) || 0)
         .attr("y", (d) => y(d[1]))
         .attr("width", x.bandwidth())
         .attr("height", (d) => Math.abs(y(d[0]) - y(d[1])))
-        .attr("opacity", (d) => (d.selected ? 1 : 0.65));
+        .attr("opacity", (d) => (d.dados.ano === ano ? 1 : 0.65));
     }
   }, [ano, rawData, size, d3Container.current]);
 
