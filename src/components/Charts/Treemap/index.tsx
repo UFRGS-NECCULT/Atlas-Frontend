@@ -80,7 +80,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
 
   const unfocusOpacity = 0.8;
 
-  const { eixo, uf, num, ano, cad, tpo, prc, cns, changeSelection } = useSelection();
+  const { eixo, uf, num, ano, cad, tpo, prc, cns, deg, changeSelection } = useSelection();
 
   const endpoints = {
     scc: getTreemapCad,
@@ -109,7 +109,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
     const getData = async () => {
       const endpoint = endpoints[group];
 
-      const { data } = await endpoint(eixo, { var: num, uf, cad, ano, tpo, prc, cns, ...constants });
+      const { data } = await endpoint(eixo, { var: num, uf, cad, ano, tpo, prc, cns, deg, ...constants });
       if (data.length) {
         setDataFormat(data[0].formato);
       }
@@ -117,7 +117,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
     };
 
     getData();
-  }, [uf, num, ano, cad, tpo, prc, cns, group]);
+  }, [uf, num, ano, cad, tpo, prc, cns, deg, group]);
 
   const parseData = (data): IParsedData => {
     const groups = {};
@@ -332,9 +332,9 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
 
         tooltip.setText(
           `Valor: ${valor}\n` +
-            (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
-            `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
-            `Grupo: ${selected.data.name}`
+          (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
+          `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
+          `Grupo: ${selected.data.name}`
         );
         tooltip.setXY(x, y);
         tooltip.show();

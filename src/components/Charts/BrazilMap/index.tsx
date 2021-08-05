@@ -47,17 +47,17 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
     );
   }, []);
 
-  const { eixo, uf, cad, ano, num, changeSelection } = useSelection();
+  const { eixo, uf, cad, ano, num, deg, changeSelection } = useSelection();
   const { colors } = useData();
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getMap(eixo, { var: num, uf, cad, ano, ...constants });
+      const { data } = await getMap(eixo, { var: num, uf, cad, ano, deg, ...constants });
       setData(data);
     };
 
     getData();
-  }, [cad, ano, num]);
+  }, [cad, ano, num, deg]);
 
   const getValueByUf = (uf: number) => {
     return data.find((x) => x.uf_id === uf)?.valor || 0;
