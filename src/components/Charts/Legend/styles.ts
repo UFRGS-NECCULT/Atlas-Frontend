@@ -4,6 +4,10 @@ export const Container = styled.div`
   height: 100%;
   width: 200px;
 
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+
   padding: 0 15px;
   display: flex;
   flex-direction: column;
@@ -25,10 +29,20 @@ export const List = styled.div`
 
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    flex-direction: row;
+  }
 `;
 
 export const Setor = styled.div`
   width: 100%;
+  @media (max-width: 768px) {
+    width: 50%;
+  }
+
 
   display: flex;
 
