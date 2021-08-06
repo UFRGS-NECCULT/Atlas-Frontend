@@ -8,7 +8,10 @@ export const Page = styled.div`
 export const Container = styled.div`
   width: 100vw;
   overflow-x: hidden;
-  padding: 0 15%;
+
+  @media (min-width: 768px) {
+    padding: 0 15%;
+  }
 `;
 
 export const Title = styled.div`
@@ -20,7 +23,7 @@ export const Title = styled.div`
   line-height: 40px;
   text-align: center;
 
-  height: 100px;
+  min-height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,6 +59,7 @@ export const Footer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: 15px 0;
 `;
 
 export const FooterTitle = styled.div``;
