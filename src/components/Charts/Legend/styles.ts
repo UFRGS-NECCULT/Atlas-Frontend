@@ -43,7 +43,6 @@ export const Setor = styled.div`
     width: 50%;
   }
 
-
   display: flex;
 
   &.clickable {

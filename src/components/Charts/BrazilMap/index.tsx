@@ -57,7 +57,7 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
     };
 
     getData();
-  }, [cad, ano, num, deg]);
+  }, [eixo, cad, ano, num, deg]);
 
   const getValueByUf = (uf: number) => {
     return data.find((x) => x.uf_id === uf)?.valor || 0;
