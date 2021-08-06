@@ -132,12 +132,12 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
       lines
         .join("path")
         .attr("class", "line")
+        .attr("transform", `translate(${marginLeft}, ${marginTop})`)
         .transition()
         .duration(1000)
         .attr("fill", "none")
         .attr("stroke", (d) => d[0].cor)
         .attr("stroke-width", 2)
-        .attr("transform", `translate(${marginLeft}, ${marginTop})`)
         .attr("d", line);
 
       // Handle the tooltip

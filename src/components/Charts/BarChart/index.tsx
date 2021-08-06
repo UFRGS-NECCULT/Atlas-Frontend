@@ -215,14 +215,16 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
         })
         .on("mouseleave", () => tooltip.hide())
         .style("cursor", "pointer")
+        .attr("x", (d) => x(d.data.ano.toString()) || 0)
+        .attr("height", (d) => 0)
+        .attr("y", (d) => y(d[0]))
+        .attr("width", x.bandwidth())
         .transition()
         .duration(300)
         .attr("fill", (d) =>
           d.dados.ano === ano && d.dados.sdg_id === deg ? d.dados.cor_eixo || "red" : d.dados.sdg_cor || d.dados.cor
         )
-        .attr("x", (d) => x(d.data.ano.toString()) || 0)
         .attr("y", (d) => y(d[1]))
-        .attr("width", x.bandwidth())
         .attr("height", (d) => Math.abs(y(d[0]) - y(d[1])))
         .attr("opacity", (d) => (d.dados.ano === ano ? 1 : 0.65));
     }
