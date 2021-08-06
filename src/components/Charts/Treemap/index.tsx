@@ -114,10 +114,11 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
         setDataFormat(data[0].formato);
       }
       setData(parseData(data.filter((d) => d.valor !== 0)));
+      console.log(parseData(data.filter((d) => d.valor !== 0)))
     };
 
     getData();
-  }, [uf, num, ano, cad, tpo, prc, cns, deg, group]);
+  }, [eixo, uf, num, ano, cad, tpo, prc, cns, deg, group]);
 
   const parseData = (data): IParsedData => {
     const groups = {};
