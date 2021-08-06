@@ -145,16 +145,16 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
 
   // Realiza as substituições necessárias na string de descrição
   const description = (desc: string, data: DataPoint): string => {
-    const pronoumMap = {
-      "de": "em",
-      "do": "no",
-      "da": "na"
-    };
+    // const pronoumMap = {
+    //   de: "em",
+    //   do: "no",
+    //   da: "na"
+    // };
 
-    let ufPronome = data.preposicao_uf;
-    if (eixo === 3) {
-      ufPronome = pronoumMap[data.preposicao_uf];
-    }
+    // const ufPronome = data.preposicao_uf;
+    // if (eixo === 3) {
+    //   ufPronome = pronoumMap[data.preposicao_uf];
+    // }
 
     return desc
       .replace(/\[uf\]/gi, data.preposicao_uf + " " + data.nome_uf)
