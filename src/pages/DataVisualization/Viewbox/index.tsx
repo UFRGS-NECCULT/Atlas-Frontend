@@ -45,7 +45,7 @@ const Chart: React.FC<{ chart?: Chart }> = ({ chart }) => {
 };
 
 export const Viewbox: React.FC<ViewboxProps> = ({ id }) => {
-  const { num, eixo } = useSelection();
+  const { num, eixo, config } = useSelection();
   const [chart, setChart] = useState<Chart>();
   const [viewBox, _setViewBox] = useState<ViewCharts>({
     display: "none",
@@ -101,7 +101,11 @@ export const Viewbox: React.FC<ViewboxProps> = ({ id }) => {
       charts.length > 1 &&
       charts.map((chart) => {
         return (
-          <button key={chart.id} onClick={() => setViewBox({ ...viewBox, display: chart.id })}>
+          <button
+            key={chart.id}
+            style={{ backgroundColor: config.primaryColor }}
+            onClick={() => setViewBox({ ...viewBox, display: chart.id })}
+          >
             {chart.label}
           </button>
         );

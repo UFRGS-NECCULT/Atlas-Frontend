@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import qs from "query-string";
 
-import { getBreadcrumb, getVariable } from "services/api";
+import { getConfig, getVariable } from "services/api";
 
 interface SelectionContextData {
-  options: ISimpleBreadCrumb[];
+  config: IEixoConfig;
   changeSelection(selector: string, value: number): void;
   ano: number;
   eixo: number;
@@ -18,13 +18,18 @@ interface SelectionContextData {
   variableInfo: IVariableInfo;
 }
 
+interface IEixoConfig {
+  primaryColor: string;
+  breadcrumbs: ISimpleBreadCrumb[];
+}
+
 export interface ISimpleBreadCrumb {
   id: string;
   label: string;
-  options: IOptions[];
+  options: IBreadCrumbOptions[];
 }
 
-interface IOptions {
+interface IBreadCrumbOptions {
   nome: string;
   id: number;
 }
@@ -101,15 +106,17 @@ const SelectionProvider: React.FC = ({ children }) => {
     titulo: ""
   });
 
-  const [options, setOptions] = useState<ISimpleBreadCrumb[]>([]);
+  const [config, setConfig] = useState<IEixoConfig>({
+    primaryColor: "transparent",
+    breadcrumbs: []
+  });
 
   const location = window.location.toString();
 
   useEffect(() => {
     const getOptions = async (eixo, num) => {
-      const { data: breadcrumb } = await getBreadcrumb(eixo, num);
-
-      setOptions(breadcrumb);
+      const { data } = await getConfig(eixo, num);
+      setConfig(data);
 
       // Resetar opções inválidas
       const variables = [
@@ -126,7 +133,7 @@ const SelectionProvider: React.FC = ({ children }) => {
       for (const v of variables) {
         const [id, value] = v;
 
-        const current_breadcrumb = breadcrumb.find((b) => {
+        const current_breadcrumb = config.breadcrumbs.find((b) => {
           return b.id === id;
         });
 
@@ -142,12 +149,15 @@ const SelectionProvider: React.FC = ({ children }) => {
       }
     };
 
+    getOptions(eixo, num);
+  }, [eixo, num]);
+
+  useEffect(() => {
     const getNum = async (eixo, num) => {
       const { data } = await getVariable(eixo, num);
       setVariableInfo(data);
     };
     getNum(eixo, num);
-    getOptions(eixo, num);
   }, [eixo, num]);
 
   const changeSelection = (selector: string, value: number) => {
@@ -195,7 +205,7 @@ const SelectionProvider: React.FC = ({ children }) => {
   return (
     <SelectionContext.Provider
       value={{
-        options,
+        config,
         eixo,
         uf,
         num,

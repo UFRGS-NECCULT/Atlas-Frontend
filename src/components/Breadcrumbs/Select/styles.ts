@@ -21,9 +21,9 @@ export const Label = styled.label`
   padding-left: 5px;
   padding-right: 5px;
   font-size: 10px;
+  font-weight: bold;
   height: 18px;
   border-radius: 10px;
-  background-color: #6dbfc9;
   color: #fff;
   line-height: 12px;
   text-transform: uppercase;
@@ -31,9 +31,20 @@ export const Label = styled.label`
   align-items: center;
   justify-content: center;
   font-family: Lato Regular;
+
+  transition: background-color 0.5s;
 `;
 export const Select = styled.select`
   // float: left;
+
+  // Flecha customizada
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  background-image: url("/img/arrow.png");
+  background-position: right center;
+  background-repeat: no-repeat;
+
   background-color: #f0f0f0;
   background-size: 10px;
   // background-position: right center;

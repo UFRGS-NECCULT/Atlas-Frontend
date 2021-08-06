@@ -4,14 +4,17 @@ import { Container, Label, Select, Option } from "./styles";
 
 interface IBreadcrumbProps extends ISimpleBreadCrumb {
   value: number;
+  color: string;
 }
 
-const BreadcrumbSelect: React.FC<IBreadcrumbProps> = ({ id, label, options, value }) => {
+const BreadcrumbSelect: React.FC<IBreadcrumbProps> = ({ id, label, options, color, value }) => {
   const { changeSelection } = useSelection();
 
   return (
     <Container>
-      <Label htmlFor={id}>{label}</Label>
+      <Label style={{ backgroundColor: color }} htmlFor={id}>
+        {label}
+      </Label>
       {options && (
         <Select
           disabled={options.length === 1}

@@ -87,7 +87,6 @@ export const Button = styled.div`
   font-weight: bold;
   letter-spacing: 2px;
 
-  background-color: #6dbfc9;
   color: #fff;
   line-height: 12px;
   vertical-align: middle;
@@ -98,6 +97,7 @@ export const Button = styled.div`
   justify-content: center;
   align-items: center;
 
+  transition: background-color 0.5s;
   cursor: pointer;
 `;
 

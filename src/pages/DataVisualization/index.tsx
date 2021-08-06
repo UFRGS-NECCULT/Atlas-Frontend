@@ -20,7 +20,7 @@ import { getScreenshot } from "services/api";
 import { useSelection } from "hooks/SelectionContext";
 
 const DataVisualization = () => {
-  const { variableInfo } = useSelection();
+  const { variableInfo, config } = useSelection();
 
   const handleDownload = (format) => {
     const getType = () => {
@@ -67,9 +67,13 @@ const DataVisualization = () => {
         <Footer>
           <FooterTitle>Download</FooterTitle>
           <DownloadOptions>
-            <Button onClick={() => handleDownload("png")}>PNG</Button>
-            <Button>CSV</Button>
-            <Button onClick={() => handleDownload("pdf")}>PDF</Button>
+            <Button style={{ backgroundColor: config.primaryColor }} onClick={() => handleDownload("png")}>
+              PNG
+            </Button>
+            <Button style={{ backgroundColor: config.primaryColor }}>CSV</Button>
+            <Button style={{ backgroundColor: config.primaryColor }} onClick={() => handleDownload("pdf")}>
+              PDF
+            </Button>
           </DownloadOptions>
         </Footer>
       </Breadcrumbs>

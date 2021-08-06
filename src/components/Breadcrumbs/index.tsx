@@ -7,7 +7,7 @@ import BreadcrumbSelect from "./Select";
 
 const Breadcrumbs = ({ children }) => {
   const { num, uf, ano, cad, deg, prc, cns, tpo, eixo } = useSelection();
-  const { options } = useSelection();
+  const { config } = useSelection();
 
   // Controla se a barra lateral está visivel no mobile
   const [active, setActive] = useState<boolean>(false);
@@ -47,7 +47,7 @@ const Breadcrumbs = ({ children }) => {
           <AiOutlineClose />
         </MobileButton>
         <Selects>
-          {options.map((opt, i) => {
+          {config.breadcrumbs.map((opt, i) => {
             return (
               <BreadcrumbSelect
                 key={i}
@@ -55,6 +55,7 @@ const Breadcrumbs = ({ children }) => {
                 id={opt.id}
                 label={opt.label}
                 options={opt.options}
+                color={config.primaryColor}
               />
             );
           })}

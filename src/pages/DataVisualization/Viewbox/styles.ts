@@ -19,7 +19,6 @@ export const ChartButtons = styled.div`
   button {
     width: 120px;
     height: 17px;
-    background-color: #6dbfc9;
     color: #fff;
     line-height: 12px;
 
