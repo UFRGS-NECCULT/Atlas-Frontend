@@ -117,7 +117,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
     };
 
     getData();
-  }, [uf, num, ano, cad, tpo, prc, cns, deg, group]);
+  }, [eixo, uf, num, ano, cad, tpo, prc, cns, deg, group]);
 
   const parseData = (data): IParsedData => {
     const groups = {};
@@ -213,8 +213,14 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
         .attr("class", "title-container")
         .attr("x", 0)
         .attr("y", 0)
-        .attr("width", (d: any) => d.x1 - d.x0)
-        .attr("height", (d: any) => d.y1 - d.y0 - 20)
+        .attr("width", (d: any) => {
+          const width = d.x1 - d.x0
+          return width > 0 ? width : 0;
+        })
+        .attr("height", (d: any) => {
+          const height = d.y1 - d.y0 - 20
+          return height > 0 ? height : 0
+        })
         .append("xhtml:span")
         .attr("class", "title")
         .style("padding", "0.8em")

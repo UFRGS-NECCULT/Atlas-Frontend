@@ -111,8 +111,6 @@ const SelectionProvider: React.FC = ({ children }) => {
     breadcrumbs: []
   });
 
-  const location = window.location.toString();
-
   useEffect(() => {
     const getOptions = async (eixo, num) => {
       const { data } = await getConfig(eixo, num);
