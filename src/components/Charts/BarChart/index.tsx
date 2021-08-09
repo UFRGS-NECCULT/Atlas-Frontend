@@ -216,9 +216,9 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
         .on("mouseleave", () => tooltip.hide())
         .style("cursor", "pointer")
         .attr("x", (d) => x(d.data.ano.toString()) || 0)
-        .attr("height", (d) => 0)
-        .attr("y", (d) => y(d[0]))
         .attr("width", x.bandwidth())
+        // .attr("height", (d) => 0)
+        // .attr("y", (d) => y(d[0]))
         .transition()
         .duration(300)
         .attr("fill", (d) =>
