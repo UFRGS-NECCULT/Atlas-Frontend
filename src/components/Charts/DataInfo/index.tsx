@@ -53,7 +53,7 @@ interface ChartProps {
 }
 
 const DataInfo: React.FC<ChartProps> = ({ constants }) => {
-  const { eixo, ano, num, cad, uf, deg, prc, cns, tpo } = useSelection();
+  const { eixo, ano, num, cad, uf, deg, prc, cns, tpo, config } = useSelection();
   // TODO: ocp no useSelection()
   const ocp = 0;
   const { desc } = useData();
@@ -92,10 +92,10 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
 
     return (
       <Flex>
-        <TabButton className={tab === 0 ? "active" : ""} style={{ backgroundColor: data.data[0].cor }}>
+        <TabButton className={tab === 0 ? "active" : ""} style={{ backgroundColor: config.primaryColor }}>
           {leftButtonText}
         </TabButton>
-        <TabButton className={tab === 1 ? "active" : ""} style={{ backgroundColor: data.data[0].cor }}>
+        <TabButton className={tab === 1 ? "active" : ""} style={{ backgroundColor: config.primaryColor }}>
           {rightButtonText}
         </TabButton>
       </Flex>
@@ -225,7 +225,7 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
     return [
       main && (
         <Column key="0">
-          <BigNumber style={{ color: main.cor }}>{format(main.valor, main.formato)}</BigNumber>
+          <BigNumber style={{ color: config.primaryColor }}>{format(main.valor, main.formato)}</BigNumber>
           <BigNumberDesc>{description(mainStr, main)}</BigNumberDesc>
         </Column>
       ),
@@ -233,13 +233,13 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
         <Row key="1">
           {scnd && (
             <Column>
-              <BigNumber style={{ color: scnd.cor }}>{format((main?.valor || 0) / scnd.valor, "percent")}</BigNumber>
+              <BigNumber style={{ color: config.primaryColor }}>{format((main?.valor || 0) / scnd.valor, "percent")}</BigNumber>
               <BigNumberDesc>{description(scndStr, scnd)}</BigNumberDesc>
             </Column>
           )}
           {thrd && (
             <Column>
-              <BigNumber style={{ color: thrd.cor }}>{format((main?.valor || 0) / thrd.valor, "percent")}</BigNumber>
+              <BigNumber style={{ color: config.primaryColor }}>{format((main?.valor || 0) / thrd.valor, "percent")}</BigNumber>
               <BigNumberDesc>{description(thrdStr, thrd)}</BigNumberDesc>
             </Column>
           )}
