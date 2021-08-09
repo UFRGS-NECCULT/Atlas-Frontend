@@ -10,6 +10,7 @@ export const Container = styled.div`
 
 export const ChartButtons = styled.div`
   width: 100%;
+  margin-bottom: 4px;
 
   display: flex;
   flex-direction: row;
