@@ -1,13 +1,6 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
-  height: 100%;
-  width: 200px;
-
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-
   padding: 0 15px;
   display: flex;
   flex-direction: column;
@@ -30,9 +23,13 @@ export const List = styled.div`
   display: flex;
   flex-direction: column;
 
+  flex-wrap: wrap;
+  justify-content: flex-start;
+
   @media (max-width: 768px) {
-    flex-wrap: wrap;
-    justify-content: flex-start;
+    flex-direction: row;
+  }
+  .box-small & {
     flex-direction: row;
   }
 `;
@@ -40,6 +37,9 @@ export const List = styled.div`
 export const Setor = styled.div`
   width: 100%;
   @media (max-width: 768px) {
+    width: 50%;
+  }
+  .box-small & {
     width: 50%;
   }
 

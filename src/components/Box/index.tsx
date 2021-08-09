@@ -4,11 +4,12 @@ import { BoxTitle, Container } from "./styles";
 interface BoxProps {
   title?: string;
   id: string;
+  className?: string;
 }
 
-const Box: React.FC<BoxProps> = ({ children, id, title }) => {
+const Box: React.FC<BoxProps> = ({ children, id, title, className }) => {
   return (
-    <Container id={id}>
+    <Container className={className} id={id}>
       <BoxTitle>{title}</BoxTitle>
       {children}
     </Container>

@@ -8,4 +8,12 @@ export const TreemapContainer = styled.div`
   @media (max-width: 768px) {
     flex-direction: column;
   }
+  .box-small & {
+    flex-direction: column;
+  }
+
+  & > svg {
+    height: 100%;
+    width: 100%;
+  }
 `;

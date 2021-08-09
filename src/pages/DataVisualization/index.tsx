@@ -43,16 +43,16 @@ const DataVisualization = () => {
         <Container>
           <Title>{variableInfo.titulo}</Title>
           <Viewboxes>
-            <Box id={"box-1"} title="Mapa do Brasil">
+            <Box id={"box-1"} className="box-small" title="Mapa do Brasil">
               <Viewbox id={1} />
             </Box>
-            <Box id={"box-2"} title="Dados">
+            <Box id={"box-2"} className="box-small" title="Dados">
               <DataInfo />
             </Box>
-            <Box id={"box-3"} title="Descrição da variável">
+            <Box id={"box-3"} className="box-small" title="Descrição da variável">
               <VarDescription />
             </Box>
-            <Box id={"box-4"} title="Série histórica">
+            <Box id={"box-4"} className="box-small" title="Série histórica">
               <ChartContainer>
                 <Viewbox id={2} />
               </ChartContainer>
