@@ -115,12 +115,11 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
       (d) =>
         d.id_uf === data.selection.uf &&
         d.id_cad === data.selection.cad &&
-        d.id_subdeg === data.selection.deg &&
-        (d.id_subdeg ? d.id_subdeg === data.selection.deg : true) &&
-        (d.id_ocupacao ? d.id_ocupacao === data.selection.ocp : true) &&
-        (d.id_parceiro ? d.id_parceiro === data.selection.prc : true) &&
-        (d.id_tipo ? d.id_tipo === data.selection.tpo : true) &&
-        (d.id_consumo ? d.id_consumo === data.selection.cns : true)
+        (d.id_subdeg !== undefined ? d.id_subdeg === data.selection.deg : true) &&
+        (d.id_ocupacao !== undefined ? d.id_ocupacao === data.selection.ocp : true) &&
+        (d.id_parceiro !== undefined ? d.id_parceiro === data.selection.prc : true) &&
+        (d.id_tipo !== undefined ? d.id_tipo === data.selection.tpo : true) &&
+        (d.id_consumo !== undefined ? d.id_consumo === data.selection.cns : true)
     );
 
     return d || null;
@@ -133,11 +132,11 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
       (d) =>
         d.id_uf === (has("uf", str) ? data.selection.uf : 0) &&
         d.id_cad === (has("cad", str) ? data.selection.cad : 0) &&
-        (d.id_subdeg ? d.id_subdeg === (has("deg", str) ? data.selection.deg : 0) : true) &&
-        (d.id_ocupacao ? d.id_ocupacao === (has("ocp", str) ? data.selection.ocp : 0) : true) &&
-        (d.id_parceiro ? d.id_parceiro === (has("prc", str) ? data.selection.prc : 0) : true) &&
-        (d.id_consumo ? d.id_consumo === (has("cns", str) ? data.selection.cns : 0) : true) &&
-        (d.id_tipo && has("tpo", str) ? d.id_tipo === data.selection.tpo : true) // Tipo não tem um "filtro total"
+        (d.id_subdeg !== undefined ? d.id_subdeg === (has("deg", str) ? data.selection.deg : 0) : true) &&
+        (d.id_ocupacao !== undefined ? d.id_ocupacao === (has("ocp", str) ? data.selection.ocp : 0) : true) &&
+        (d.id_parceiro !== undefined ? d.id_parceiro === (has("prc", str) ? data.selection.prc : 0) : true) &&
+        (d.id_consumo !== undefined ? d.id_consumo === (has("cns", str) ? data.selection.cns : 0) : true) &&
+        (d.id_tipo !== undefined && has("tpo", str) ? d.id_tipo === data.selection.tpo : true) // Tipo não tem um "filtro total"
     );
 
     return d || null;
@@ -233,13 +232,17 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
         <Row key="1">
           {scnd && (
             <Column>
-              <BigNumber style={{ color: config.primaryColor }}>{format((main?.valor || 0) / scnd.valor, "percent")}</BigNumber>
+              <BigNumber style={{ color: config.primaryColor }}>
+                {format((main?.valor || 0) / scnd.valor, "percent")}
+              </BigNumber>
               <BigNumberDesc>{description(scndStr, scnd)}</BigNumberDesc>
             </Column>
           )}
           {thrd && (
             <Column>
-              <BigNumber style={{ color: config.primaryColor }}>{format((main?.valor || 0) / thrd.valor, "percent")}</BigNumber>
+              <BigNumber style={{ color: config.primaryColor }}>
+                {format((main?.valor || 0) / thrd.valor, "percent")}
+              </BigNumber>
               <BigNumberDesc>{description(thrdStr, thrd)}</BigNumberDesc>
             </Column>
           )}
