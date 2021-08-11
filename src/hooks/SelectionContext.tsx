@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import qs from "query-string";
 
-import { getConfig, getVariable } from "services/api";
+import { getConfig } from "services/api";
 
 interface SelectionContextData {
   config: IEixoConfig;
@@ -15,12 +15,19 @@ interface SelectionContextData {
   prc: number;
   tpo: number;
   deg: number;
-  variableInfo: IVariableInfo;
 }
 
 interface IEixoConfig {
   primaryColor: string;
+  variable: IVariableInfo;
   breadcrumbs: ISimpleBreadCrumb[];
+}
+
+interface IVariableInfo {
+  descricao: string;
+  fonte: string;
+  formato: string;
+  titulo: string;
 }
 
 export interface ISimpleBreadCrumb {
@@ -32,13 +39,6 @@ export interface ISimpleBreadCrumb {
 interface IBreadCrumbOptions {
   nome: string;
   id: number;
-}
-
-interface IVariableInfo {
-  descricao: string;
-  fonte: string;
-  formato: string;
-  titulo: string;
 }
 
 const SelectionContext = createContext<SelectionContextData>({} as SelectionContextData);
@@ -99,15 +99,15 @@ const SelectionProvider: React.FC = ({ children }) => {
   const [prc, setPrc] = useState<number>(_prc);
   const [tpo, setTpo] = useState<number>(_tpo);
   const [cns, setCns] = useState<number>(_cns);
-  const [variableInfo, setVariableInfo] = useState<IVariableInfo>({
-    descricao: "",
-    fonte: "",
-    formato: "",
-    titulo: ""
-  });
 
   const [config, setConfig] = useState<IEixoConfig>({
     primaryColor: "transparent",
+    variable: {
+      descricao: "",
+      fonte: "",
+      formato: "none",
+      titulo: ""
+    },
     breadcrumbs: []
   });
 
@@ -148,14 +148,6 @@ const SelectionProvider: React.FC = ({ children }) => {
     };
 
     getOptions(eixo, num);
-  }, [eixo, num]);
-
-  useEffect(() => {
-    const getNum = async (eixo, num) => {
-      const { data } = await getVariable(eixo, num);
-      setVariableInfo(data);
-    };
-    getNum(eixo, num);
   }, [eixo, num]);
 
   const changeSelection = (selector: string, value: number) => {
@@ -213,7 +205,6 @@ const SelectionProvider: React.FC = ({ children }) => {
         cns,
         prc,
         tpo,
-        variableInfo,
         changeSelection
       }}
     >

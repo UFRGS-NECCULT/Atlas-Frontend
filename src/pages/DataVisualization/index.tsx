@@ -20,7 +20,7 @@ import { getScreenshot } from "services/api";
 import { useSelection } from "hooks/SelectionContext";
 
 const DataVisualization = () => {
-  const { variableInfo, config } = useSelection();
+  const { config } = useSelection();
 
   const handleDownload = (format) => {
     const getType = () => {
@@ -41,7 +41,7 @@ const DataVisualization = () => {
     <Page>
       <Breadcrumbs>
         <Container>
-          <Title>{variableInfo.titulo}</Title>
+          <Title>{config.variable.titulo}</Title>
           <Viewboxes>
             <Box id={"box-1"} className="box-small" title="Mapa do Brasil">
               <Viewbox id={1} />
