@@ -12,7 +12,8 @@ const VarDescription: React.FC = () => {
 
   useEffect(() => {
     if (data.var) {
-      setDescription((data.var[eixo - 1] as any).find((d) => d.id === num).desc);
+      const variable = (data.var[eixo - 1] as any).find((d) => d.id === num);
+      setDescription(variable ? variable.desc : "");
     }
   }, [data, eixo, num]);
 

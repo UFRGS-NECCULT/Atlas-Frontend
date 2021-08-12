@@ -128,8 +128,10 @@ const SelectionProvider: React.FC = ({ children }) => {
         ["cns", cns],
         ["eixo", eixo]
       ];
+
       for (const v of variables) {
         const [id, value] = v;
+        const breadcrumb = data.breadcrumbs.find((b) => b.id === id);
 
         const current_breadcrumb = config.breadcrumbs.find((b) => {
           return b.id === id;
@@ -140,7 +142,7 @@ const SelectionProvider: React.FC = ({ children }) => {
         if (options && options.length) {
           // Se o valor atualmente selecionado não está disponível,
           // selecione um valor padrão
-          if (!options.includes(value)) {
+          if (!options.includes(value) || !breadcrumb.options.some((b) => b.id === value)) {
             changeSelection(id, options[0]);
           }
         }
