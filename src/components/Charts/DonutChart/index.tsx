@@ -59,7 +59,7 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getDonut(eixo, { var: num, uf, deg, ano, prc, cns, tpo, ...constants });
+      const { data } = await getDonut(eixo, { var: num, uf, deg, ano, prc, cns, tpo, cad, ...constants });
       setData(data);
     };
 
