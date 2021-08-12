@@ -12,7 +12,7 @@ interface Data {
   valor: number;
   percentual: number;
   taxa: number;
-  grupo_id: number|null;
+  grupo_id: number | null;
   grupo: string;
   cor: string;
   formato: string;
@@ -137,7 +137,7 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
         .transition()
         .duration(1000)
         .attr("fill", "none")
-        .attr("opacity", d => d[0].grupo_id ? (d[0].grupo_id === deg ? 1 : 0.4) : 1)
+        .attr("opacity", (d) => (d[0].grupo_id ? (d[0].grupo_id === deg ? 1 : 0.4) : 1))
         .attr("stroke", (d) => d[0].cor)
         .attr("stroke-width", 2)
         .attr("d", line);
