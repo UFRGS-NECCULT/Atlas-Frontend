@@ -46,6 +46,10 @@ export const Viewboxes = styled.div`
   column-gap: 20px;
   row-gap: 20px;
 
+  #box-3 {
+    overflow: auto;
+  }
+
   @media (max-width: 768px) {
     padding: 8px;
 
