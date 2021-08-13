@@ -1,5 +1,5 @@
 import React from "react";
-import { BoxTitle, Container } from "./styles";
+import { Container } from "./styles";
 
 interface BoxProps {
   title?: string;
@@ -10,7 +10,6 @@ interface BoxProps {
 const Box: React.FC<BoxProps> = ({ children, id, title, className }) => {
   return (
     <Container className={className} id={id}>
-      <BoxTitle>{title}</BoxTitle>
       {children}
     </Container>
   );

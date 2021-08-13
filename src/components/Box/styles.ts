@@ -16,11 +16,3 @@ export const Container = styled.div`
   flex-direction: column;
 `;
 
-export const BoxTitle = styled.div`
-  width: 100%;
-  color: #aaa;
-  font-size: 14px;
-  letter-spacing: 1px;
-  font-family: Lato Regular;
-  text-transform: uppercase;
-`;

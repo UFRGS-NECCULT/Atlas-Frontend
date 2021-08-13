@@ -10,7 +10,7 @@ import Treemap from "components/Charts/Treemap";
 import { useSelection } from "hooks/SelectionContext";
 import React, { useEffect, useState } from "react";
 import { getVisualization } from "services/api";
-import { ChartButtons, ChartContainer, Container } from "./styles";
+import { Title, ChartButtons, ChartContainer, Container } from "./styles";
 
 interface ViewboxProps {
   id: number;
@@ -21,6 +21,7 @@ type ChartType = "none" | "map" | "treemap_scc" | "treemap_uf" | "lines" | "bars
 interface Chart {
   id: ChartType;
   label: string;
+  title: string;
   constants?: {
     [key: string]: string | number;
   };
@@ -52,11 +53,11 @@ export const Viewbox: React.FC<ViewboxProps> = ({ id }) => {
     charts: []
   });
 
-  const setViewBox = (data) => {
+  const setViewBox = (data: ViewCharts) => {
     const box = `box-${id}`;
     const parsed = qs.parse(window.location.search);
 
-    const result = parsed[box];
+    const result = parsed[box] as ChartType;
 
     if (!data.display) {
       data.display = "none";
@@ -64,7 +65,7 @@ export const Viewbox: React.FC<ViewboxProps> = ({ id }) => {
         data.display = data.charts[0].id;
       }
       if (result && data.charts.map((c) => c.id).includes(result)) {
-        data.display = result.toString();
+        data.display = result;
       }
 
       parsed[box] = result;
@@ -119,6 +120,7 @@ export const Viewbox: React.FC<ViewboxProps> = ({ id }) => {
 
   return (
     <Container>
+      <Title>{chart?.title}</Title>
       <ChartButtons>{getViewButtons(viewBox)}</ChartButtons>
       {/* <ChartContainer>{getViewChart()}</ChartContainer> */}
       <ChartContainer>

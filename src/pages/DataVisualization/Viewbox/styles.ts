@@ -44,3 +44,12 @@ export const ChartContainer = styled.div`
   display: flex;
   flex: 1 1 auto;
 `;
+
+export const Title = styled.div`
+  width: 100%;
+  color: #aaa;
+  font-size: 14px;
+  letter-spacing: 1px;
+  font-family: Lato Regular;
+  text-transform: uppercase;
+`;
