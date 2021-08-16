@@ -114,7 +114,7 @@ const SelectionProvider: React.FC = ({ children }) => {
   useEffect(() => {
     const getOptions = async (eixo, num) => {
       const { data } = await getConfig(eixo, num);
-      setConfig(data);
+      setConfig((prev) => ({ ...prev, ...data }));
 
       // Resetar opções inválidas
       const variables = [
