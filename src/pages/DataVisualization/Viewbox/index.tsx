@@ -11,6 +11,7 @@ import { useSelection } from "hooks/SelectionContext";
 import React, { useEffect, useState } from "react";
 import { getVisualization } from "services/api";
 import { Title, ChartButtons, ChartContainer, Container } from "./styles";
+import { RichString } from "components/RichString";
 
 interface ViewboxProps {
   id: number;
@@ -120,7 +121,9 @@ export const Viewbox: React.FC<ViewboxProps> = ({ id }) => {
 
   return (
     <Container>
-      <Title>{chart?.title}</Title>
+      <Title>
+        <RichString>{chart?.title}</RichString>
+      </Title>
       <ChartButtons>{getViewButtons(viewBox)}</ChartButtons>
       {/* <ChartContainer>{getViewChart()}</ChartContainer> */}
       <ChartContainer>

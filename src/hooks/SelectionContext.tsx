@@ -39,6 +39,9 @@ export interface ISimpleBreadCrumb {
 interface IBreadCrumbOptions {
   nome: string;
   id: number;
+
+  // String opcional que substitue o nome ao ser mostrada em RichStrings
+  display?: string;
 }
 
 const SelectionContext = createContext<SelectionContextData>({} as SelectionContextData);
