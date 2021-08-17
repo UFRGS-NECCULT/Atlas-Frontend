@@ -205,7 +205,6 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
         .attr("id", (d) => d.data.id || "")
         .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
         .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
-        .attr("opacity", (d) => (cad === 0 || cad === Number(d.data.id) ? 1 : unfocusOpacity))
         .attr("fill", (d) => d.data.color);
 
       g.append("foreignObject")
@@ -255,9 +254,8 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
         .style("opacity", "1")
         .each(scaleFont);
 
-      const transition = cell.transition().duration(300);
-
-      transition
+      cell.transition()
+        .duration(300)
         .attr("transform", (d: any) => `translate(${d.x0}, ${d.y0})`)
         .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
         .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
@@ -302,7 +300,10 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
           debounce((d) => changeSelection(selector, Number(d.target.id)), 250)
         );
 
-        transition.style("opacity", (d) => (val === 0 || val === Number(d.data.id) ? 1 : unfocusOpacity));
+        svg.selectAll('g.cell')
+          .transition()
+          .duration(300)
+          .style("opacity", (d: any) => (val === 0 || val === Number(d.data.id) ? 1 : unfocusOpacity));
       }
 
       cell.exit().remove();
