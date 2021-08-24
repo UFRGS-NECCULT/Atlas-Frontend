@@ -64,7 +64,7 @@ const DataVisualization = () => {
             </Box>
           </Viewboxes>
         </Container>
-        <Footer>
+        <Footer id="footer">
           <FooterTitle>Download</FooterTitle>
           <DownloadOptions>
             <Button style={{ backgroundColor: config.primaryColor }} onClick={() => handleDownload("png")}>

@@ -39,10 +39,10 @@ const Breadcrumbs = ({ children }) => {
 
   return (
     <Container>
-      <MobileButton className="open" onClick={() => setActive(true)}>
+      <MobileButton id="mobileButton" className="open" onClick={() => setActive(true)}>
         <AiOutlineMenu />
       </MobileButton>
-      <MobileBar className={active ? "active" : ""}>
+      <MobileBar id="mobileBar" className={active ? "active" : ""}>
         <MobileButton onClick={() => setActive(false)}>
           <AiOutlineClose />
         </MobileButton>
