@@ -51,25 +51,33 @@ const DataVisualization = () => {
         <Container>
           <Title>{config.variable.titulo}</Title>
           <Viewboxes>
-            <Box id={"box-1"} className="box-small" title="Mapa do Brasil">
-              <Viewbox id={1} />
-            </Box>
-            <Box id={"box-2"} className="box-small" title="Dados">
-              <DataInfo />
-            </Box>
-            <Box id={"box-3"} className="box-small" title="Descrição da variável">
-              <VarDescription />
-            </Box>
-            <Box id={"box-4"} className="box-small" title="Série histórica">
-              <ChartContainer>
-                <Viewbox id={2} />
-              </ChartContainer>
-            </Box>
-            <Box id={"box-5"} title="Treemap - Setores Culturais Criativos">
-              <ChartContainer>
-                <Viewbox id={3} />
-              </ChartContainer>
-            </Box>
+            <div className="row">
+              <div className="col">
+                <Box id="box-1" className="box expand" title="Mapa do Brasil">
+                  <Viewbox id={1} />
+                </Box>
+                <Box id="box-3" className="box" title="Descrição da variável">
+                  <VarDescription />
+                </Box>
+              </div>
+              <div className="col">
+                <Box id="box-2" className="box" title="Dados">
+                  <DataInfo />
+                </Box>
+                <Box id="box-4" className="box expand" title="Série histórica">
+                  <ChartContainer>
+                    <Viewbox id={2} />
+                  </ChartContainer>
+                </Box>
+              </div>
+            </div>
+            <div className="row">
+              <Box id={"box-5"} title="Treemap - Setores Culturais Criativos">
+                <ChartContainer>
+                  <Viewbox id={3} />
+                </ChartContainer>
+              </Box>
+            </div>
           </Viewboxes>
         </Container>
         <Footer id="footer">
