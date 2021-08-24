@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { LinearProgress } from "@material-ui/core";
 
 export const Page = styled.div`
   overflow-x: hidden;
@@ -73,6 +74,12 @@ export const DownloadOptions = styled.div`
   align-items: center;
   width: 100%;
   max-width: 500px;
+`;
+
+export const Loading = styled(LinearProgress)`
+  width: 100%;
+  height: 20px;
+  margin-top: 15px;
 `;
 
 export const Button = styled.div`
