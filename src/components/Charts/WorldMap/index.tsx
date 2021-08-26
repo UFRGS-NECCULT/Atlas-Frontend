@@ -9,6 +9,7 @@ import { GeometryCollection } from "topojson-specification";
 import { World } from "./styles";
 import { format } from "utils";
 import { useSelection } from "hooks/SelectionContext";
+import SVGTooltip from "components/SVGTooltip";
 import { getWorld } from "services/api";
 
 interface ChartProps {
@@ -19,6 +20,7 @@ interface ChartProps {
 
 const WorldMap: React.FC<ChartProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
+  const tooltipContainer = useRef<SVGTooltip | null>(null);
 
   const [data, setData] = useState<
     {
@@ -81,6 +83,16 @@ const WorldMap: React.FC<ChartProps> = ({ constants }) => {
       const marginLeft = 30;
       const marginTop = 20;
       const marginBottom = 20;
+
+      if (tooltipContainer.current == null) {
+        tooltipContainer.current = new SVGTooltip(d3Container.current, {
+          right: 0,
+          left: marginLeft,
+          top: marginTop,
+          bottom: marginBottom
+        });
+      }
+      const tooltip = tooltipContainer.current;
 
       const width = d3Container.current.clientWidth - marginLeft;
       const height = d3Container.current.clientHeight - marginTop - marginBottom;
@@ -183,6 +195,27 @@ const WorldMap: React.FC<ChartProps> = ({ constants }) => {
         continents
       );
 
+      const getValueByContinent = (parceiro_id: number) => {
+        return data.find((x) => x.parceiro_id === parceiro_id)?.valor || 0;
+      };
+
+      const showTooltip = (e, d) => {
+        let [x, y] = d3.pointer(e);
+        // Adjust for margins
+        x -= marginLeft;
+        y -= marginTop;
+
+        const parceiro = d.properties.continent;
+        const valor = getValueByContinent(Number(d.id));
+
+        tooltip.setXY(x, y);
+        tooltip.setText(`Parceiro: ${parceiro}\nValor: ${format(valor, dataFormat)}`);
+        tooltip.show();
+      };
+      const hideTooltip = () => {
+        tooltip.hide();
+      };
+
       const parsedContinents = continents.features.map((s) => {
         const d = data.find((x) => String(x.parceiro_id) === s.id);
         return { ...s, ...d, cor: colorScale(d?.valor || 0) };
@@ -198,8 +231,8 @@ const WorldMap: React.FC<ChartProps> = ({ constants }) => {
         .attr("stroke", "black")
         .style("cursor", "pointer")
         .on("click", (d) => changeSelection("prc", Number(d.target.id)))
-        // .on("mousemove", showTooltip)
-        // .on("mouseout", () => hideTooltip())
+        .on("mousemove", showTooltip)
+        .on("mouseout", () => hideTooltip())
         .transition()
         .duration(800)
         .attr("d", path)
