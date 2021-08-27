@@ -4,7 +4,7 @@ import { useData } from "hooks/DataContext";
 import { TabButton, Flex, Column, BigNumber, BigNumberDesc, Container, Source, Row } from "./styles";
 import { getInfo } from "services/api";
 
-import { format } from "utils";
+import { format, richString } from "utils";
 
 interface Data {
   selection: {
@@ -102,12 +102,6 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
     );
   };
 
-  // Diz se uma string contém uma certa expressão de substituição, como "[cad]" ou "[uf]"
-  const has = (expr: string, target: string): boolean => {
-    const regex = new RegExp(`\\[${expr}\\]`, "gi");
-    return regex.test(target);
-  };
-
   // Acha a entrada correta para um valor baseando-se na seleção
   // de valores do breadcrumb
   const findSelectedData = (data: Data) => {
@@ -125,43 +119,26 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
     return d || null;
   };
 
+
   // Acha a entrada correta para um valor baseando-se nas expressões
   // de substituição encontradas na string que descreve esse valor
-  const findCorrectData = (str: string, data: Data) => {
+  const findCorrectData = (filters: string[], data: Data) => {
+    // Atalho para deixar o código mais enxuto
+    // Diz se um nome está presente na lista de filtros
+    const i = (name) => filters.includes(name);
+
     const d = data.data.find(
       (d) =>
-        d.id_uf === (has("uf", str) ? data.selection.uf : 0) &&
-        d.id_cad === (has("cad", str) ? data.selection.cad : 0) &&
-        (d.id_subdeg !== undefined ? d.id_subdeg === (has("deg", str) ? data.selection.deg : 0) : true) &&
-        (d.id_ocupacao !== undefined ? d.id_ocupacao === (has("ocp", str) ? data.selection.ocp : 0) : true) &&
-        (d.id_parceiro !== undefined ? d.id_parceiro === (has("prc", str) ? data.selection.prc : 0) : true) &&
-        (d.id_consumo !== undefined ? d.id_consumo === (has("cns", str) ? data.selection.cns : 0) : true) &&
-        (d.id_tipo !== undefined && has("tpo", str) ? d.id_tipo === data.selection.tpo : true) // Tipo não tem um "filtro total"
+        d.id_uf === (i("uf") ? data.selection.uf : 0) &&
+        d.id_cad === (i("cad") ? data.selection.cad : 0) &&
+        (d.id_subdeg !== undefined ? d.id_subdeg === (i("deg") ? data.selection.deg : 0) : true) &&
+        (d.id_ocupacao !== undefined ? d.id_ocupacao === (i("ocp") ? data.selection.ocp : 0) : true) &&
+        (d.id_parceiro !== undefined ? d.id_parceiro === (i("prc") ? data.selection.prc : 0) : true) &&
+        (d.id_consumo !== undefined ? d.id_consumo === (i("cns") ? data.selection.cns : 0) : true) &&
+        (d.id_tipo !== undefined && i("tpo") ? d.id_tipo === data.selection.tpo : true) // Tipo não tem um "filtro total"
     );
 
     return d || null;
-  };
-
-  // Realiza as substituições necessárias na string de descrição
-  const description = (desc: string, data: DataPoint): string => {
-    // const pronoumMap = {
-    //   de: "em",
-    //   do: "no",
-    //   da: "na"
-    // };
-
-    // const ufPronome = data.preposicao_uf;
-    // if (eixo === 3) {
-    //   ufPronome = pronoumMap[data.preposicao_uf];
-    // }
-
-    return desc
-      .replace(/\[uf\]/gi, data.preposicao_uf + " " + data.nome_uf)
-      .replace(/\[cad\]/gi, data.nome_cad)
-      .replace(/\[ano\]/gi, data.ano.toString())
-      .replace(/\[deg\]/gi, data.display_subdeg || data.nome_subdeg || "undefined")
-      .replace(/\[ocp]/gi, data.nome_ocupacao || "undefined")
-      .replace(/\[prc\]/gi, data.nome_parceiro || "undefined");
   };
 
   const displayValues = () => {
@@ -172,60 +149,39 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
     // Se não há definição para esses valores, não mostre nada
     const tabs = desc[data.selection.eixo - 1][data.selection.num.toString()];
     const descriptions = tabs ? tabs[tab] : null;
-    if (!descriptions || !descriptions[0]) {
+    if (!descriptions || !descriptions[0] || typeof descriptions[0] !== 'string') {
       return false;
     }
 
-    const getStandardAccessor = () =>
-      (data.selection.uf !== 0 ? "u" : "") +
-      (data.selection.cad !== 0 ? "s" : "") +
-      (data.selection.ocp !== 0 ? "o" : "") +
-      (data.selection.deg !== 0 ? "d" : "");
-
-    const getEixo4Accessor = () => {
-      switch (data.selection.tpo) {
-        case 1:
-          return "e";
-        case 2:
-          return "i";
-        case 3:
-          return "s";
-        case 4:
-          return "c";
-        default:
-          return "";
-      }
-    };
-
-    const accessor = eixo === 4 ? getEixo4Accessor() : getStandardAccessor();
-
-    const mainStr = descriptions[0][accessor];
-    // Se a variável principal não está definida, não mostre nenhum valor
-    if (!mainStr || mainStr === "") {
-      return false;
+    let mainStr = "";
+    let main: DataPoint|null = null;
+    if (descriptions[0]) {
+      const rich = richString(descriptions[0]);
+      mainStr = rich.string;
+      main = findCorrectData(rich.used, data);
     }
-
-    const main = mainStr.trim() === "" ? findSelectedData(data) : findCorrectData(mainStr, data);
 
     let scndStr = "";
     let scnd: DataPoint | null = null;
-    if (descriptions[1] && descriptions[1][accessor]) {
-      scndStr = descriptions[1][accessor];
-      scnd = findCorrectData(scndStr, data);
+    if (descriptions[1] && typeof descriptions[1] === 'string') {
+      const rich = richString(descriptions[1]);
+      scndStr = rich.string;
+      scnd = findCorrectData(rich.used, data);
     }
 
     let thrdStr = "";
     let thrd: DataPoint | null = null;
-    if (descriptions[2] && descriptions[2][accessor]) {
-      thrdStr = descriptions[2][accessor];
-      thrd = findCorrectData(thrdStr, data);
+    if (descriptions[2] && typeof descriptions[2] === 'string') {
+      const rich = richString(descriptions[2]);
+      thrdStr = rich.string;
+      thrd = findCorrectData(rich.used, data);
     }
 
     return [
       main && (
         <Column key="0">
           <BigNumber style={{ color: config.primaryColor }}>{format(main.valor, main.formato)}</BigNumber>
-          <BigNumberDesc>{description(mainStr, main)}</BigNumberDesc>
+          <BigNumberDesc>{mainStr}</BigNumberDesc>
         </Column>
       ),
       (scnd || thrd) && (
@@ -235,7 +191,7 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
               <BigNumber style={{ color: config.primaryColor }}>
                 {format((main?.valor || 0) / scnd.valor, "percent")}
               </BigNumber>
-              <BigNumberDesc>{description(scndStr, scnd)}</BigNumberDesc>
+              <BigNumberDesc>{scndStr}</BigNumberDesc>
             </Column>
           )}
           {thrd && (
@@ -243,7 +199,7 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
               <BigNumber style={{ color: config.primaryColor }}>
                 {format((main?.valor || 0) / thrd.valor, "percent")}
               </BigNumber>
-              <BigNumberDesc>{description(thrdStr, thrd)}</BigNumberDesc>
+              <BigNumberDesc>{thrdStr}</BigNumberDesc>
             </Column>
           )}
         </Row>
