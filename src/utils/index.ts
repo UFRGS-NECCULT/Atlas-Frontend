@@ -42,7 +42,7 @@ export function format(value: number, type: string): string {
  * @returns Objeto contendo a string resultante e um vetor informando quais strings variáveis foram inseridas
  * @example richString("Dados {{ uf if uf else 'do Brasil' }}")
  */
-export function richString(template: string) {
+ export function richString(template: string) {
   const { config, uf, cad, ano, deg, prc } = useSelection();
   // TODO: ocp no useSelection()
   const ocp = 0;
@@ -63,7 +63,7 @@ export function richString(template: string) {
     const data = config.breadcrumbs.find((b) => b.id === varName)?.options.find((o) => o.id === variables[varName]);
 
     if (data && data.id !== 0) {
-      context[varName] = data.display ? data.display : data.nome;
+      context[varName] = data;
     }
   }
 
@@ -75,10 +75,15 @@ export function richString(template: string) {
 
     if (context[key]) {
       renderContext[key] = {
+        get nome() {
+          accessed[key] = true;
+          return context[key].nome;
+        },
         // Converter para string indica que esse objeto foi inserido no template
         toString() {
+          const data = context[key];
           accessed[key] = true;
-          return context[key].toString();
+          return (data.display ? data.display : data.nome).toString();
         }
       };
     }

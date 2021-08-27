@@ -2,9 +2,9 @@
 	[
     {
       "1": [[
-        "EMPRESAS {{ 'DO SETOR ' + cad if cad else 'CULTURAIS E CRIATIVAS' }} {{ deg }} {{ uf or 'NO BRASIL' }}",
-        "DO TOTAL DE EMPRESAS DOS SETORES CULTURAIS E CRIATIVOS {{ deg if (deg and cad) }} {{ uf if (uf and (cad or deg)) else 'DO BRASIL' }}",
-        "DO TOTAL DE EMPRESAS {{ 'DO SETOR ' + cad if cad else 'DOS SETORES CULTURAIS E CRIATIVOS' }} {{ deg }} DO BRASIL"
+        "EMPRESAS {{ 'DO SETOR ' + cad if cad else 'CULTURAIS E CRIATIVAS' }} {{ 'DE PORTE ' + deg.nome if deg }} {{ uf or 'NO BRASIL' }}",
+        "DO TOTAL DE EMPRESAS DOS SETORES CULTURAIS E CRIATIVOS {{ 'DE PORTE ' + deg.nome if (deg and cad) }} {{ uf if (uf and (cad or deg)) else 'DO BRASIL' }}",
+        "DO TOTAL DE EMPRESAS {{ 'DO SETOR ' + cad if cad else 'DOS SETORES CULTURAIS E CRIATIVOS' }} {{ 'DE PORTE ' + deg.nome if deg }} DO BRASIL"
       ]]
       ,
       "2" : [[
@@ -12,7 +12,7 @@
       ]]
       ,
       "3" : [[
-        "DE VARIAÇÃO NO TOTAL DE EMPRESAS {{ 'DO SETOR ' + cad if cad else 'CULTURAIS E CRIATIVAS' }} {{ deg }} {{ uf or 'DO BRASIL' }} EM {{ ano }}"
+        "DE VARIAÇÃO NO TOTAL DE EMPRESAS {{ 'DO SETOR ' + cad if cad else 'CULTURAIS E CRIATIVAS' }} {{ 'DE PORTE ' + deg.nome if deg }} {{ uf or 'DO BRASIL' }} EM {{ ano }}"
       ]]
       ,
       "4" : [[
