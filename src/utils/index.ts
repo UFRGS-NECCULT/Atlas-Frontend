@@ -104,7 +104,18 @@ export function richString(template: string, selection) {
         toString() {
           const data = context[key];
           accessed[key] = true;
-          return (data.display ? data.display : data.nome).toString();
+
+          if (data.display) {
+            return data.display.toString();
+          }
+          if ( data.preposicao && data.nome) {
+            return data.preposicao + ' ' + data.nome;
+          }
+          if (data.nome) {
+            return data.nome.toString();
+          }
+
+          throw new Error("nenhum atributo adequado encontrado no objeto");
         }
       };
     }
