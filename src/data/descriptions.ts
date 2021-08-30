@@ -291,14 +291,8 @@ export const descriptions: IDescriptions = [
       ["IHH VALOR ABSOLUTO POR PARCEIROS", "IHH VALOR ABSOLUTO POR UF", "IHH VALOR ABSOLUTO POR SETOR"],
       ["IHH VALOR ABSOLUTO POR PARCEIROS", "IHH VALOR ABSOLUTO POR UF", "IHH VALOR ABSOLUTO POR SETOR"]
     ],
-    11: [
-      ["ÍNDICE DE QUANTUM DO VALOR ABSOLUTO DAS {{ tpo }}"],
-      ["ÍNDICE DE QUANTUM DO VALOR ABSOLUTO DAS {{ tpo }}"]
-    ],
-    12: [
-      ["ÍNDICE DE PREÇOS DO VALOR ABSOLUTO DAS {{ tpo }}"],
-      ["ÍNDICE DE PREÇOS DO VALOR ABSOLUTO DAS {{ tpo }}"]
-    ],
+    11: [["ÍNDICE DE QUANTUM DO VALOR ABSOLUTO DAS {{ tpo }}"], ["ÍNDICE DE QUANTUM DO VALOR ABSOLUTO DAS {{ tpo }}"]],
+    12: [["ÍNDICE DE PREÇOS DO VALOR ABSOLUTO DAS {{ tpo }}"], ["ÍNDICE DE PREÇOS DO VALOR ABSOLUTO DAS {{ tpo }}"]],
     13: [
       [
         `{% if tpo.id === 1 %}    EXPORTADOS {{ uf }} PARA {{ prc }} {{ cad }}
