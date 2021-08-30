@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
 import debounce from "debounce";
@@ -46,11 +46,15 @@ const WorldMap: React.FC<ChartProps> = ({ constants }) => {
   const { eixo, uf, prc, tpo, cns, cad, ano, num, changeSelection } = useSelection();
 
   const [size, setSize] = useState<[number, number]>([0, 0]);
+
+  const debouncedResize = useCallback(
+    debounce(() => setSize([window.innerWidth, window.innerHeight]), 100),
+    []
+  );
+
   useEffect(() => {
-    window.addEventListener(
-      "resize",
-      debounce(() => setSize([window.innerWidth, window.innerHeight]), 100)
-    );
+    window.addEventListener("resize", debouncedResize);
+    return () => window.removeEventListener("resize", debouncedResize);
   }, []);
 
   useEffect(() => {
