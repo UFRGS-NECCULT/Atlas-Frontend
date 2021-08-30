@@ -4,7 +4,7 @@ import { useData } from "hooks/DataContext";
 import { TabButton, Flex, Column, BigNumber, BigNumberDesc, Container, Source, Row } from "./styles";
 import { getInfo } from "services/api";
 
-import { format, richString } from "utils";
+import { format, richString, shouldDisplayDescription } from "utils";
 
 interface Data {
   selection: {
@@ -53,7 +53,8 @@ interface ChartProps {
 }
 
 const DataInfo: React.FC<ChartProps> = ({ constants }) => {
-  const { eixo, ano, num, cad, uf, deg, prc, cns, tpo, config } = useSelection();
+  const selection = useSelection();
+  const { eixo, ano, num, cad, uf, deg, prc, cns, tpo, config } = {...selection, ...constants};
   // TODO: ocp no useSelection()
   const ocp = 0;
   const { desc } = useData();
@@ -68,10 +69,10 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
   }
 
   useEffect(() => {
-    const selection = { eixo, ano, num, cad, uf, deg, ocp, prc, cns, tpo, ...constants };
+    const selectionClone = { eixo, ano, num, cad, uf, deg, ocp, prc, cns, tpo, config };
     const getData = async () => {
-      const { data } = await getInfo(selection.eixo, { ...selection, var: selection.num });
-      setData({ selection, data });
+      const { data } = await getInfo(selectionClone.eixo, { ...selectionClone, var: selectionClone.num });
+      setData({ selection: selectionClone, data });
     };
 
     getData();
@@ -119,7 +120,6 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
     return d || null;
   };
 
-
   // Acha a entrada correta para um valor baseando-se nas expressões
   // de substituição encontradas na string que descreve esse valor
   const findCorrectData = (filters: string[], data: Data) => {
@@ -149,32 +149,44 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
     // Se não há definição para esses valores, não mostre nada
     const tabs = desc[data.selection.eixo - 1][data.selection.num.toString()];
     const descriptions = tabs ? tabs[tab] : null;
-    if (!descriptions || !descriptions[0] || typeof descriptions[0] !== 'string') {
+    if (!descriptions || !descriptions[0] || typeof descriptions[0] !== "string") {
       return false;
     }
 
     let mainStr = "";
-    let main: DataPoint|null = null;
-    if (descriptions[0]) {
-      const rich = richString(descriptions[0]);
-      mainStr = rich.string;
-      main = findCorrectData(rich.used, data);
+    let main: DataPoint | null = null;
+    if (shouldDisplayDescription(eixo, num, tab + 1, 1, data.selection)) {
+      if (descriptions[0] && typeof descriptions[0] === "string") {
+        const rich = richString(descriptions[0], data.selection);
+        mainStr = rich.string;
+        main = findCorrectData(rich.used, data);
+      } else if (descriptions[0] === "") {
+        main = findSelectedData(data);
+      }
     }
 
     let scndStr = "";
     let scnd: DataPoint | null = null;
-    if (descriptions[1] && typeof descriptions[1] === 'string') {
-      const rich = richString(descriptions[1]);
-      scndStr = rich.string;
-      scnd = findCorrectData(rich.used, data);
+    if (shouldDisplayDescription(eixo, num, tab + 1, 2, data.selection)) {
+      if (descriptions[1] && typeof descriptions[1] === "string") {
+        const rich = richString(descriptions[1], data.selection);
+        scndStr = rich.string;
+        scnd = findCorrectData(rich.used, data);
+      } else if (descriptions[0] === "") {
+        scnd = findSelectedData(data);
+      }
     }
 
     let thrdStr = "";
     let thrd: DataPoint | null = null;
-    if (descriptions[2] && typeof descriptions[2] === 'string') {
-      const rich = richString(descriptions[2]);
-      thrdStr = rich.string;
-      thrd = findCorrectData(rich.used, data);
+    if (shouldDisplayDescription(eixo, num, tab + 1, 3, data.selection)) {
+      if (descriptions[2] && typeof descriptions[2] === "string") {
+        const rich = richString(descriptions[2], data.selection);
+        thrdStr = rich.string;
+        thrd = findCorrectData(rich.used, data);
+      } else if (descriptions[2] === "") {
+        thrd = findSelectedData(data);
+      }
     }
 
     return [

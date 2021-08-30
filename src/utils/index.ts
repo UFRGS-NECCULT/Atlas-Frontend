@@ -1,6 +1,6 @@
 import * as d3 from "d3";
-import { useSelection } from 'hooks/SelectionContext';
 import nunjucks from "nunjucks";
+import { displayDescriptions, ISelection } from "./displayDescription";
 
 // Local pt-BR
 const locale = d3.formatLocale({
@@ -36,14 +36,33 @@ export function format(value: number, type: string): string {
   return f(value);
 }
 
+export function shouldDisplayDescription(
+  eixo: number,
+  variable: number,
+  tab: number,
+  value: 1 | 2 | 3,
+  selection: ISelection
+) {
+  if (
+    displayDescriptions[eixo] &&
+    displayDescriptions[eixo][variable] &&
+    displayDescriptions[eixo][variable][tab] &&
+    displayDescriptions[eixo][variable][tab][value]
+  ) {
+    return displayDescriptions[eixo][variable][tab][value](selection) ? true : false;
+  }
+
+  return true;
+}
+
 /**
  *
  * @param template Template para substituição
  * @returns Objeto contendo a string resultante e um vetor informando quais strings variáveis foram inseridas
  * @example richString("Dados {{ uf if uf else 'do Brasil' }}")
  */
- export function richString(template: string) {
-  const { config, uf, cad, ano, deg, prc } = useSelection();
+export function richString(template: string, selection) {
+  const { config, uf, cad, ano, deg, prc, tpo } = selection;
   // TODO: ocp no useSelection()
   const ocp = 0;
 
@@ -54,7 +73,8 @@ export function format(value: number, type: string): string {
     ano,
     deg,
     prc,
-    ocp
+    ocp,
+    tpo
   };
 
   // Pegar os dados das variáveis selecionadas para construir o contexto
@@ -75,6 +95,7 @@ export function format(value: number, type: string): string {
 
     if (context[key]) {
       renderContext[key] = {
+        id: context[key].id,
         get nome() {
           accessed[key] = true;
           return context[key].nome;
