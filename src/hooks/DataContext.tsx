@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 
 import DATA_JSON from "../assets/json/pt-br.json";
 import COLOR_JSON from "../assets/json/colors.json";
-import DESC_JSON from "../assets/json/descricoes.json";
+import { descriptions } from "data/descriptions";
 
 interface DataContextData {
   data: IOptions;
@@ -10,19 +10,15 @@ interface DataContextData {
   desc: IDescriptions;
 }
 
-interface IDescriptions {
+// Descrições do componente DataInfo, no formato
+// desc[eixo][variavel][aba (entre 0 e 1)][numero (entre 0 e 2)]
+export interface IDescriptions {
   [eixo: number]: {
-    [num: string]: {
-      // eslint-disable-next-line no-unused-vars
-      [tab in 0 | 1]: {
-        // eslint-disable-next-line no-unused-vars
-        [data in 0 | 1 | 2]: string;
-      };
-    };
+    [num: string]: string[][];
   };
 }
 
-interface IOptions {
+export interface IOptions {
   [key: string]: {
     name: string;
     value?: string | number;
@@ -53,7 +49,7 @@ const DataContext = createContext<DataContextData>({} as DataContextData);
 const DataProvider: React.FC = ({ children }) => {
   const [data] = useState(JSON.parse(JSON.stringify(DATA_JSON)));
   const [colors] = useState(JSON.parse(JSON.stringify(COLOR_JSON)));
-  const [desc] = useState(JSON.parse(JSON.stringify(DESC_JSON)));
+  const [desc] = useState(descriptions);
 
   return <DataContext.Provider value={{ data, colors, desc }}>{children}</DataContext.Provider>;
 };
