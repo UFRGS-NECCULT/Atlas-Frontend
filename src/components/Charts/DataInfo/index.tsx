@@ -153,9 +153,10 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
       return false;
     }
 
+    // Pegar descrição e valor do número principal
     let mainStr = "";
     let main: DataPoint | null = null;
-    if (shouldDisplayDescription(eixo, num, tab + 1, 1, data.selection)) {
+    if (shouldDisplayDescription(data.selection.eixo, data.selection.num, tab + 1, 1, data.selection)) {
       if (descriptions[0] && typeof descriptions[0] === "string") {
         const rich = richString(descriptions[0], data.selection);
         mainStr = rich.string;
@@ -165,9 +166,10 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
       }
     }
 
+    // Pegar descrição e valor do segundo valor
     let scndStr = "";
     let scnd: DataPoint | null = null;
-    if (shouldDisplayDescription(eixo, num, tab + 1, 2, data.selection)) {
+    if (shouldDisplayDescription(data.selection.eixo, data.selection.num, tab + 1, 2, data.selection)) {
       if (descriptions[1] && typeof descriptions[1] === "string") {
         const rich = richString(descriptions[1], data.selection);
         scndStr = rich.string;
@@ -177,9 +179,10 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
       }
     }
 
+    // Pegar descrição e valor do terceiro valor
     let thrdStr = "";
     let thrd: DataPoint | null = null;
-    if (shouldDisplayDescription(eixo, num, tab + 1, 3, data.selection)) {
+    if (shouldDisplayDescription(data.selection.eixo, data.selection.num, tab + 1, 3, data.selection)) {
       if (descriptions[2] && typeof descriptions[2] === "string") {
         const rich = richString(descriptions[2], data.selection);
         thrdStr = rich.string;
