@@ -276,16 +276,16 @@ export const descriptions: IDescriptions = [
     ],
     3: [
       [
-        `{% if tpo.id === 1 %} DE PARTICIPAÇÃO DO VALOR EXPORTADO D{{ prc or 'O MUNDO' }} PARA {{ uf.nome or 'BRASIL' }}
-        {% if tpo.id === 2 %}  DE PARTICIPAÇÃO DO VALOR IMPORTADO D{{ prc or 'O MUNDO' }} PARA {{ uf.nome or 'BRASIL' }}
-        {% if tpo.id === 4 %}  DA CORRENTE DE COMÉRCIO ENTRE {{ uf.nome or 'BRASIL' }} E {{ prc.nome or 'MUNDO' }}
+        `{% if tpo.id === 1 %}     DE PARTICIPAÇÃO DO VALOR EXPORTADO D{{ prc or 'O MUNDO' }} PARA {{ uf.nome or 'BRASIL' }}
+        {% elseif tpo.id === 2 %}  DE PARTICIPAÇÃO DO VALOR IMPORTADO D{{ prc or 'O MUNDO' }} PARA {{ uf.nome or 'BRASIL' }}
+        {% elseif tpo.id === 4 %}  DA CORRENTE DE COMÉRCIO ENTRE {{ uf.nome or 'BRASIL' }} E {{ prc.nome or 'MUNDO' }}
         {% endif %}
         {{ cad }} NO VALOR ADICIONADO`
       ],
       [
-        `{% if tpo.id === 1 %} DE PARTICIPAÇÃO DO VALOR EXPORTADO D{{ prc or 'O MUNDO' }} PARA {{ uf.nome or 'BRASIL' }}
-        {% if tpo.id === 2 %}  DE PARTICIPAÇÃO DO VALOR IMPORTADO D{{ prc or 'O MUNDO' }} PARA {{ uf.nome or 'BRASIL' }}
-        {% if tpo.id === 4 %}  DA CORRENTE DE COMÉRCIO ENTRE {{ uf.nome or 'BRASIL' }} E {{ prc.nome or 'MUNDO' }}
+        `{% if tpo.id === 1 %}     DE PARTICIPAÇÃO DO VALOR EXPORTADO D{{ prc or 'O MUNDO' }} PARA {{ uf.nome or 'BRASIL' }}
+        {% elseif tpo.id === 2 %}  DE PARTICIPAÇÃO DO VALOR IMPORTADO D{{ prc or 'O MUNDO' }} PARA {{ uf.nome or 'BRASIL' }}
+        {% elseif tpo.id === 4 %}  DA CORRENTE DE COMÉRCIO ENTRE {{ uf.nome or 'BRASIL' }} E {{ prc.nome or 'MUNDO' }}
         {% endif %}
         {{ cad }} NO VALOR ADICIONADO`
       ]
@@ -306,22 +306,22 @@ export const descriptions: IDescriptions = [
         {% endif %}`,
 
         `DOS KG
-        {% if tpo.id === 1 %} EXPORTADOS {{ uf or 'DO BRASIL' }}
-        {% if tpo.id === 2 %} IMPORTADOS PARA {{ uf.nome or 'BRASIL' }}
-        {% if tpo.id === 4 %} TRANSACIONADOS ENTRE {{ uf.nome or 'BRASIL' }} E O MUNDO
+        {% if tpo.id === 1 %}     EXPORTADOS {{ uf or 'DO BRASIL' }}
+        {% elseif tpo.id === 2 %} IMPORTADOS PARA {{ uf.nome or 'BRASIL' }}
+        {% elseif tpo.id === 4 %} TRANSACIONADOS ENTRE {{ uf.nome or 'BRASIL' }} E O MUNDO
         {% endif %}`
       ],
       [
-        `{% if tpo.id === 1 %} EXPORTADOS {{ uf or 'DO BRASIL' }} PARA {{ prc or 'O MUNDO' }} {{ cad }}
-        {% if tpo.id === 2 %}  IMPORTDADOS D{{ prc or 'O MUNDO' }} PARA {{ uf.nome or 'BRASIL' }} {{ cad }}
-        {% if tpo.id === 3 %}  DE SALDO COMERCIAL ENTRE {{ uf.nome or 'BRASIL' }} e {{ prc or 'O MUNDO' }} {{ cad }}
-        {% if tpo.id === 4 %}  {{ uf or 'DO BRASIL' }} COM {{ prc or 'O MUNDO' }} {{ cad }}
+        `{% if tpo.id === 1 %}     EXPORTADOS {{ uf or 'DO BRASIL' }} PARA {{ prc or 'O MUNDO' }} {{ cad }}
+        {% elseif tpo.id === 2 %}  IMPORTDADOS D{{ prc or 'O MUNDO' }} PARA {{ uf.nome or 'BRASIL' }} {{ cad }}
+        {% elseif tpo.id === 3 %}  DE SALDO COMERCIAL ENTRE {{ uf.nome or 'BRASIL' }} e {{ prc or 'O MUNDO' }} {{ cad }}
+        {% elseif tpo.id === 4 %}  {{ uf or 'DO BRASIL' }} COM {{ prc or 'O MUNDO' }} {{ cad }}
         {% endif %}
         `,
         `DOS KG
-        {% if tpo.id === 1 %} EXPORTADOS PELO BRASIL PARA {{ prc or 'O MUNDO' }}
-        {% if tpo.id === 2 %} IMPORTADOS PELO BRASIL D{{ prc or 'O MUNDO' }}
-        {% if tpo.id === 4 %} TRANSACIONADOS ENTRE BRASIL E {{ prc or 'O MUNDO' }} {{ cad }}
+        {% if tpo.id === 1 %}     EXPORTADOS PELO BRASIL PARA {{ prc or 'O MUNDO' }}
+        {% elseif tpo.id === 2 %} IMPORTADOS PELO BRASIL D{{ prc or 'O MUNDO' }}
+        {% elseif tpo.id === 4 %} TRANSACIONADOS ENTRE BRASIL E {{ prc or 'O MUNDO' }} {{ cad }}
         {% endif %}`
       ]
     ],
