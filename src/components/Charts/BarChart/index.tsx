@@ -11,6 +11,8 @@ interface RawData {
   valor: number;
   cor: string;
   cor_eixo: any;
+  cor_inferior: string;
+  cor_superior: string;
   sdg_id?: number;
   sdg_nome?: string;
   sdg_cor?: string;
@@ -49,7 +51,7 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
     return () => window.removeEventListener("resize", debouncedResize);
   }, []);
 
-  // TODO: ocp, subdeg
+  // TODO: ocp
   const { eixo, deg, uf, cad, num, ano, changeSelection } = useSelection();
 
   useEffect(() => {

@@ -124,7 +124,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
     getData();
   }, [eixo, uf, num, ano, cad, tpo, prc, cns, deg, group]);
 
-  const parseData = (data): IParsedData => {
+  const parseData = useCallback((data): IParsedData => {
     const groups = {};
     for (const d of data) {
       // Inicializar grupo
@@ -160,7 +160,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
     setLegendData(legend);
 
     return { name: "scc", color: "#ff0000", children: groupsArray };
-  };
+  }, []);
 
   useEffect(() => {
     const marginLeft = 0;
