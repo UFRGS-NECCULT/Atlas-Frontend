@@ -53,8 +53,7 @@ interface ChartProps {
 }
 
 const DataInfo: React.FC<ChartProps> = ({ constants }) => {
-  const selection = useSelection();
-  const { eixo, ano, num, cad, uf, deg, prc, cns, tpo, config } = { ...selection, ...constants };
+  const { eixo, ano, num, cad, uf, deg, prc, cns, tpo, config } = { ...useSelection(), ...constants };
   // TODO: ocp no useSelection()
   const ocp = 0;
   const { desc } = useData();
@@ -76,7 +75,7 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
     };
 
     getData();
-  }, [eixo, num, ano, cad, uf, deg, prc, cns, tpo]);
+  }, [eixo, num, ano, cad, uf, deg, ocp, prc, cns, tpo, config]);
 
   const tabs = (data: Data) => {
     // Só eixos do Mercado, Fomento e Comércio Internacional têm abas
