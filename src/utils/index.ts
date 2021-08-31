@@ -87,14 +87,40 @@ export function richString(template: string, selection) {
     }
   }
 
+  // Funções que os templates podem usar
+  const renderContext: any = {
+    // Recebe um objeto que tenha um pronome possessivo (de, do, da...) no campo 'preposicao',
+    // converte esse pronome para indicativo (o, a, ...) e concatena com o campo 'nome'
+    indicativo(arg) {
+      if (!arg) {
+        return null;
+      }
+      const obj = context[arg.key];
+
+      switch (obj.preposicao) {
+        case "do":
+          return "o " + obj.nome;
+        case "da":
+          return "a " + obj.nome;
+        case "de":
+          return obj.nome;
+        default:
+          throw new Error(`Pronome possessivo "${obj.preposicao}" desconhecido!`);
+      }
+    }
+  };
+
   // Modificar o contexto para registrar quais variáveis foram acessadas
   const accessed: any = {};
-  const renderContext: any = {};
   for (const key in context) {
     accessed[key] = false;
 
     if (context[key]) {
       renderContext[key] = {
+        // Chave para podermos acessar informações "privadas" do objeto
+        // nas funções do template
+        key,
+
         id: context[key].id,
         get nome() {
           accessed[key] = true;
