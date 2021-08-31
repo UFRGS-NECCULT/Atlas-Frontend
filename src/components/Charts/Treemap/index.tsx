@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import * as debounce from "debounce";
 import { useSelection } from "hooks/SelectionContext";
@@ -71,12 +71,17 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg
   const [size, setSize] = useState<[number, number]>([0, 0]);
+
+  const debouncedResize = useCallback(
+    debounce(() => setSize([window.innerWidth, window.innerHeight]), 100),
+    []
+  );
+
   useEffect(() => {
-    window.addEventListener(
-      "resize",
-      debounce(() => setSize([window.innerWidth, window.innerHeight]), 100)
-    );
+    window.addEventListener("resize", debouncedResize);
+    return () => window.removeEventListener("resize", debouncedResize);
   }, []);
+
 
   const unfocusOpacity = 0.8;
 
@@ -119,7 +124,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
     getData();
   }, [eixo, uf, num, ano, cad, tpo, prc, cns, deg, group]);
 
-  const parseData = (data): IParsedData => {
+  const parseData = useCallback((data): IParsedData => {
     const groups = {};
     for (const d of data) {
       // Inicializar grupo
@@ -155,7 +160,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
     setLegendData(legend);
 
     return { name: "scc", color: "#ff0000", children: groupsArray };
-  };
+  }, []);
 
   useEffect(() => {
     const marginLeft = 0;

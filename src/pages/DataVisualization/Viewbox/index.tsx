@@ -109,6 +109,7 @@ export const Viewbox: React.FC<ViewboxProps> = ({ id }) => {
         return (
           <button
             key={chart.id}
+            className="viewButton"
             style={{ backgroundColor: config.primaryColor }}
             onClick={() => setViewBox({ ...viewBox, display: chart.id })}
           >

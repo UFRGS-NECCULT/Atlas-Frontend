@@ -41,21 +41,18 @@ export const Container = styled.div`
 
 export const Selects = styled.div`
   width: 100%;
-
+  max-width: 1366px;
   min-height: 70px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
 
+  margin: 0 auto;
   border-bottom: 1px #f7f7f7 solid;
-  // position: fixed;
 
-  padding-left: 2%;
-  padding-right: 2%;
-
-  // top: 0;
-  // left: 0;
-  // z-index: 99;
+  padding: 15px 47px;
   background-color: white;
 
   @media (max-width: 768px) {

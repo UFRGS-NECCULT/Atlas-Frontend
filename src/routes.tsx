@@ -4,7 +4,6 @@ import LandingPage from "pages/Landing";
 import AppProvider from "hooks";
 import DataVisualization from "pages/DataVisualization";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { LibrasDisabler } from "components/LibrasDisabler";
 
 const Routes = () => {
   return (
@@ -12,9 +11,7 @@ const Routes = () => {
       <Switch>
         <Route path="/" exact component={LandingPage} />
         <AppProvider>
-          <LibrasDisabler>
-            <Route path="/resultado" exact component={DataVisualization} />
-          </LibrasDisabler>
+          <Route path="/resultado" exact component={DataVisualization} />
         </AppProvider>
       </Switch>
     </BrowserRouter>

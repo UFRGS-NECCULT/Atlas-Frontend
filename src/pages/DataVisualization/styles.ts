@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { LinearProgress } from "@material-ui/core";
 
 export const Page = styled.div`
   overflow-x: hidden;
@@ -7,10 +8,13 @@ export const Page = styled.div`
 
 export const Container = styled.div`
   width: 100vw;
+  max-width: 1366px;
+  margin: 0 auto;
+
   overflow-x: hidden;
 
   @media (min-width: 768px) {
-    padding: 0 15%;
+    padding: 0 32px;
   }
 `;
 
@@ -30,31 +34,80 @@ export const Title = styled.div`
 `;
 
 export const Viewboxes = styled.div`
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 
-  overflow-x: hidden;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: repeat(6, 100px) 450px;
-  grid-template-areas:
-    "box-1 box-2"
-    "box-1 box-2"
-    "box-1 box-2"
-    "box-1 box-4"
-    "box-3 box-4"
-    "box-3 box-4"
-    "box-5 box-5";
-  column-gap: 20px;
-  row-gap: 20px;
+  padding: 15px;
+
+  .row + .row {
+    margin-top: 15px;
+  }
+  .row {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+
+    .col + .col {
+      margin-left: 15px;
+    }
+    .col {
+      width: 50%;
+
+      display: flex;
+      flex-direction: column;
+
+      .box {
+        width: 100%;
+        padding: 15px;
+      }
+
+      .box.expand {
+        height: 100%;
+      }
+
+      .box + .box {
+        margin-top: 15px;
+      }
+    }
+  }
 
   #box-3 {
+    min-height: 120px;
     overflow: auto;
   }
 
-  @media (max-width: 768px) {
-    padding: 8px;
+  #box-5 {
+    width: 100%;
+  }
 
-    display: flex;
-    flex-direction: column;
+  @media (max-width: 768px) {
+    .col + .col {
+      margin-left: 0;
+    }
+
+    .row + .row {
+      margin-top: 0;
+    }
+    .row {
+      flex-direction: column;
+      width: 100%;
+
+      .col + .col {
+        margin-left: 0px;
+      }
+
+      .col {
+        width: 100%;
+        padding: 8px;
+
+        .box {
+          width: 100%;
+        }
+
+        display: flex;
+      }
+    }
   }
 `;
 
@@ -73,6 +126,12 @@ export const DownloadOptions = styled.div`
   align-items: center;
   width: 100%;
   max-width: 500px;
+`;
+
+export const Loading = styled(LinearProgress)`
+  width: 100%;
+  height: 20px;
+  margin-top: 15px;
 `;
 
 export const Button = styled.div`

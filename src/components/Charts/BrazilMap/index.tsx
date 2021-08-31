@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
 import debounce from "debounce";
@@ -7,7 +7,6 @@ import brStates from "../../../assets/json/br-min.json";
 import { GeometryCollection } from "topojson-specification";
 import { useSelection } from "hooks/SelectionContext";
 import { getMap } from "services/api";
-import { useData } from "hooks/DataContext";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
 import { Map } from "./styles";
@@ -18,50 +17,57 @@ interface ChartProps {
   };
 }
 
+interface DataProps {
+  cadeia: string;
+  cadeia_id: number;
+  uf: string;
+  uf_id: number;
+  cor: string;
+  cor_eixo: string;
+  cor_inferior: string;
+  cor_superior: string;
+  valor: number;
+  percentual: number;
+  taxa: number;
+  formato: string;
+}
+
 const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
-  const [data, setData] = useState<
-    {
-      cadeia: string;
-      cadeia_id: number;
-      uf: string;
-      uf_id: number;
-      cor: string;
-      cor_eixo: string;
-      valor: number;
-      percentual: number;
-      taxa: number;
-      formato: string;
-    }[]
-  >([]);
+  const [data, setData] = useState<DataProps[]>([]);
 
-  // O tamanho da janela faz parte do nosso estado já que sempre
-  // que a janela muda de tamanho, temos que redesenhar o svg
   const [size, setSize] = useState<[number, number]>([0, 0]);
+
+  const debouncedResize = useCallback(
+    debounce(() => setSize([window.innerWidth, window.innerHeight]), 100),
+    []
+  );
+
   useEffect(() => {
-    window.addEventListener(
-      "resize",
-      debounce(() => setSize([window.innerWidth, window.innerHeight]), 100)
-    );
+    window.addEventListener("resize", debouncedResize);
+    return () => window.removeEventListener("resize", debouncedResize);
   }, []);
 
   const { eixo, uf, cad, ano, num, deg, changeSelection } = useSelection();
-  const { colors } = useData();
 
   useEffect(() => {
     const getData = async () => {
       const { data } = await getMap(eixo, { var: num, uf, cad, ano, deg, ...constants });
+      console.log(data);
       setData(data);
     };
 
     getData();
   }, [eixo, cad, ano, num, deg]);
 
-  const getValueByUf = (uf: number) => {
-    return data.find((x) => x.uf_id === uf)?.valor || 0;
-  };
+  const getValueByUf = useCallback(
+    (uf: number) => {
+      return data.find((x) => x.uf_id === uf)?.valor || 0;
+    },
+    [data]
+  );
 
   useEffect(() => {
     const svg = d3.select(d3Container.current);
@@ -79,6 +85,7 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
   useEffect(() => {
     if (data && data.length && d3Container.current) {
       const dataFormat = data[0].formato;
+      const { cor_inferior, cor_superior } = data[0];
 
       const marginLeft = 30;
       const marginTop = 20;
@@ -125,7 +132,7 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
       const colorScale = d3
         .scaleLinear<string>()
         .domain(d3.extent(values) as [number, number])
-        .range([colors.cadeias[cad].gradient["2"], colors.cadeias[cad].gradient["6"]]); // TODO: change color dynamically
+        .range([cor_inferior, cor_superior]);
 
       const [minValue, maxValue] = d3.extent(values);
       const [lowColor, highColor] = d3.extent(values).map((v) => colorScale(v));

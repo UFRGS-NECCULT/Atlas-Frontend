@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import * as d3 from "d3";
 import { useSelection } from "hooks/SelectionContext";
 import { getBars } from "services/api";
@@ -11,6 +11,8 @@ interface RawData {
   valor: number;
   cor: string;
   cor_eixo: any;
+  cor_inferior: string;
+  cor_superior: string;
   sdg_id?: number;
   sdg_nome?: string;
   sdg_cor?: string;
@@ -38,14 +40,18 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg
   const [size, setSize] = useState<[number, number]>([0, 0]);
+
+  const debouncedResize = useCallback(
+    debounce(() => setSize([window.innerWidth, window.innerHeight]), 100),
+    []
+  );
+
   useEffect(() => {
-    window.addEventListener(
-      "resize",
-      debounce(() => setSize([window.innerWidth, window.innerHeight]), 100)
-    );
+    window.addEventListener("resize", debouncedResize);
+    return () => window.removeEventListener("resize", debouncedResize);
   }, []);
 
-  // TODO: ocp, subdeg
+  // TODO: ocp
   const { eixo, deg, uf, cad, num, ano, changeSelection } = useSelection();
 
   useEffect(() => {
@@ -57,7 +63,7 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
     getData();
   }, [eixo, deg, uf, cad, num, stacked]);
 
-  const parseBarsData = (data): ParsedData[] => {
+  const parseBarsData = useCallback((data): ParsedData[] => {
     const groupedData = data.reduce((r, c) => {
       const index = r.findIndex((d) => d.ano === c.ano);
 
@@ -83,7 +89,7 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
     });
 
     return parsedData;
-  };
+  }, []);
 
   useEffect(() => {
     if (rawData && rawData.length && d3Container.current) {
