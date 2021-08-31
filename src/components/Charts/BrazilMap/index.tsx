@@ -55,7 +55,6 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
   useEffect(() => {
     const getData = async () => {
       const { data } = await getMap(eixo, { var: num, uf, cad, ano, deg, ...constants });
-      console.log(data);
       setData(data);
     };
 
