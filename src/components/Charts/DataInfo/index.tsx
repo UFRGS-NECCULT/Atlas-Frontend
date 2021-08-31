@@ -18,6 +18,8 @@ interface Data {
     prc: number;
     tpo: number;
     cns: number;
+    mec: number;
+    pfj: number;
   };
   data: DataPoint[];
 }
@@ -54,8 +56,10 @@ interface ChartProps {
 
 const DataInfo: React.FC<ChartProps> = ({ constants }) => {
   const { eixo, ano, num, cad, uf, deg, prc, cns, tpo, config } = { ...useSelection(), ...constants };
-  // TODO: ocp no useSelection()
+  // TODO: ocp, mec, pfj no useSelection()
   const ocp = 0;
+  const mec = 0;
+  const pfj = 0;
   const { desc } = useData();
 
   const [data, setData] = useState<Data | null>(null);
@@ -68,14 +72,14 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
   }
 
   useEffect(() => {
-    const selectionClone = { eixo, ano, num, cad, uf, deg, ocp, prc, cns, tpo, config };
+    const selectionClone = { eixo, ano, num, cad, uf, deg, ocp, prc, cns, tpo, mec, pfj, config };
     const getData = async () => {
       const { data } = await getInfo(selectionClone.eixo, { ...selectionClone, var: selectionClone.num });
       setData({ selection: selectionClone, data });
     };
 
     getData();
-  }, [eixo, num, ano, cad, uf, deg, ocp, prc, cns, tpo, config]);
+  }, [eixo, num, ano, cad, uf, deg, ocp, prc, cns, tpo, mec, pfj, config]);
 
   const tabs = (data: Data) => {
     // Só eixos do Mercado, Fomento e Comércio Internacional têm abas
