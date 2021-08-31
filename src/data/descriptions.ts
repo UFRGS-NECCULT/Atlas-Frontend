@@ -329,6 +329,9 @@ export const descriptions: IDescriptions = [
         {% endif %}`
       ]
     ],
-    14: [["DE RENTABILIDADE DAS EXPORTAÇÕES {{ 'NO SETOR ' + cad if cad }}"], ["DE RENTABILIDADE DAS EXPORTAÇÕES {{ 'DO SETOR ' + cad if cad }}"]]
+    14: [
+      ["DE RENTABILIDADE DAS EXPORTAÇÕES {{ 'NO SETOR ' + cad if cad }}"],
+      ["DE RENTABILIDADE DAS EXPORTAÇÕES {{ 'DO SETOR ' + cad if cad }}"]
+    ]
   }
 ];

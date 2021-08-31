@@ -95,6 +95,7 @@ export function richString(template: string, selection) {
       if (!arg) {
         return null;
       }
+      accessed[arg.key] = true;
       const obj = context[arg.key];
 
       switch (obj.preposicao) {
