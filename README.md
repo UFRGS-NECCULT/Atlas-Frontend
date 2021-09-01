@@ -1,8 +1,41 @@
 # Atlas OBEC
 
-## Utils
+Atlas econômico da cultura brasileira (OBEC - UFRGS)
 
-### React e D3
+## Tecnologias utilizadas
 
-Artigo muito bom para integração de React e D3 com hooks. 
-https://medium.com/@jeffbutsch/using-d3-in-react-with-hooks-4a6c61f1d102
+* WIP
+
+## Documentação para instalar o Atlas
+
+### Instalação via docker
+
+**Windows**
+
+* WIP
+
+**Debian/Ubuntu**
+
+* WIP
+
+
+**CentOS/Fedora**
+
+* WIP
+
+
+### Instalação sem docker
+
+* WIP
+
+## Requisitos e Funcionalidades
+
+* WIP
+
+## DER e Banco de Dados
+
+* WIP
+  
+## Fluxograma do Atlas
+
+* WIP
