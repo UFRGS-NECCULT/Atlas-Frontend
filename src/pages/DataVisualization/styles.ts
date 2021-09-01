@@ -14,7 +14,7 @@ export const Container = styled.div`
   overflow-x: hidden;
 
   @media (min-width: 768px) {
-    padding: 0 32px;
+    padding: 0 64px;
   }
 `;
 
@@ -72,6 +72,11 @@ export const Viewboxes = styled.div`
     }
   }
 
+  #box-1,
+  #box-4 {
+    min-height: 330px;
+  }
+
   #box-3 {
     min-height: 120px;
     overflow: auto;
@@ -79,6 +84,7 @@ export const Viewboxes = styled.div`
 
   #box-5 {
     width: 100%;
+    min-height: 440px;
   }
 
   @media (max-width: 768px) {

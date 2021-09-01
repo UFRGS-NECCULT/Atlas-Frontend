@@ -135,8 +135,8 @@ export function richString(template: string, selection) {
           if (data.display) {
             return data.display.toString();
           }
-          if ( data.preposicao && data.nome) {
-            return data.preposicao + ' ' + data.nome;
+          if (data.preposicao && data.nome) {
+            return data.preposicao + " " + data.nome;
           }
           if (data.nome) {
             return data.nome.toString();
