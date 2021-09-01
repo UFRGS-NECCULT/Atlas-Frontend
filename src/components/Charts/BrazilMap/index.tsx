@@ -50,16 +50,16 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
     return () => window.removeEventListener("resize", debouncedResize);
   }, []);
 
-  const { eixo, uf, cad, ano, num, deg, changeSelection } = useSelection();
+  const { eixo, uf, cad, ano, num, deg, prc, tpo, changeSelection } = useSelection();
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getMap(eixo, { var: num, uf, cad, ano, deg, ...constants });
+      const { data } = await getMap(eixo, { var: num, uf, cad, ano, deg, prc, tpo, ...constants });
       setData(data);
     };
 
     getData();
-  }, [eixo, cad, ano, num, deg]);
+  }, [eixo, cad, ano, num, deg, prc, tpo]);
 
   const getValueByUf = useCallback(
     (uf: number) => {
