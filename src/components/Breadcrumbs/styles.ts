@@ -52,7 +52,7 @@ export const Selects = styled.div`
   margin: 0 auto;
   border-bottom: 1px #f7f7f7 solid;
 
-  padding: 15px 47px;
+  padding: 15px 64px;
   background-color: white;
 
   @media (max-width: 768px) {
