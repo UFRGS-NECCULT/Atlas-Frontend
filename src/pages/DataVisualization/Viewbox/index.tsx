@@ -54,49 +54,49 @@ export const Viewbox: React.FC<ViewboxProps> = ({ id }) => {
     charts: []
   });
 
-  const setViewBox = (data: ViewCharts) => {
+  const setViewBox = (charts: Chart[], display?: ChartType) => {
     const box = `box-${id}`;
     const parsed = qs.parse(window.location.search);
 
     const result = parsed[box] as ChartType;
+    let chartDisplay: ChartType = "none";
 
-    if (!data.display) {
-      data.display = "none";
-      if (data.charts.length) {
-        data.display = data.charts[0].id;
+    if (!display) {
+      if (charts.length) {
+        chartDisplay = charts[0].id;
       }
-      if (result && data.charts.map((c) => c.id).includes(result)) {
-        data.display = result;
+      if (result && charts.map((c) => c.id).includes(result)) {
+        chartDisplay = result;
       }
-
-      parsed[box] = result;
-      const stringified = qs.stringify(parsed);
-      history.pushState({}, "", `/resultado?${stringified}`);
+    } else {
+      chartDisplay = display;
     }
 
-    parsed[box] = data.display;
+    parsed[box] = chartDisplay;
     const stringified = qs.stringify(parsed);
-
     history.pushState({}, "", `/resultado?${stringified}`);
 
-    _setViewBox(data);
+    _setViewBox({
+      charts,
+      display: chartDisplay
+    });
   };
 
   useEffect(() => {
     const { display } = viewBox;
-
-    const chart = viewBox.charts.find((chart) => chart.id === display);
-
-    if (chart) setChart(chart);
-  }, [viewBox.display]);
+    if (viewBox.charts && viewBox.charts.length) {
+      const chart = viewBox.charts.find((chart) => chart.id === display);
+      if (chart) setChart(chart);
+    }
+  }, [viewBox]);
 
   useEffect(() => {
     const getBoxInfo = async () => {
       try {
         const { data } = await getVisualization(eixo, { var: num, box: id });
-        setViewBox(data);
+        setViewBox(data.charts);
       } catch (e) {
-        setViewBox({ display: "none", charts: [] });
+        setViewBox([]);
       }
     };
     getBoxInfo();
@@ -111,7 +111,7 @@ export const Viewbox: React.FC<ViewboxProps> = ({ id }) => {
             key={chart.id}
             className="viewButton"
             style={{ backgroundColor: config.primaryColor }}
-            onClick={() => setViewBox({ ...viewBox, display: chart.id })}
+            onClick={() => setViewBox(viewBox.charts, chart.id)}
           >
             {chart.label}
           </button>
