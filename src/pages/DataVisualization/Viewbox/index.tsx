@@ -1,14 +1,17 @@
+import React, { Suspense, lazy, useEffect, useState } from "react";
+
 import qs from "query-string";
 
-import BarChart from "components/Charts/BarChart";
-import BrazilMap from "components/Charts/BrazilMap";
-import DonutChart from "components/Charts/DonutChart";
+const BarChart = lazy(() => import("../../../components/Charts/BarChart"));
+const BrazilMap = lazy(() => import("../../../components/Charts/BrazilMap"));
+const DonutChart = lazy(() => import("../../../components/Charts/DonutChart"));
+const LineChart = lazy(() => import("../../../components/Charts/LineChart"));
+const WorldMap = lazy(() => import("../../../components/Charts/WorldMap"));
+const Treemap = lazy(() => import("../../../components/Charts/Treemap"));
+
 import { EmptyChart } from "components/Charts/EmptyChart";
-import LineChart from "components/Charts/LineChart";
-import WorldMap from "components/Charts/WorldMap";
-import Treemap from "components/Charts/Treemap";
 import { useSelection } from "hooks/SelectionContext";
-import React, { useEffect, useState } from "react";
+
 import { getVisualization } from "services/api";
 import { Title, ChartButtons, ChartContainer, Container } from "./styles";
 import { RichString } from "components/RichString";
@@ -122,14 +125,16 @@ export const Viewbox: React.FC<ViewboxProps> = ({ id }) => {
 
   return (
     <Container>
-      <Title>
-        <RichString>{chart?.title}</RichString>
-      </Title>
-      <ChartButtons>{getViewButtons(viewBox)}</ChartButtons>
-      {/* <ChartContainer>{getViewChart()}</ChartContainer> */}
-      <ChartContainer>
-        <Chart chart={chart} />
-      </ChartContainer>
+      <Suspense fallback={<h1>loading</h1>}>
+        <Title>
+          <RichString>{chart?.title}</RichString>
+        </Title>
+        <ChartButtons>{getViewButtons(viewBox)}</ChartButtons>
+        {/* <ChartContainer>{getViewChart()}</ChartContainer> */}
+        <ChartContainer>
+          <Chart chart={chart} />
+        </ChartContainer>
+      </Suspense>
     </Container>
   );
 };

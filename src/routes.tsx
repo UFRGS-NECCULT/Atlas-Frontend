@@ -1,22 +1,24 @@
-import React from "react";
-
-import LandingPage from "pages/Landing";
-import AppProvider from "hooks";
-import DataVisualization from "pages/DataVisualization";
+import React, { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { LibrasDisabler } from "components/LibrasDisabler";
+import AppProvider from "hooks";
+
+const LandingPage = lazy(() => import("./pages/Landing"));
+const DataVisualizationPage = lazy(() => import("./pages/DataVisualization"));
+const LibrasDisabler = lazy(() => import("./components/LibrasDisabler"));
 
 const Routes = () => {
   return (
     <BrowserRouter>
-      <Switch>
-        <Route path="/" exact component={LandingPage} />
-        <AppProvider>
-          <LibrasDisabler>
-            <Route path="/resultado" exact component={DataVisualization} />
-          </LibrasDisabler>
-        </AppProvider>
-      </Switch>
+      <Suspense fallback={<h1>loading</h1>}>
+        <Switch>
+          <Route path="/" exact component={LandingPage} />
+          <AppProvider>
+            <LibrasDisabler>
+              <Route path="/resultado" exact component={DataVisualizationPage} />
+            </LibrasDisabler>
+          </AppProvider>
+        </Switch>
+      </Suspense>
     </BrowserRouter>
   );
 };

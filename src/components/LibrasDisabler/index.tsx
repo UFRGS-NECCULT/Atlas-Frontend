@@ -41,3 +41,5 @@ export const LibrasDisabler: React.FC = ({ children }) => {
 
   return <>{children}</>;
 };
+
+export default LibrasDisabler;
