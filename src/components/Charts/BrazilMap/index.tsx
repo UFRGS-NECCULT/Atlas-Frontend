@@ -10,6 +10,7 @@ import { getMap } from "services/api";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
 import { Map } from "./styles";
+import { Loader } from "components/Loading";
 
 interface ChartProps {
   constants?: {
@@ -49,10 +50,15 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
     []
   );
 
+  const resize = () => {
+    setIsLoading(true);
+    debouncedResize();
+  };
+
   useEffect(() => {
-    window.addEventListener("resize", debouncedResize);
+    window.addEventListener("resize", resize);
     setSize([window.innerWidth, window.innerHeight]);
-    return () => window.removeEventListener("resize", debouncedResize);
+    return () => window.removeEventListener("resize", resize);
   }, []);
 
   useEffect(() => {
@@ -254,15 +260,17 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
 
   useEffect(() => {
     const redraw = debounce(() => {
-      draw();
+      setIsLoading(false);
       drawScale();
+      draw();
     }, 50);
 
+    setIsLoading(true);
     redraw();
   }, [uf, data, size, config, constants, d3Container]);
 
-  // return isLoading ? <Loader /> : <Map ref={d3Container} width={"100%"} height={"100%"} />;
-  return <Map ref={d3Container} width={"100%"} height={"100%"} />;
+  return isLoading ? <Loader /> : <Map ref={d3Container} width={"100%"} height={"100%"} />;
+  // return <Map ref={d3Container} width={"100%"} height={"100%"} />;
 };
 
 export default BrazilMap;
