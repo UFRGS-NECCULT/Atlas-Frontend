@@ -43,17 +43,20 @@ const WorldMap: React.FC<ChartProps> = ({ constants }) => {
     }[]
   >([]);
 
-  const { eixo, uf, prc, tpo, cns, cad, ano, num, changeSelection } = useSelection();
+  const { eixo, uf, prc, tpo, cns, cad, ano, num, config, changeSelection } = useSelection();
 
   const [size, setSize] = useState<[number, number]>([0, 0]);
 
   const debouncedResize = useCallback(
-    debounce(() => setSize([window.innerWidth, window.innerHeight]), 100),
+    debounce(() => {
+      setSize([window.innerWidth, window.innerHeight]);
+    }, 300),
     []
   );
 
   useEffect(() => {
     window.addEventListener("resize", debouncedResize);
+    setSize([window.innerWidth, window.innerHeight]);
     return () => window.removeEventListener("resize", debouncedResize);
   }, []);
 
@@ -81,7 +84,7 @@ const WorldMap: React.FC<ChartProps> = ({ constants }) => {
     }
   }, [d3Container]);
 
-  useEffect(() => {
+  const draw = () => {
     if (data && data.length && d3Container.current) {
       const dataFormat = data[0].formato;
       const marginLeft = 30;
@@ -242,7 +245,15 @@ const WorldMap: React.FC<ChartProps> = ({ constants }) => {
         .attr("d", path)
         .attr("fill", (d) => (d.id === String(prc) ? d.cor_eixo : d.cor) || `red`);
     }
-  }, [d3Container, data, size, prc]);
+  };
+
+  useEffect(() => {
+    const redraw = debounce(() => {
+      draw();
+    }, 50);
+
+    redraw();
+  }, [d3Container, data, size, prc, config, constants]);
 
   return <World ref={d3Container} width={"100%"} height={"100%"} />;
 };

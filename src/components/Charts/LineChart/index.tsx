@@ -33,17 +33,20 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
   // que a janela muda de tamanho, temos que redesenhar o svg
   const [size, setSize] = useState<[number, number]>([0, 0]);
 
+  const { eixo, num, uf, cad, deg, config } = useSelection();
+
   const debouncedResize = useCallback(
-    debounce(() => setSize([window.innerWidth, window.innerHeight]), 100),
+    debounce(() => {
+      setSize([window.innerWidth, window.innerHeight]);
+    }, 300),
     []
   );
 
   useEffect(() => {
     window.addEventListener("resize", debouncedResize);
+    setSize([window.innerWidth, window.innerHeight]);
     return () => window.removeEventListener("resize", debouncedResize);
   }, []);
-
-  const { eixo, num, uf, cad, deg } = useSelection();
 
   useEffect(() => {
     const getData = async () => {
@@ -54,7 +57,7 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
     getData();
   }, [eixo, num, uf, cad, deg]);
 
-  useEffect(() => {
+  const draw = () => {
     const marginLeft = 50;
     const marginTop = 20;
     const marginBottom = 20;
@@ -179,7 +182,15 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
 
       svg.on("touchend mouseleave", () => tooltip.hide());
     }
-  }, [data, size, d3Container.current]);
+  };
+
+  useEffect(() => {
+    const redraw = debounce(() => {
+      draw();
+    }, 50);
+
+    redraw();
+  }, [data, size, d3Container, config]);
 
   return <svg ref={d3Container} width="100%" height="100%" />;
 };

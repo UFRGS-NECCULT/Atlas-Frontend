@@ -72,20 +72,25 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
   // que a janela muda de tamanho, temos que redesenhar o svg
   const [size, setSize] = useState<[number, number]>([0, 0]);
 
+  const { eixo, uf, num, ano, cad, tpo, prc, cns, deg, config, changeSelection } = useSelection();
+
   const debouncedResize = useCallback(
-    debounce(() => setSize([window.innerWidth, window.innerHeight]), 100),
+    debounce(() => {
+      setSize([window.innerWidth, window.innerHeight]);
+    }, 300),
     []
   );
 
   useEffect(() => {
     window.addEventListener("resize", debouncedResize);
+    setSize([window.innerWidth, window.innerHeight]);
     return () => window.removeEventListener("resize", debouncedResize);
   }, []);
 
 
+
   const unfocusOpacity = 0.8;
 
-  const { eixo, uf, num, ano, cad, tpo, prc, cns, deg, changeSelection } = useSelection();
 
   const endpoints = {
     scc: getTreemapCad,
@@ -162,7 +167,8 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
     return { name: "scc", color: "#ff0000", children: groupsArray };
   }, []);
 
-  useEffect(() => {
+  const draw = () => {
+
     const marginLeft = 0;
     const marginTop = 0;
     const marginBottom = 0;
@@ -353,7 +359,15 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
 
       svg.on("touchend mouseleave", () => tooltip.hide());
     }
-  }, [data, size, cad, d3Container]);
+  }
+
+  useEffect(() => {
+    const redraw = debounce(() => {
+      draw();
+    }, 50);
+
+    redraw();
+  }, [data, size, cad, config, constants, d3Container]);
 
   return (
     <TreemapContainer>
