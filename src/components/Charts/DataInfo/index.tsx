@@ -50,6 +50,11 @@ interface DataPoint {
   // Valor que indica se um valor deve ser mostrado de maneira absoluta
   // ou como porcentagem do valor principal (padrão: porcentagem)
   display_absolute?: boolean;
+
+  // Valor que indica que um dado deve ser mostrado na dada posição (1, 2 ou 3).
+  // Se ausente, a lógica para escolher quais valores são mostrados na posição 1, 2 e 3
+  // usa a string de descrição daquela posição para a variável sendo exibida
+  display_at?: number;
 }
 
 interface ChartProps {
@@ -78,7 +83,11 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
   useEffect(() => {
     const selectionClone = { eixo, ano, num, cad, uf, deg, ocp, prc, cns, tpo, mec, pfj, config };
     const getData = async () => {
-      const { data } = await getInfo(selectionClone.eixo, { ...selectionClone, var: selectionClone.num });
+      const { data } = await getInfo(selectionClone.eixo, {
+        ...selectionClone,
+        config: undefined,
+        var: selectionClone.num
+      });
       setData({ selection: selectionClone, data });
     };
 
@@ -116,34 +125,37 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
     const scnd = getValue(desc, tab, data, 2);
     const thrd = getValue(desc, tab, data, 3);
 
-    return (
-      main && [
+    return [
+      main &&
         <Column key="0">
           <BigNumber style={{ color: config.primaryColor }}>{format(main.data.valor, main.data.formato)}</BigNumber>
           <BigNumberDesc>{main.string}</BigNumberDesc>
         </Column>,
-        (scnd || thrd) && (
-          <Row key="1">
-            {scnd && (
-              <Column>
-                <BigNumber style={{ color: config.primaryColor }}>
-                  {format(main.data.valor / scnd.data.valor, "percent")}
-                </BigNumber>
-                <BigNumberDesc>{scnd.string}</BigNumberDesc>
-              </Column>
-            )}
-            {thrd && (
-              <Column>
-                <BigNumber style={{ color: config.primaryColor }}>
-                  {format(main.data.valor / thrd.data.valor, "percent")}
-                </BigNumber>
-                <BigNumberDesc>{thrd.string}</BigNumberDesc>
-              </Column>
-            )}
-          </Row>
-        )
-      ]
-    );
+      (scnd || thrd) && (
+        <Row key="1">
+          {scnd && (
+            <Column>
+              <BigNumber style={{ color: config.primaryColor }}>
+                {scnd.data.display_absolute
+                  ? format(scnd.data.valor, scnd.data.formato)
+                  : format((main ? main.data.valor : 0) / scnd.data.valor, "percent")}
+              </BigNumber>
+              <BigNumberDesc>{scnd.string}</BigNumberDesc>
+            </Column>
+          )}
+          {thrd && (
+            <Column>
+              <BigNumber style={{ color: config.primaryColor }}>
+                {thrd.data.display_absolute
+                  ? format(thrd.data.valor, thrd.data.formato)
+                  : format((main ? main.data.valor : 0) / thrd.data.valor, "percent")}
+              </BigNumber>
+              <BigNumberDesc>{thrd.string}</BigNumberDesc>
+            </Column>
+          )}
+        </Row>
+      )
+    ];
   };
 
   if (!data || !data.data.length) {
@@ -170,27 +182,29 @@ function getValue(desc: IDescriptions, tab: 1 | 2, data: Data, val: 1 | 2 | 3) {
     return null;
   }
 
-  if (shouldDisplayDescription(data.selection.eixo, data.selection.num, tab, val, data.selection)) {
-    if (descriptions[val - 1] && typeof descriptions[0] === "string") {
-      const rich = richString(descriptions[val - 1], data.selection);
-      const valData = findCorrectData(rich.used, data);
+  return findData(descriptions[val - 1], tab, val, data);
+}
 
-      if (valData) {
-        return {
-          string: rich.string,
-          data: valData
-        };
-      }
-    } else if (descriptions[0] === "") {
-      const valData = findSelectedData(data);
+function findData(description: string, tab: 1 | 2, val: 1 | 2 | 3, data: Data) {
+  const rich = richString(description, data.selection);
+  // Verificar se há um dado que deve ser obrigatóriamente mostrado
+  let dataPoint = data.data.find((d) => d.display_at === val);
 
-      if (valData) {
-        return {
-          data: valData,
-          string: ""
-        };
-      }
+  // Se não há um valor obrigatório e devemos mostrar algum, tente achar um baseado
+  // na seleção dos breadcrumbs atual
+  if (!dataPoint && shouldDisplayDescription(data.selection.eixo, data.selection.num, tab, val, data.selection)) {
+    if (description) {
+      dataPoint = findCorrectData(rich.used, data);
+    } else if (description === "") {
+      dataPoint = findSelectedData(data);
     }
+  }
+
+  if (dataPoint) {
+    return {
+      string: rich.string,
+      data: dataPoint
+    };
   }
 
   return null;
@@ -214,7 +228,7 @@ function findCorrectData(filters: string[], data: Data) {
       (d.id_tipo !== undefined && i("tpo") ? d.id_tipo === data.selection.tpo : true) // Tipo não tem um "filtro total"
   );
 
-  return d || null;
+  return d;
 }
 
 // Acha a entrada correta para um valor baseando-se na seleção
@@ -231,5 +245,5 @@ function findSelectedData(data: Data) {
       (d.id_consumo !== undefined ? d.id_consumo === data.selection.cns : true)
   );
 
-  return d || null;
+  return d;
 }
