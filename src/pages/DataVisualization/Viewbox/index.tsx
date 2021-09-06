@@ -15,6 +15,7 @@ import { useSelection } from "hooks/SelectionContext";
 import { getVisualization } from "services/api";
 import { Title, ChartButtons, ChartContainer, Container } from "./styles";
 import { RichString } from "components/RichString";
+import Loader from "components/Loading";
 
 interface ViewboxProps {
   id: number;
@@ -125,7 +126,7 @@ export const Viewbox: React.FC<ViewboxProps> = ({ id }) => {
 
   return (
     <Container>
-      <Suspense fallback={<h1>loading</h1>}>
+      <Suspense fallback={<Loader />}>
         <Title>
           <RichString>{chart?.title}</RichString>
         </Title>

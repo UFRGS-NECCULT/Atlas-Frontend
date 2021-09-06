@@ -31,21 +31,22 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
 
   const [data, setData] = useState<Data[]>([]);
 
-  // O tamanho da janela faz parte do nosso estado já que sempre
-  // que a janela muda de tamanho, temos que redesenhar o svg
   const [size, setSize] = useState<[number, number]>([0, 0]);
 
+  const { eixo, uf, deg, num, ano, cad, prc, cns, tpo, changeSelection } = useSelection();
+
   const debouncedResize = useCallback(
-    debounce(() => setSize([window.innerWidth, window.innerHeight]), 100),
+    debounce(() => {
+      setSize([window.innerWidth, window.innerHeight]);
+    }, 300),
     []
   );
 
   useEffect(() => {
     window.addEventListener("resize", debouncedResize);
+    setSize([window.innerWidth, window.innerHeight]);
     return () => window.removeEventListener("resize", debouncedResize);
   }, []);
-
-  const { eixo, uf, deg, num, ano, cad, prc, cns, tpo, changeSelection } = useSelection();
 
   // Valor entre (0, 1) para o quão grosso devem ser as fatias
   // em % do raio (1 = 100% do raio, 0 = 0% do raio)
@@ -70,7 +71,7 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
     getData();
   }, [uf, deg, num, ano, cad, prc, cns, tpo, eixo]);
 
-  useEffect(() => {
+  const draw = () => {
     if (d3Container.current && data && data.length) {
       const dataFormat = data[0].formato;
 
@@ -147,7 +148,15 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
         .attr("fill", (d) => d.data.cor)
         .attrTween("d", tweenDonut as any);
     }
-  }, [d3Container.current, size, data]);
+  };
+
+  useEffect(() => {
+    const redraw = debounce(() => {
+      draw();
+    }, 50);
+
+    redraw();
+  }, [d3Container, size, data, constants]);
 
   return (
     <DonutChartContainer>

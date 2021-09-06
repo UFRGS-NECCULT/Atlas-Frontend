@@ -10,6 +10,7 @@ import { getMap } from "services/api";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
 import { Map } from "./styles";
+import { Loader } from "components/Loading";
 
 interface ChartProps {
   constants?: {
@@ -36,28 +37,38 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
+  const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<DataProps[]>([]);
 
   const [size, setSize] = useState<[number, number]>([0, 0]);
+  const { eixo, uf, cad, ano, num, deg, prc, tpo, config, changeSelection } = useSelection();
 
   const debouncedResize = useCallback(
-    debounce(() => setSize([window.innerWidth, window.innerHeight]), 100),
+    debounce(() => {
+      setSize([window.innerWidth, window.innerHeight]);
+    }, 300),
     []
   );
 
-  useEffect(() => {
-    window.addEventListener("resize", debouncedResize);
-    return () => window.removeEventListener("resize", debouncedResize);
-  }, []);
+  const resize = () => {
+    setIsLoading(true);
+    debouncedResize();
+  };
 
-  const { eixo, uf, cad, ano, num, deg, prc, tpo, changeSelection } = useSelection();
+  useEffect(() => {
+    window.addEventListener("resize", resize);
+    setSize([window.innerWidth, window.innerHeight]);
+    return () => window.removeEventListener("resize", resize);
+  }, []);
 
   useEffect(() => {
     const getData = async () => {
       const { data } = await getMap(eixo, { var: num, uf, cad, ano, deg, prc, tpo, ...constants });
       setData(data);
+      setIsLoading(false);
     };
 
+    setIsLoading(true);
     getData();
   }, [eixo, cad, ano, num, deg, prc, tpo]);
 
@@ -68,7 +79,7 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
     [data]
   );
 
-  useEffect(() => {
+  const drawScale = () => {
     const svg = d3.select(d3Container.current);
     svg
       .append("defs")
@@ -79,9 +90,9 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
       .attr("y1", "100%")
       .attr("x2", "90%")
       .attr("y2", "100%");
-  }, []);
+  };
 
-  useEffect(() => {
+  const draw = () => {
     if (data && data.length && d3Container.current) {
       const dataFormat = data[0].formato;
       const { cor_inferior, cor_superior } = data[0];
@@ -245,9 +256,21 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
         .attr("d", path)
         .attr("fill", (d) => (uf === d.id ? d.cor_eixo || d.color : d.color));
     }
-  }, [uf, data, size, d3Container]);
+  };
 
-  return <Map ref={d3Container} width={"100%"} height={"100%"} />;
+  useEffect(() => {
+    const redraw = debounce(() => {
+      setIsLoading(false);
+      drawScale();
+      draw();
+    }, 50);
+
+    setIsLoading(true);
+    redraw();
+  }, [uf, data, size, config, constants, d3Container]);
+
+  return isLoading ? <Loader /> : <Map ref={d3Container} width={"100%"} height={"100%"} />;
+  // return <Map ref={d3Container} width={"100%"} height={"100%"} />;
 };
 
 export default BrazilMap;

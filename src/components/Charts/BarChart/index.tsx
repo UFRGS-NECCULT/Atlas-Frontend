@@ -6,6 +6,8 @@ import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
 import * as debounce from "debounce";
 
+const DEBOUNCE_INTERVAL = 50;
+
 interface RawData {
   ano: number;
   valor: number;
@@ -41,18 +43,20 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
   // que a janela muda de tamanho, temos que redesenhar o svg
   const [size, setSize] = useState<[number, number]>([0, 0]);
 
+  const { eixo, deg, uf, cad, num, ano, config, changeSelection } = useSelection();
+
   const debouncedResize = useCallback(
-    debounce(() => setSize([window.innerWidth, window.innerHeight]), 100),
+    debounce(() => {
+      setSize([window.innerWidth, window.innerHeight]);
+    }, 300),
     []
   );
 
   useEffect(() => {
     window.addEventListener("resize", debouncedResize);
+    setSize([window.innerWidth, window.innerHeight]);
     return () => window.removeEventListener("resize", debouncedResize);
   }, []);
-
-  // TODO: ocp
-  const { eixo, deg, uf, cad, num, ano, changeSelection } = useSelection();
 
   useEffect(() => {
     const getData = async () => {
@@ -61,7 +65,7 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
     };
 
     getData();
-  }, [eixo, deg, uf, cad, num, stacked]);
+  }, [eixo, deg, uf, cad, num, constants, stacked]);
 
   const parseBarsData = useCallback((data): ParsedData[] => {
     const groupedData = data.reduce((r, c) => {
@@ -91,7 +95,7 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
     return parsedData;
   }, []);
 
-  useEffect(() => {
+  const draw = () => {
     if (rawData && rawData.length && d3Container.current) {
       const data = parseBarsData(rawData);
       const dataFormat = rawData[0].formato;
@@ -234,7 +238,15 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
         .attr("height", (d) => Math.abs(y(d[0]) - y(d[1])))
         .attr("opacity", (d) => (d.dados.ano === ano ? 1 : 0.65));
     }
-  }, [ano, rawData, size, d3Container.current]);
+  };
+
+  useEffect(() => {
+    const redraw = debounce(() => {
+      draw();
+    }, DEBOUNCE_INTERVAL);
+
+    redraw();
+  }, [ano, rawData, size, constants, config, d3Container]);
 
   return <svg ref={d3Container} width={"100%"} height={"100%"} />;
 };
