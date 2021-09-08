@@ -10,7 +10,7 @@ import { getMap } from "services/api";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
 import { Map } from "./styles";
-import { Loader } from "components/Loading";
+import { useAsyncState } from "hooks/useAsyncState";
 
 interface ChartProps {
   constants?: {
@@ -37,7 +37,7 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
-  const [data, setData] = useState<DataProps[]>([]);
+  const [data, setData] = useAsyncState<DataProps[]>([]);
 
   const [size, setSize] = useState<[number, number]>([0, 0]);
   const { eixo, uf, cad, ano, num, deg, prc, tpo, config, changeSelection } = useSelection();

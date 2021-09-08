@@ -7,6 +7,7 @@ import { useSelection } from "hooks/SelectionContext";
 import { getDonut } from "services/api";
 import { DonutChartContainer } from "./styles";
 import { format } from "utils";
+import { useAsyncState } from "hooks/useAsyncState";
 
 interface Data {
   valor: number;
@@ -29,7 +30,7 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
-  const [data, setData] = useState<Data[]>([]);
+  const [data, setData] = useAsyncState<Data[]>([]);
 
   const [size, setSize] = useState<[number, number]>([0, 0]);
 

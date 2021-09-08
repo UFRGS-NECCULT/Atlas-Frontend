@@ -70,30 +70,6 @@ export const displayDescriptions: IDisplayDescriptions = {
         1: (s) => !s.deg
       }
     },
-    10: {
-      1: {
-        1: (s) => !s.uf && !s.cad && !s.uf,
-        2: (s) => !s.uf && !s.cad && !s.uf
-      }
-    },
-    11: {
-      1: {
-        1: (s) => !s.uf && !s.cad && !s.uf,
-        2: (s) => !s.uf && !s.cad && !s.uf
-      }
-    },
-    12: {
-      1: {
-        1: (s) => !s.uf && !s.cad && !s.uf,
-        2: (s) => !s.uf && !s.cad && !s.uf
-      }
-    },
-    13: {
-      1: {
-        1: (s) => !s.uf && !s.cad && !s.uf,
-        2: (s) => !s.uf && !s.cad && !s.uf
-      }
-    }
   },
   // Eixo 2
   2: {
@@ -130,46 +106,6 @@ export const displayDescriptions: IDisplayDescriptions = {
         1: (s) => !s.deg
       }
     },
-    12: {
-      1: {
-        1: (s) => !s.deg && !s.uf && !s.cad,
-        2: (s) => !s.deg && !s.uf && !s.cad
-      },
-      2: {
-        1: (s) => !s.deg && !s.uf && !s.ocp,
-        2: (s) => !s.deg && !s.uf && !s.ocp
-      }
-    },
-    13: {
-      1: {
-        1: (s) => !s.deg && !s.uf && !s.cad,
-        2: (s) => !s.deg && !s.uf && !s.cad
-      },
-      2: {
-        1: (s) => !s.deg && !s.uf && !s.ocp,
-        2: (s) => !s.deg && !s.uf && !s.ocp
-      }
-    },
-    14: {
-      1: {
-        1: (s) => !s.deg && !s.uf && !s.cad,
-        2: (s) => !s.deg && !s.uf && !s.cad
-      },
-      2: {
-        1: (s) => !s.deg && !s.uf && !s.ocp,
-        2: (s) => !s.deg && !s.uf && !s.ocp
-      }
-    },
-    15: {
-      1: {
-        1: (s) => !s.deg && !s.uf && !s.cad,
-        2: (s) => !s.deg && !s.uf && !s.cad
-      },
-      2: {
-        1: (s) => !s.deg && !s.uf && !s.ocp,
-        2: (s) => !s.deg && !s.uf && !s.ocp
-      }
-    }
   },
   // Eixo 3
   3: {

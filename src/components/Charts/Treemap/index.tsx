@@ -8,6 +8,7 @@ import Legend, { ILegendData } from "../Legend";
 import { TreemapContainer } from "./styles";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
+import { useAsyncState, useAsyncUndefinedState } from "hooks/useAsyncState";
 
 interface IParsedData {
   name: string;
@@ -64,9 +65,9 @@ const scaleFont = (d: any, i, g) => {
 const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
-  const [data, setData] = useState<IParsedData>();
-  const [dataFormat, setDataFormat] = useState("none");
-  const [legendData, setLegendData] = useState<ILegendData[]>([]);
+  const [data, setData] = useAsyncUndefinedState<IParsedData>();
+  const [dataFormat, setDataFormat] = useAsyncState("none");
+  const [legendData, setLegendData] = useAsyncState<ILegendData[]>([]);
 
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg
@@ -87,10 +88,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
     return () => window.removeEventListener("resize", debouncedResize);
   }, []);
 
-
-
   const unfocusOpacity = 0.8;
-
 
   const endpoints = {
     scc: getTreemapCad,
@@ -168,7 +166,6 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
   }, []);
 
   const draw = () => {
-
     const marginLeft = 0;
     const marginTop = 0;
     const marginBottom = 0;
@@ -225,12 +222,12 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
         .attr("x", 0)
         .attr("y", 0)
         .attr("width", (d: any) => {
-          const width = d.x1 - d.x0
+          const width = d.x1 - d.x0;
           return width > 0 ? width : 0;
         })
         .attr("height", (d: any) => {
-          const height = d.y1 - d.y0 - 20
-          return height > 0 ? height : 0
+          const height = d.y1 - d.y0 - 20;
+          return height > 0 ? height : 0;
         })
         .append("xhtml:span")
         .attr("class", "title")
@@ -349,9 +346,9 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
 
         tooltip.setText(
           `Valor: ${valor}\n` +
-          (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
-          `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
-          `Grupo: ${selected.data.name}`
+            (selected.data.taxa > 0 ? `Taxa: ${selected.data.taxa}\n` : "") +
+            `Percentual: ${(selected.data.percentual * 100).toFixed(2)}%\n` +
+            `Grupo: ${selected.data.name}`
         );
         tooltip.setXY(x, y);
         tooltip.show();
@@ -359,7 +356,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
 
       svg.on("touchend mouseleave", () => tooltip.hide());
     }
-  }
+  };
 
   useEffect(() => {
     const redraw = debounce(() => {
