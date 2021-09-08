@@ -10,7 +10,6 @@ import { getMap } from "services/api";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
 import { Map } from "./styles";
-import { Loader } from "components/Loading";
 import { useAsyncState } from "hooks/useAsyncState";
 
 interface ChartProps {
@@ -38,7 +37,6 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
-  const [isLoading, setIsLoading] = useAsyncState(true);
   const [data, setData] = useAsyncState<DataProps[]>([]);
 
   const [size, setSize] = useState<[number, number]>([0, 0]);
@@ -52,7 +50,6 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
   );
 
   const resize = () => {
-    setIsLoading(true);
     debouncedResize();
   };
 
@@ -66,10 +63,8 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
     const getData = async () => {
       const { data } = await getMap(eixo, { var: num, uf, cad, ano, deg, prc, tpo, ...constants });
       setData(data);
-      setIsLoading(false);
     };
 
-    setIsLoading(true);
     getData();
   }, [eixo, cad, ano, num, deg, prc, tpo]);
 
@@ -261,17 +256,14 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
 
   useEffect(() => {
     const redraw = debounce(() => {
-      setIsLoading(false);
       drawScale();
       draw();
     }, 50);
 
-    setIsLoading(true);
     redraw();
   }, [uf, data, size, config, constants, d3Container]);
 
-  return isLoading ? <Loader /> : <Map ref={d3Container} width={"100%"} height={"100%"} />;
-  // return <Map ref={d3Container} width={"100%"} height={"100%"} />;
+  return <Map ref={d3Container} width={"100%"} height={"100%"} />;
 };
 
 export default BrazilMap;

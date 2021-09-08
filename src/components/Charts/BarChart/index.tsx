@@ -5,6 +5,7 @@ import { getBars } from "services/api";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
 import * as debounce from "debounce";
+import { Bars } from "./styles";
 import { useAsyncState } from "hooks/useAsyncState";
 
 const DEBOUNCE_INTERVAL = 50;
@@ -249,7 +250,7 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
     redraw();
   }, [ano, rawData, size, constants, config, d3Container]);
 
-  return <svg ref={d3Container} width={"100%"} height={"100%"} />;
+  return <Bars ref={d3Container} width={"100%"} height={"100%"} />;
 };
 
 export default BarChart;

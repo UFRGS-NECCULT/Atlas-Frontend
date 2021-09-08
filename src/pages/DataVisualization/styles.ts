@@ -176,6 +176,8 @@ export const Button = styled.div`
 
 export const ChartContainer = styled.div`
   flex: 1 1 auto;
+  height: 100%;
+  width: 100%;
   padding: 15px;
 `;
 
