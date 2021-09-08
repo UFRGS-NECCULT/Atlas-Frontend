@@ -126,11 +126,12 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
     const thrd = getValue(desc, tab, data, 3);
 
     return [
-      main &&
+      main && (
         <Column key="0">
           <BigNumber style={{ color: config.primaryColor }}>{format(main.data.valor, main.data.formato)}</BigNumber>
           <BigNumberDesc>{main.string}</BigNumberDesc>
-        </Column>,
+        </Column>
+      ),
       (scnd || thrd) && (
         <Row key="1">
           {scnd && (

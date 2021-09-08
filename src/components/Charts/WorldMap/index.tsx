@@ -11,6 +11,7 @@ import { format } from "utils";
 import { useSelection } from "hooks/SelectionContext";
 import SVGTooltip from "components/SVGTooltip";
 import { getWorld } from "services/api";
+import { useAsyncState } from "hooks/useAsyncState";
 
 interface ChartProps {
   constants?: {
@@ -22,7 +23,7 @@ const WorldMap: React.FC<ChartProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
-  const [data, setData] = useState<
+  const [data, setData] = useAsyncState<
     {
       cadeia: string;
       cadeia_id: number;

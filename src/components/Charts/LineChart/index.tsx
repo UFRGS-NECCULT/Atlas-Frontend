@@ -6,6 +6,7 @@ import { useSelection } from "hooks/SelectionContext";
 import { getLines } from "services/api";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
+import { useAsyncState } from "hooks/useAsyncState";
 
 interface Data {
   ano: number;
@@ -27,7 +28,7 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
-  const [data, setData] = useState<Data[]>([]);
+  const [data, setData] = useAsyncState<Data[]>([]);
 
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg

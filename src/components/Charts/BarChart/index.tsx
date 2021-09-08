@@ -5,6 +5,7 @@ import { getBars } from "services/api";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
 import * as debounce from "debounce";
+import { useAsyncState } from "hooks/useAsyncState";
 
 const DEBOUNCE_INTERVAL = 50;
 
@@ -37,7 +38,7 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
   const d3Container = useRef<SVGSVGElement | null>(null);
   const tooltipContainer = useRef<SVGTooltip | null>(null);
 
-  const [rawData, setRawData] = useState<RawData[]>([]);
+  const [rawData, setRawData] = useAsyncState<RawData[]>([]);
 
   // O tamanho da janela faz parte do nosso estado já que sempre
   // que a janela muda de tamanho, temos que redesenhar o svg
