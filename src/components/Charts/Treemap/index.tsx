@@ -315,7 +315,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
 
       cell.exit().remove();
 
-      svg.on("mousemove touchmove", (e) => {
+      svg.on("mousemove", (e) => {
         let [x, y] = d3.pointer(e);
 
         // Adjust to account for margins
@@ -354,7 +354,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
         tooltip.show();
       });
 
-      svg.on("touchend mouseleave", () => tooltip.hide());
+      svg.on("mouseleave", () => tooltip.hide());
     }
   };
 
