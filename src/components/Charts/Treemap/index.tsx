@@ -186,33 +186,38 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
       const width = d3Container.current.clientWidth - marginLeft;
       const height = d3Container.current.clientHeight - marginTop - marginBottom;
 
-      const treemap = d3.treemap().tile(d3.treemapResquarify).size([width, height]).round(true).paddingInner(1);
+      const treemap = d3
+        .treemap<IParsedData>()
+        .tile(d3.treemapResquarify)
+        .size([width, height])
+        .round(true)
+        .paddingInner(1);
       const fontScale = d3.scaleThreshold().domain([12, 25, 30, 40]).range([8, 12, 16, 20]);
 
-      const root = d3
-        .hierarchy(data)
-        .sum((d: any) => {
-          return d.size;
-        })
-        .sort(function (a, b) {
-          return b.height - a.height;
-        });
-
-      treemap(root);
+      const root = treemap(
+        d3
+          .hierarchy(data)
+          .sum((d: any) => {
+            return d.size;
+          })
+          .sort(function (a, b) {
+            return b.height - a.height;
+          })
+      );
 
       const cell = svg.selectAll(".cell").data(root.leaves());
 
       const g = cell
         .enter()
         .append("g")
-        .attr("class", "cell") // TODO: descobrir a tipagem correta
-        .attr("transform", (d: any) => `translate(${d.x0}, ${d.y0})`); // TODO: descobrir a tipagem correta
+        .attr("class", "cell")
+        .attr("transform", (d) => `translate(${d.x0}, ${d.y0})`);
 
       const rects = g
         .append("rect")
         .attr("id", (d) => d.data.id || "")
-        .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
-        .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
+        .attr("width", (d) => d.x1 - d.x0)
+        .attr("height", (d) => d.y1 - d.y0)
         .attr("opacity", (d) => (cad === 0 || cad === Number(d.data.id) ? 1 : unfocusOpacity))
         .attr("fill", (d) => d.data.color);
 
@@ -221,11 +226,11 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
         .attr("class", "title-container")
         .attr("x", 0)
         .attr("y", 0)
-        .attr("width", (d: any) => {
+        .attr("width", (d) => {
           const width = d.x1 - d.x0;
           return width > 0 ? width : 0;
         })
-        .attr("height", (d: any) => {
+        .attr("height", (d) => {
           const height = d.y1 - d.y0 - 20;
           return height > 0 ? height : 0;
         })
@@ -238,7 +243,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
         .style("width", "100%")
         .style("height", "100%")
         .style("font-size", "12px")
-        .text((d: any) => {
+        .text((d) => {
           const height = d.y1 - d.y0;
           const width = d.x1 - d.x0;
           return height < 40 || width < 50 ? "" : d.data.name;
@@ -246,19 +251,19 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
 
       g.append("text")
         .attr("class", "value")
-        .attr("font-size", (d: any) => {
+        .attr("font-size", (d) => {
           const nodePercentageX = Math.round((100 * (d.x1 - d.x0)) / width);
           const nodePercentageY = Math.round((100 * (d.y1 - d.y0)) / height);
           return fontScale(nodePercentageX > nodePercentageY ? nodePercentageY : nodePercentageX);
         })
-        .attr("x", (d: any) => d.x1 - d.x0 - 2)
-        .attr("y", (d: any) => d.y1 - d.y0 - 2)
+        .attr("x", (d) => d.x1 - d.x0 - 2)
+        .attr("y", (d) => d.y1 - d.y0 - 2)
         .attr("dominant-baseline", "text-after-edge")
         .attr("text-anchor", "end")
-        .text((d: any) => {
+        .text((d) => {
           const height = d.y1 - d.y0;
           const width = d.x1 - d.x0;
-          return height < 20 || width < 40 ? "" : format(d.value, dataFormat);
+          return height < 20 || width < 40 ? "" : format(d.value || 0, dataFormat);
         })
         .style("opacity", "1")
         .each(scaleFont);
@@ -266,39 +271,39 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
       const transition = cell.transition().duration(300);
 
       transition
-        .attr("transform", (d: any) => `translate(${d.x0}, ${d.y0})`)
-        .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
-        .attr("height", (d: any) => d.y1 - d.y0) // TODO: descobrir a tipagem correta
+        .attr("transform", (d) => `translate(${d.x0}, ${d.y0})`)
+        .attr("width", (d) => d.x1 - d.x0)
+        .attr("height", (d) => d.y1 - d.y0)
         .select("rect")
         .attr("id", (d) => d.data.id || "")
-        .attr("width", (d: any) => d.x1 - d.x0) // TODO: descobrir a tipagem correta
-        .attr("height", (d: any) => d.y1 - d.y0); // TODO: descobrir a tipagem correta
+        .attr("width", (d) => d.x1 - d.x0)
+        .attr("height", (d) => d.y1 - d.y0);
 
-      cell.select("span.title").text((d: any) => {
+      cell.select("span.title").text((d) => {
         const height = d.y1 - d.y0;
         const width = d.x1 - d.x0;
         return height < 40 || width < 50 ? "" : d.data.name;
       });
       cell
         .select("foreignObject.title-container")
-        .attr("width", (d: any) => d.x1 - d.x0)
-        .attr("height", (d: any) => d.y1 - d.y0);
+        .attr("width", (d) => d.x1 - d.x0)
+        .attr("height", (d) => d.y1 - d.y0);
 
       cell
         .select("text.value")
-        .attr("font-size", (d: any) => {
+        .attr("font-size", (d) => {
           const nodePercentageX = Math.round((100 * (d.x1 - d.x0)) / width);
           const nodePercentageY = Math.round((100 * (d.y1 - d.y0)) / height);
           return fontScale(nodePercentageX > nodePercentageY ? nodePercentageY : nodePercentageX);
         })
-        .attr("x", (d: any) => d.x1 - d.x0 - 2)
-        .attr("y", (d: any) => d.y1 - d.y0 - 2)
+        .attr("x", (d) => d.x1 - d.x0 - 2)
+        .attr("y", (d) => d.y1 - d.y0 - 2)
         .attr("dominant-baseline", "text-after-edge")
         .attr("text-anchor", "end")
-        .text((d: any) => {
+        .text((d) => {
           const height = d.y1 - d.y0;
           const width = d.x1 - d.x0;
-          return height < 20 || width < 40 ? "" : format(d.value, dataFormat);
+          return height < 20 || width < 40 ? "" : format(d.value || 0, dataFormat);
         })
         .each(scaleFont);
 
@@ -328,8 +333,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
 
         // Select the rectangle the mouse is on
         let selected: any = null;
-        for (const data of root.leaves() as any[]) {
-          // TODO: Find correct typing
+        for (const data of root.leaves()) {
           if (isInside(x, y, data.x0, data.y0, data.x1, data.y1)) {
             selected = data;
             break;
