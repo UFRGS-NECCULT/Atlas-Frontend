@@ -14,14 +14,6 @@ export interface IDescriptions {
   };
 }
 
-export interface IOptions {
-  [key: string]: {
-    name: string;
-    value?: string | number;
-    id?: string | number;
-  }[];
-}
-
 const DataContext = createContext<DataContextData>({} as DataContextData);
 
 const DataProvider: React.FC = ({ children }) => {
