@@ -4,25 +4,29 @@ Atlas econômico da cultura brasileira (OBEC - UFRGS)
 
 ## Tecnologias utilizadas
 
-* WIP
+* React (^17.0.2)
+* NPM (6.14.12)
+* NodeJS (v14.16.1)
+* Typescript (^4.1.2)
+* Docker Engine (v20.10.8)
+* Docker Compose (3.7)
 
-## Documentação para instalar o Atlas
+*Outras bibliotecas e frameworks:*
+* axios: biblioteca para configuração de cliente HTTP
+* styled-somponents: biblioteca para estilização de componentes React
+* eslint e prettier: biblioteca para lint de código
+* d3: biblioteca para manipulação do DOM e desenho dos gráficos/mapas
+* topojson-client: biblioteca para manipulação de coordenadas para criação de mapas
+
+## Documentação para instalação e execução do Atlas
 
 ### Instalação via docker
 
-**Windows**
+*Requisito(s): Docker Engine e Docker Compose*
 
-* WIP
-
-**Debian/Ubuntu**
-
-* WIP
-
-
-**CentOS/Fedora**
-
-* WIP
-
+* Criar uma cópia do arquivo `docker-compose.example.yml` e renomear para `docker-compose.yml`
+* Adicionar na seção *enviroments* do arquivo criado, caso necessário, as variáveis de ambiente (por exemplo, host do backend)
+* Rodar o comando `docker-compose up` na pasta raiz do projeto
 
 ### Instalação sem docker
 
@@ -34,8 +38,8 @@ Atlas econômico da cultura brasileira (OBEC - UFRGS)
 
 ## DER e Banco de Dados
 
-* WIP
-  
+![Diagrama Entidade Relacionamento](docs/er-diagram.png)
+
 ## Fluxograma do Atlas
 
 * WIP
