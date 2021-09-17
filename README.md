@@ -8,8 +8,10 @@ Atlas econômico da cultura brasileira (OBEC - UFRGS)
     - [Instalação via docker](#instalação-via-docker)
     - [Instalação sem docker](#instalação-sem-docker)
   - [Requisitos e Funcionalidades](#requisitos-e-funcionalidades)
-  - [DER](#der)
-  - [Banco de Dados](#banco-de-dados)
+    - [Requisitos Funcionais:](#requisitos-funcionais)
+    - [Requisitos Não Funcionais:](#requisitos-não-funcionais)
+    - [Requisitos Inversos:](#requisitos-inversos)
+  - [Banco de Dados e DER](#banco-de-dados-e-der)
   - [Utilidades](#utilidades)
     - [Adicionando Novos Pacotes ao Projeto](#adicionando-novos-pacotes-ao-projeto)
 ## Tecnologias utilizadas
@@ -22,6 +24,7 @@ Adicionando Novos Pacotes ao Projeto
 * Typescript (^4.1.2)
 * Docker Engine (v20.10.8)
 * Docker Compose (3.7)
+* PostgreSQL (13)
 
 *Outras bibliotecas e frameworks:*
 * axios: biblioteca para configuração de cliente HTTP
@@ -46,15 +49,39 @@ Adicionando Novos Pacotes ao Projeto
 
 ## Requisitos e Funcionalidades
 
-* WIP
+### Requisitos Funcionais:
+	- Menu dinâmico para os 4 eixos contendo para cada eixo os menus de variáveis, desagregações e periodicidade respectivos de cada eixo;
 
-## DER
+	- Para cada combinação possível e viável de variável, desagregação e período plotar informações nos seguintes formatos:
+		- Choropleth Map 
+		(Mapa do Brasil cor dos estados por distribuição de frequência de valores)
+		- Stacked Bar Chart
+		(gráfico das informações conforme desagregação)
+		- Treemap
+		(gráfico das informações conforme desagregação)
+
+	- Opção para baixar resultados no seguintes formatos:
+		- CSV
+		- Imagem PNG
+		- PDF
+
+	- Cadastro de informações na plataforma (?)
+	(banco de dados relacional para eixos, variáveis, desagregações e períodos).
+
+### Requisitos Não Funcionais:
+	- Tempo de resposta para execução das funcionalidades aceitável (Complexidade Computacional a ser estimada para cada função) 
+
+	- Padronização do formato dos dados na plataforma. (IBGE)
+
+### Requisitos Inversos:
+	- Inconsistências nos dados
+
+
+## Banco de Dados e DER
+
+O banco escolhido para a persistência dos dados foi o banco relacional open source PostgreSQL 13.
 
 ![Diagrama Entidade Relacionamento](docs/er-diagram.png)
-
-## Banco de Dados
-
-* WIP
 
 ## Utilidades
 
