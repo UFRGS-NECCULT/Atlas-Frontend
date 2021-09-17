@@ -2,7 +2,19 @@
 
 Atlas econômico da cultura brasileira (OBEC - UFRGS)
 
+- [Atlas OBEC](#atlas-obec)
+  - [Tecnologias utilizadas](#tecnologias-utilizadas)
+  - [Documentação para instalação e execução do Atlas](#documentação-para-instalação-e-execução-do-atlas)
+    - [Instalação via docker](#instalação-via-docker)
+    - [Instalação sem docker](#instalação-sem-docker)
+  - [Requisitos e Funcionalidades](#requisitos-e-funcionalidades)
+  - [DER](#der)
+  - [Banco de Dados](#banco-de-dados)
+  - [Utilidades](#utilidades)
+    - [Adicionando Novos Pacotes ao Projeto](#adicionando-novos-pacotes-ao-projeto)
 ## Tecnologias utilizadas
+
+Adicionando Novos Pacotes ao Projeto
 
 * React (^17.0.2)
 * NPM (6.14.12)
@@ -36,18 +48,17 @@ Atlas econômico da cultura brasileira (OBEC - UFRGS)
 
 * WIP
 
-## DER e Banco de Dados
+## DER
 
 ![Diagrama Entidade Relacionamento](docs/er-diagram.png)
 
-## Fluxograma do Atlas
+## Banco de Dados
 
 * WIP
-- [Atlas OBEC](#atlas-obec)
-  - [Adicionando Novos Pacotes ao Projeto](#adicionando-novos-pacotes-ao-projeto)
-  - [React e D3](#react-e-d3)
 
-## Adicionando Novos Pacotes ao Projeto
+## Utilidades
+
+### Adicionando Novos Pacotes ao Projeto
 
 Os pacotes do frontend são instalados dentro da própria imagem docker, o que requer alguns passos extras na hora de adicionar bibliotecas ao projeto:
 
