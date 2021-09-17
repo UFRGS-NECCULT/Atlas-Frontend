@@ -9,5 +9,8 @@ export const RichString: React.FC = ({ children: text }) => {
   }
   assert(typeof text === "string", "O filho de RichString deve ser um texto");
 
-  return <span>{richString(text, useSelection()).string}</span>;
+  // TODO: ocp no useSelection()
+  const selection = { ...useSelection(), ocp: 0 };
+
+  return <span>{richString(text, selection).string}</span>;
 };

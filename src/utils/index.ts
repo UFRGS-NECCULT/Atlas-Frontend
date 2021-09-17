@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import { IEixoConfig } from "hooks/SelectionContext";
 import nunjucks from "nunjucks";
 import { displayDescriptions, ISelection } from "./displayDescription";
 
@@ -55,16 +56,28 @@ export function shouldDisplayDescription(
   return true;
 }
 
+interface Selection {
+  config: IEixoConfig;
+  ano: number;
+  eixo: number;
+  num: number;
+  uf: number;
+  cad: number;
+  cns: number;
+  prc: number;
+  tpo: number;
+  deg: number;
+  ocp: number;
+}
+
 /**
  *
  * @param template Template para substituição
  * @returns Objeto contendo a string resultante e um vetor informando quais strings variáveis foram inseridas
  * @example richString("Dados {{ uf if uf else 'do Brasil' }}")
  */
-export function richString(template: string, selection) {
-  const { config, uf, cad, ano, deg, prc, tpo } = selection;
-  // TODO: ocp no useSelection()
-  const ocp = 0;
+export function richString(template: string, selection: Selection) {
+  const { config, uf, cad, ano, deg, prc, tpo, ocp } = selection;
 
   // Mapa de variáveis no formato "nomeVar" => valorVar
   const variables = {

@@ -17,7 +17,7 @@ interface SelectionContextData {
   deg: number;
 }
 
-interface IEixoConfig {
+export interface IEixoConfig {
   primaryColor: string;
   variable: IVariableInfo;
   breadcrumbs: ISimpleBreadCrumb[];

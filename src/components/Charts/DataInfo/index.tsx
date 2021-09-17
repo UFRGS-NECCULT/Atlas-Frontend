@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSelection } from "hooks/SelectionContext";
+import { IEixoConfig, useSelection } from "hooks/SelectionContext";
 import { IDescriptions, useData } from "hooks/DataContext";
 import { TabButton, Flex, Column, BigNumber, BigNumberDesc, Container, Source, Row } from "./styles";
 import { getInfo } from "services/api";
@@ -20,6 +20,7 @@ interface Data {
     cns: number;
     mec: number;
     pfj: number;
+    config: IEixoConfig;
   };
   data: DataPoint[];
 }
