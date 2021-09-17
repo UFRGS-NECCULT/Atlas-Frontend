@@ -6,7 +6,7 @@ import { useSelection } from "hooks/SelectionContext";
 import BreadcrumbSelect from "./Select";
 
 const Breadcrumbs = ({ children }) => {
-  const { num, uf, ano, cad, deg, prc, cns, tpo, eixo } = useSelection();
+  const { num, uf, ano, cad, deg, prc, cns, tpo, eixo, ocp, mec, pfj } = useSelection();
   const { config } = useSelection();
 
   // Controla se a barra lateral está visivel no mobile
@@ -32,6 +32,12 @@ const Breadcrumbs = ({ children }) => {
         return tpo;
       case "cns":
         return cns;
+      case "ocp":
+        return ocp;
+      case "mec":
+        return mec;
+      case "pfj":
+        return pfj;
       default:
         return 1;
     }

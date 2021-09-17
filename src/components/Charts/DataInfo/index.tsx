@@ -65,11 +65,7 @@ interface ChartProps {
 }
 
 const DataInfo: React.FC<ChartProps> = ({ constants }) => {
-  const { eixo, ano, num, cad, uf, deg, prc, cns, tpo, config } = { ...useSelection(), ...constants };
-  // TODO: ocp, mec, pfj no useSelection()
-  const ocp = 0;
-  const mec = 0;
-  const pfj = 0;
+  const { eixo, ano, num, cad, uf, deg, prc, cns, tpo, ocp, mec, pfj, config } = { ...useSelection(), ...constants };
   const { desc } = useData();
 
   const [data, setData] = useState<Data | null>(null);

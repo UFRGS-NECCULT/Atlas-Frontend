@@ -15,6 +15,9 @@ interface SelectionContextData {
   prc: number;
   tpo: number;
   deg: number;
+  ocp: number;
+  mec: number;
+  pfj: number;
 }
 
 export interface IEixoConfig {
@@ -59,6 +62,9 @@ const SelectionProvider: React.FC = ({ children }) => {
   let _prc = 0;
   let _tpo = 1;
   let _cns = 0;
+  let _ocp = 0;
+  let _mec = 0;
+  let _pfj = 0;
 
   // Verificar se não há valores iniciais já informados na url
   if (window.location.search) {
@@ -91,6 +97,15 @@ const SelectionProvider: React.FC = ({ children }) => {
     if (parsed.prc) {
       _prc = Number(parsed.prc);
     }
+    if (parsed.ocp) {
+      _ocp = Number(parsed.ocp);
+    }
+    if (parsed.mec) {
+      _mec = Number(parsed.mec);
+    }
+    if (parsed.pfj) {
+      _pfj = Number(parsed.pfj);
+    }
   }
 
   const [eixo, setEixo] = useState<number>(_eixo);
@@ -102,6 +117,9 @@ const SelectionProvider: React.FC = ({ children }) => {
   const [prc, setPrc] = useState<number>(_prc);
   const [tpo, setTpo] = useState<number>(_tpo);
   const [cns, setCns] = useState<number>(_cns);
+  const [ocp, setOcp] = useState<number>(_ocp);
+  const [mec, setMec] = useState<number>(_mec);
+  const [pfj, setPfj] = useState<number>(_pfj);
 
   const [config, setConfig] = useState<IEixoConfig>({
     primaryColor: "transparent",
@@ -129,7 +147,10 @@ const SelectionProvider: React.FC = ({ children }) => {
         ["prc", prc],
         ["tpo", tpo],
         ["cns", cns],
-        ["eixo", eixo]
+        ["eixo", eixo],
+        ["ocp", ocp],
+        ["mec", mec],
+        ["pfj", pfj]
       ];
 
       for (const v of variables) {
@@ -180,6 +201,15 @@ const SelectionProvider: React.FC = ({ children }) => {
       case "eixo":
         setEixo(value);
         break;
+      case "ocp":
+        setOcp(value);
+        break;
+      case "mec":
+        setMec(value);
+        break;
+      case "pfj":
+        setPfj(value);
+        break;
       default:
         console.error("Seletor não existe");
         break;
@@ -205,6 +235,9 @@ const SelectionProvider: React.FC = ({ children }) => {
         cns,
         prc,
         tpo,
+        ocp,
+        mec,
+        pfj,
         changeSelection
       }}
     >
