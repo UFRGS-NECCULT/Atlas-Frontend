@@ -69,7 +69,7 @@ export const displayDescriptions: IDisplayDescriptions = {
       1: {
         1: (s) => !s.deg
       }
-    },
+    }
   },
   // Eixo 2
   2: {
@@ -105,7 +105,7 @@ export const displayDescriptions: IDisplayDescriptions = {
       1: {
         1: (s) => !s.deg
       }
-    },
+    }
   },
   // Eixo 3
   3: {

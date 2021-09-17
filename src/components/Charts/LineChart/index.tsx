@@ -155,7 +155,7 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
         return { dx: getXPos(d), dy: getYPos(d), d };
       });
 
-      svg.on("mousemove touchmove", (e) => {
+      svg.on("mousemove", (e) => {
         let [x, y] = d3.pointer(e);
 
         // Adjust to account for margins
@@ -181,7 +181,7 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
         tooltip.show();
       });
 
-      svg.on("touchend mouseleave", () => tooltip.hide());
+      svg.on("mouseleave", () => tooltip.hide());
     }
   };
 
