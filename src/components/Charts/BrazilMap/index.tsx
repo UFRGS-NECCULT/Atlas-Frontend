@@ -219,7 +219,7 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
           .map((n) => n[0].toUpperCase() + n.slice(1).toLowerCase())
           .join(" ");
 
-        const valor = getValueByUf(Number(d.id));
+        const valor = getValueByUf(Number(d.properties?.id));
 
         tooltip.setXY(x, y);
         tooltip.setText(`Estado: ${name}\nValor: ${format(valor, dataFormat)}`);
@@ -230,9 +230,9 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
       };
 
       const parsedStates = states.features.map((s) => {
-        const d = data.find((x) => x.uf_id === Number(s.id));
+        const d = data.find((x) => x.uf_id === Number(s.properties?.id));
 
-        return { ...s, ...d, id: Number(s.id), color: colorScale(d?.valor || 0) };
+        return { ...s, ...d, id: Number(s.properties?.id), color: colorScale(d?.valor || 0) };
       });
 
       svg
