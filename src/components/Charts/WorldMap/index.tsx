@@ -3,7 +3,7 @@ import * as d3 from "d3";
 import * as topojson from "topojson-client";
 import debounce from "debounce";
 
-import worldMap from "../../../assets/json/world-110m.json";
+import worldMap from "../../../assets/json/world-min.json";
 import { GeometryCollection } from "topojson-specification";
 
 import { World } from "./styles";
@@ -214,7 +214,7 @@ const WorldMap: React.FC<ChartProps> = ({ constants }) => {
         y -= marginTop;
 
         const parceiro = d.properties.continent;
-        const valor = getValueByContinent(Number(d.id));
+        const valor = getValueByContinent(Number(d.properties?.id));
 
         tooltip.setXY(x, y);
         tooltip.setText(`Parceiro: ${parceiro}\nValor: ${format(valor, dataFormat)}`);
@@ -225,7 +225,7 @@ const WorldMap: React.FC<ChartProps> = ({ constants }) => {
       };
 
       const parsedContinents = continents.features.map((s) => {
-        const d = data.find((x) => String(x.parceiro_id) === s.id);
+        const d = data.find((x) => String(x.parceiro_id) === s.properties?.id);
         return { ...s, ...d, cor: colorScale(d?.valor || 0) };
       });
 
@@ -234,7 +234,7 @@ const WorldMap: React.FC<ChartProps> = ({ constants }) => {
         .data(parsedContinents)
         .join("path")
         .attr("class", "country")
-        .attr("id", (d) => Number(d.id) || 0)
+        .attr("id", (d) => Number(d.properties?.id) || 0)
         .attr("stroke-linecap", "round")
         .attr("stroke", "black")
         .style("cursor", "pointer")
@@ -244,7 +244,7 @@ const WorldMap: React.FC<ChartProps> = ({ constants }) => {
         .transition()
         .duration(800)
         .attr("d", path)
-        .attr("fill", (d) => (d.id === String(prc) ? d.cor_eixo : d.cor) || `red`);
+        .attr("fill", (d) => (d.properties?.id === String(prc) ? d.cor_eixo : d.cor) || `red`);
     }
   };
 
