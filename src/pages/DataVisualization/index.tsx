@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 import {
   Button,
@@ -17,38 +17,88 @@ import Box from "components/Box";
 import VarDescription from "components/Charts/VarDescription";
 import DataInfo from "components/Charts/DataInfo";
 import { Viewbox } from "./Viewbox";
-import { getScreenshot } from "services/api";
 import { useSelection } from "hooks/SelectionContext";
+import html2canvas from "html2canvas";
 
 const DataVisualization = () => {
   const { config } = useSelection();
   const [loading, setLoading] = useState<boolean>(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  const handleDownload = (format) => {
+  const blobToBase64 = (blob: Blob): Promise<string | ArrayBuffer | null> => {
+    return new Promise((resolve, _) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  };
+
+  const downloadPNG = async (element: HTMLElement): Promise<Blob> => {
+    // Baixar a fonte padrão e converter pra base64
+    const fontBlob = await fetch(process.env.PUBLIC_URL + "/fonts/Lato-Regular.ttf").then((r) => r.blob());
+    const fontBase64 = await blobToBase64(fontBlob);
+
+    const canvas = await html2canvas(element, {
+      y: -75, // TODO: Determinar número de acordo com a altura da barra de breadcrumbs
+      foreignObjectRendering: true,
+      onclone: (clonedElement) => {
+        // Adicionar a fonte padrão em todos os SVGs
+        const svgElemens = clonedElement.getElementsByTagName("svg");
+        for (let i = 0; i < svgElemens.length; i++) {
+          const svg = svgElemens.item(i);
+          if (svg) {
+            const style = document.createElement("style");
+            style.append(`@font-face {
+              font-family: 'Lato Regular';
+              src: url("${fontBase64}");
+            }`);
+            svg.prepend(style);
+          }
+        }
+      }
+    });
+
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject("canvas não foi corretamente convertido para blob");
+        }
+      });
+    });
+  };
+
+  const handleDownload = async (format: "png" | "pdf") => {
     setLoading(true);
 
-    const getType = () => {
-      if (format === "pdf") return "application/pdf";
-      else if (format === "png") return "image/png";
+    const saveElement = (el: HTMLElement) => {
+      switch (format) {
+        case "png":
+          return downloadPNG(el);
+        case "pdf":
+          // TODO: Implementar download de pdf
+          throw new Error("Ainda não implementado!");
+      }
     };
 
-    getScreenshot(format)
-      .then((res) => {
-        const blob = new Blob([res.data], { type: getType() });
+    if (contentRef.current) {
+      try {
+        const blob = await saveElement(contentRef.current);
         const link = document.createElement("a");
         link.href = window.URL.createObjectURL(blob);
         link.download = `data.${format}`;
         link.click();
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
+      }
+    }
   };
 
   return (
     <Page>
       <Breadcrumbs>
-        <Container>
+        <Container ref={contentRef}>
           <Title>{config.variable.titulo}</Title>
           <Viewboxes>
             <div className="row">

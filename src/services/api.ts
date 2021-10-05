@@ -46,20 +46,3 @@ export const getInfo = async (eixo = 1, params) => {
 export const getVisualization = async (eixo = 1, params) => {
   return await api.get(`/eixo/${eixo}/visualization?${qs.stringify(params)}`);
 };
-
-export const getScreenshotURL = (format) => {
-  const params = qs.parse(window.location.search);
-
-  return baseURL + `/screenshot/${format}?${qs.stringify(params)}`;
-};
-
-export const getScreenshot = (format) => {
-  const params = qs.parse(window.location.search);
-
-  return api.get(baseURL + `/screenshot/${format}?${qs.stringify(params)}`, {
-    responseType: "arraybuffer",
-    headers: {
-      Accept: "application/pdf"
-    }
-  });
-};
