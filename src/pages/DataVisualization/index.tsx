@@ -38,8 +38,12 @@ const DataVisualization = () => {
     const fontBlob = await fetch(process.env.PUBLIC_URL + "/fonts/Lato-Regular.ttf").then((r) => r.blob());
     const fontBase64 = await blobToBase64(fontBlob);
 
+    // Calcular a posição Y do elemento
+    const { top } = element.getBoundingClientRect();
+    const topOffset = top + (window.pageYOffset || document.documentElement.scrollTop);
+
     const canvas = await html2canvas(element, {
-      y: -75, // TODO: Determinar número de acordo com a altura da barra de breadcrumbs
+      y: -topOffset,
       foreignObjectRendering: true,
       onclone: (clonedElement) => {
         // Adicionar a fonte padrão em todos os SVGs
