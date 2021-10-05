@@ -25,54 +25,6 @@ const DataVisualization = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const blobToBase64 = (blob: Blob): Promise<string | ArrayBuffer | null> => {
-    return new Promise((resolve, _) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.readAsDataURL(blob);
-    });
-  };
-
-  const downloadPNG = async (element: HTMLElement): Promise<Blob> => {
-    // Baixar a fonte padrão e converter pra base64
-    const fontBlob = await fetch(process.env.PUBLIC_URL + "/fonts/Lato-Regular.ttf").then((r) => r.blob());
-    const fontBase64 = await blobToBase64(fontBlob);
-
-    // Calcular a posição Y do elemento
-    const { top } = element.getBoundingClientRect();
-    const topOffset = top + (window.pageYOffset || document.documentElement.scrollTop);
-
-    const canvas = await html2canvas(element, {
-      y: -topOffset,
-      foreignObjectRendering: true,
-      onclone: (clonedElement) => {
-        // Adicionar a fonte padrão em todos os SVGs
-        const svgElemens = clonedElement.getElementsByTagName("svg");
-        for (let i = 0; i < svgElemens.length; i++) {
-          const svg = svgElemens.item(i);
-          if (svg) {
-            const style = document.createElement("style");
-            style.append(`@font-face {
-              font-family: 'Lato Regular';
-              src: url("${fontBase64}");
-            }`);
-            svg.prepend(style);
-          }
-        }
-      }
-    });
-
-    return new Promise((resolve, reject) => {
-      canvas.toBlob((blob) => {
-        if (blob) {
-          resolve(blob);
-        } else {
-          reject("canvas não foi corretamente convertido para blob");
-        }
-      });
-    });
-  };
-
   const handleDownload = async (format: "png" | "pdf") => {
     setLoading(true);
 
@@ -155,6 +107,54 @@ const DataVisualization = () => {
       </Breadcrumbs>
     </Page>
   );
+};
+
+const blobToBase64 = (blob: Blob): Promise<string | ArrayBuffer | null> => {
+  return new Promise((resolve, _) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+};
+
+const downloadPNG = async (element: HTMLElement): Promise<Blob> => {
+  // Baixar a fonte padrão e converter pra base64
+  const fontBlob = await fetch(process.env.PUBLIC_URL + "/fonts/Lato-Regular.ttf").then((r) => r.blob());
+  const fontBase64 = await blobToBase64(fontBlob);
+
+  // Calcular a posição Y do elemento
+  const { top } = element.getBoundingClientRect();
+  const topOffset = top + (window.pageYOffset || document.documentElement.scrollTop);
+
+  const canvas = await html2canvas(element, {
+    y: -topOffset,
+    foreignObjectRendering: true,
+    onclone: (clonedElement) => {
+      // Adicionar a fonte padrão em todos os SVGs
+      const svgElemens = clonedElement.getElementsByTagName("svg");
+      for (let i = 0; i < svgElemens.length; i++) {
+        const svg = svgElemens.item(i);
+        if (svg) {
+          const style = document.createElement("style");
+          style.append(`@font-face {
+            font-family: 'Lato Regular';
+            src: url("${fontBase64}");
+          }`);
+          svg.prepend(style);
+        }
+      }
+    }
+  });
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) {
+        resolve(blob);
+      } else {
+        reject("canvas não foi corretamente convertido para blob");
+      }
+    });
+  });
 };
 
 export default DataVisualization;
