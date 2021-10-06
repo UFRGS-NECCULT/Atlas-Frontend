@@ -198,3 +198,10 @@ export const ViewOptions = styled.div`
     cursor: pointer;
   }
 `;
+
+export const Source = styled.div`
+  height: 1em;
+  width: 100%;
+
+  text-align: right;
+`;

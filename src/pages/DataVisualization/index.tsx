@@ -10,7 +10,8 @@ import {
   Title,
   Viewboxes,
   ChartContainer,
-  Loading
+  Loading,
+  Source
 } from "./styles";
 import Breadcrumbs from "components/Breadcrumbs";
 import Box from "components/Box";
@@ -84,6 +85,8 @@ const DataVisualization = () => {
                 </ChartContainer>
               </Box>
             </div>
+            {/* Essa div é usada para indicar a URL da página ao baixá-la como PNG/PDF */}
+            <Source id="page-source" />
           </Viewboxes>
         </Container>
         <Footer id="footer">
@@ -129,19 +132,24 @@ const downloadPNG = async (element: HTMLElement): Promise<Blob> => {
   const canvas = await html2canvas(element, {
     y: -topOffset,
     foreignObjectRendering: true,
-    onclone: (clonedElement) => {
+    onclone: (clonedDocument) => {
       // Adicionar a fonte padrão em todos os SVGs
-      const svgElemens = clonedElement.getElementsByTagName("svg");
+      const svgElemens = clonedDocument.getElementsByTagName("svg");
       for (let i = 0; i < svgElemens.length; i++) {
         const svg = svgElemens.item(i);
         if (svg) {
-          const style = document.createElement("style");
+          const style = clonedDocument.createElement("style");
           style.append(`@font-face {
             font-family: 'Lato Regular';
             src: url("${fontBase64}");
           }`);
           svg.prepend(style);
         }
+      }
+
+      const srcDiv = clonedDocument.getElementById("page-source");
+      if (srcDiv) {
+        srcDiv.innerText = 'Fonte: ' + window.origin;
       }
     }
   });
