@@ -12,11 +12,11 @@ const locale = d3.formatLocale({
 });
 
 // Uma formatação básica de números
-const standard = locale.format(".2~f"); // No máximo 2 casas decimais
+const standard = locale.format(",.2~f"); // Separador de milhar e no máximo 2 casas decimais
 
 const formatters = {
   none: standard,
-  si: locale.format(".2~s"),
+  si: locale.format(",.2~s"), // Separador de milhar, duas casas decimais e prefixo do sistema internacional (https://en.wikipedia.org/wiki/Metric_prefix#List_of_SI_prefixes)
   real: locale.format("$,.2f"), // Prefixo de dinheiro, separador de milhar, 2 casas decimais
   percent: locale.format(".2%"), // 2 casas decimais, multiplicar por 100
   kilograms: (n) => standard(n) + "kg" // Número normal + kg
