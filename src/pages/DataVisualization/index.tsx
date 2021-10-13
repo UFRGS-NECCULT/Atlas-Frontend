@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 import {
   Button,
@@ -10,19 +10,22 @@ import {
   Title,
   Viewboxes,
   ChartContainer,
-  Loading
+  Loading,
+  Source
 } from "./styles";
 import Breadcrumbs from "components/Breadcrumbs";
 import Box from "components/Box";
 import VarDescription from "components/Charts/VarDescription";
 import DataInfo from "components/Charts/DataInfo";
 import { Viewbox } from "./Viewbox";
-import { getCsv, getScreenshot } from "services/api";
+import { getCsv } from "services/api";
 import { useSelection } from "hooks/SelectionContext";
+import html2canvas from "html2canvas";
 
 const DataVisualization = () => {
   const { config, eixo, num } = useSelection();
   const [loading, setLoading] = useState<boolean>(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const handleDownloadCsv = () => {
     getCsv(eixo, { var: num })
@@ -38,31 +41,36 @@ const DataVisualization = () => {
       .catch((e) => console.log(e));
   };
 
-  const handleDownload = (format) => {
+  const handleDownload = async (format) => {
     setLoading(true);
 
-    const getType = () => {
-      if (format === "pdf") return "application/pdf";
-      else if (format === "png") return "image/png";
+    const saveElement = (el: HTMLElement) => {
+      switch (format) {
+        case "png":
+          return downloadPNG(el);
+        case "pdf":
+          // TODO: Implementar download de pdf
+          throw new Error("Ainda não implementado!");
+      }
     };
 
-    getScreenshot(format)
-      .then((res) => {
-        const blob = new Blob([res.data], { type: getType() });
+    if (contentRef.current) {
+      try {
+        const blob = await saveElement(contentRef.current);
         const link = document.createElement("a");
         link.href = window.URL.createObjectURL(blob);
         link.download = `data.${format}`;
         link.click();
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
+      }
+    }
   };
 
   return (
     <Page>
       <Breadcrumbs>
-        <Container>
+        <Container ref={contentRef}>
           <Title>{config.variable.titulo}</Title>
           <Viewboxes>
             <div className="row">
@@ -92,6 +100,8 @@ const DataVisualization = () => {
                 </ChartContainer>
               </Box>
             </div>
+            {/* Essa div é usada para indicar a URL da página ao baixá-la como PNG/PDF */}
+            <Source id="page-source" />
           </Viewboxes>
         </Container>
         <Footer id="footer">
@@ -117,6 +127,59 @@ const DataVisualization = () => {
       </Breadcrumbs>
     </Page>
   );
+};
+
+const blobToBase64 = (blob: Blob): Promise<string | ArrayBuffer | null> => {
+  return new Promise((resolve, _) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+};
+
+const downloadPNG = async (element: HTMLElement): Promise<Blob> => {
+  // Baixar a fonte padrão e converter pra base64
+  const fontBlob = await fetch(process.env.PUBLIC_URL + "/fonts/Lato-Regular.ttf").then((r) => r.blob());
+  const fontBase64 = await blobToBase64(fontBlob);
+
+  // Calcular a posição Y do elemento
+  const { top } = element.getBoundingClientRect();
+  const topOffset = top + (window.pageYOffset || document.documentElement.scrollTop);
+
+  const canvas = await html2canvas(element, {
+    y: -topOffset,
+    foreignObjectRendering: true,
+    onclone: (clonedDocument) => {
+      // Adicionar a fonte padrão em todos os SVGs
+      const svgElemens = clonedDocument.getElementsByTagName("svg");
+      for (let i = 0; i < svgElemens.length; i++) {
+        const svg = svgElemens.item(i);
+        if (svg) {
+          const style = clonedDocument.createElement("style");
+          style.append(`@font-face {
+            font-family: 'Lato Regular';
+            src: url("${fontBase64}");
+          }`);
+          svg.prepend(style);
+        }
+      }
+
+      const srcDiv = clonedDocument.getElementById("page-source");
+      if (srcDiv) {
+        srcDiv.innerText = "Fonte: " + window.origin;
+      }
+    }
+  });
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) {
+        resolve(blob);
+      } else {
+        reject("canvas não foi corretamente convertido para blob");
+      }
+    });
+  });
 };
 
 export default DataVisualization;
