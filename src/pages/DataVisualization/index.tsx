@@ -17,12 +17,26 @@ import Box from "components/Box";
 import VarDescription from "components/Charts/VarDescription";
 import DataInfo from "components/Charts/DataInfo";
 import { Viewbox } from "./Viewbox";
-import { getScreenshot } from "services/api";
+import { getCsv, getScreenshot } from "services/api";
 import { useSelection } from "hooks/SelectionContext";
 
 const DataVisualization = () => {
-  const { config } = useSelection();
+  const { config, eixo, num } = useSelection();
   const [loading, setLoading] = useState<boolean>(false);
+
+  const handleDownloadCsv = () => {
+    getCsv(eixo, { var: num })
+      .then((res) => {
+        const blob = new Blob([res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+        const link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = `E${eixo}V${num}.xlsx`;
+        link.click();
+      })
+      .catch((e) => console.log(e));
+  };
 
   const handleDownload = (format) => {
     setLoading(true);
@@ -90,7 +104,9 @@ const DataVisualization = () => {
                 <Button style={{ backgroundColor: config.primaryColor }} onClick={() => handleDownload("png")}>
                   PNG
                 </Button>
-                <Button style={{ backgroundColor: config.primaryColor }}>CSV</Button>
+                <Button style={{ backgroundColor: config.primaryColor }} onClick={() => handleDownloadCsv()}>
+                  CSV
+                </Button>
                 <Button style={{ backgroundColor: config.primaryColor }} onClick={() => handleDownload("pdf")}>
                   PDF
                 </Button>
