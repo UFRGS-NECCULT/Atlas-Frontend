@@ -20,6 +20,7 @@ import DataInfo from "components/Charts/DataInfo";
 import { Viewbox } from "./Viewbox";
 import { useSelection } from "hooks/SelectionContext";
 import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 
 const DataVisualization = () => {
   const { config } = useSelection();
@@ -34,8 +35,7 @@ const DataVisualization = () => {
         case "png":
           return downloadPNG(el);
         case "pdf":
-          // TODO: Implementar download de pdf
-          throw new Error("Ainda não implementado!");
+          return downloadPDF(el);
       }
     };
 
@@ -112,18 +112,27 @@ const DataVisualization = () => {
   );
 };
 
-const blobToBase64 = (blob: Blob): Promise<string | ArrayBuffer | null> => {
-  return new Promise((resolve, _) => {
+// Baixar a fonte padrão e converter pra base64
+const downloadFont = async (base64 = true): Promise<string> => {
+  const fontBlob = await fetch(process.env.PUBLIC_URL + "/fonts/Lato-Regular.ttf").then((r) => r.blob());
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
+    reader.onloadend = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      }
+      reject("Font não foi corretamente convertida para base64");
+    };
+    if (base64) {
+      reader.readAsDataURL(fontBlob);
+    } else {
+      reader.readAsBinaryString(fontBlob);
+    }
   });
 };
 
 const downloadPNG = async (element: HTMLElement): Promise<Blob> => {
-  // Baixar a fonte padrão e converter pra base64
-  const fontBlob = await fetch(process.env.PUBLIC_URL + "/fonts/Lato-Regular.ttf").then((r) => r.blob());
-  const fontBase64 = await blobToBase64(fontBlob);
+  const fontBase64 = await downloadFont();
 
   // Calcular a posição Y do elemento
   const { top } = element.getBoundingClientRect();
@@ -149,7 +158,7 @@ const downloadPNG = async (element: HTMLElement): Promise<Blob> => {
 
       const srcDiv = clonedDocument.getElementById("page-source");
       if (srcDiv) {
-        srcDiv.innerText = 'Fonte: ' + window.origin;
+        srcDiv.innerText = "Fonte: " + window.origin;
       }
     }
   });
@@ -161,6 +170,32 @@ const downloadPNG = async (element: HTMLElement): Promise<Blob> => {
       } else {
         reject("canvas não foi corretamente convertido para blob");
       }
+    });
+  });
+};
+
+const downloadPDF = async (element: HTMLElement): Promise<Blob> => {
+  // Tamanho de folha a4 em milímetros
+  const jspdf = new jsPDF({
+    format: [210, 297]
+  });
+
+  const fontBase64 = await downloadFont(false);
+  jspdf.addFileToVFS("Lato-Regular-normal.ttf", fontBase64);
+  jspdf.addFont("Lato-Regular-normal.ttf", "Lato Regular", "normal");
+
+  return new Promise((resolve) => {
+    jspdf.html(element, {
+      callback: (doc) => {
+        resolve(doc.output("blob"));
+      },
+      html2canvas: {
+        // foreignObjectRendering: true,
+      },
+      width: 210,
+      windowWidth: window.innerWidth,
+      x: 0,
+      y: 0
     });
   });
 };
