@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { LinearProgress } from "@material-ui/core";
+import { LinearProgress, Popover as MuiPopover } from "@material-ui/core";
 
 export const Page = styled.div`
   overflow-x: hidden;
@@ -165,6 +165,41 @@ export const Button = styled.div`
   vertical-align: middle;
   width: 100%;
   height: 18px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: background-color 0.5s;
+  cursor: pointer;
+`;
+
+export const Popover = styled(MuiPopover)`
+  .MuiPaper-root {
+    background: inherit;
+    min-width: 167px;
+  }
+`;
+
+export const CsvOption = styled.div`
+  & + & {
+    margin-top: 5px;
+  }
+
+  text-transform: uppercase;
+  font-size: 9px;
+  font-weight: bold;
+  letter-spacing: 1px;
+
+  padding: 0 8px;
+
+  color: #fff;
+  line-height: 12px;
+  vertical-align: middle;
+  width: 100%;
+  height: 18px;
+
+  border: 0;
 
   display: flex;
   justify-content: center;
