@@ -112,10 +112,10 @@ const DataVisualization = () => {
   );
 };
 
-// Baixar a fonte padrão e converter pra base64
-const downloadFont = async (base64 = true): Promise<string> => {
+// Baixar a fonte padrão como base64 e binaryString
+const downloadFont = async (): Promise<[string, string]> => {
   const fontBlob = await fetch(process.env.PUBLIC_URL + "/fonts/Lato-Regular.ttf").then((r) => r.blob());
-  return new Promise((resolve, reject) => {
+  const base64 = new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       if (typeof reader.result === "string") {
@@ -123,16 +123,40 @@ const downloadFont = async (base64 = true): Promise<string> => {
       }
       reject("Font não foi corretamente convertida para base64");
     };
-    if (base64) {
-      reader.readAsDataURL(fontBlob);
-    } else {
-      reader.readAsBinaryString(fontBlob);
-    }
+    reader.readAsDataURL(fontBlob);
   });
+  const binaryString = new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      }
+      reject("Font não foi corretamente convertida para binaryString");
+    };
+    reader.readAsBinaryString(fontBlob);
+  });
+
+  return Promise.all([base64, binaryString]);
+};
+
+// Embarca a fonte dentro dos svgs de um elemento
+const prepareSVGs = (document: HTMLDocument, element: HTMLElement, fontBase64: string) => {
+  const svgElemens = element.getElementsByTagName("svg");
+  for (let i = 0; i < svgElemens.length; i++) {
+    const svg = svgElemens.item(i);
+    if (svg) {
+      const style = document.createElement("style");
+      style.append(`@font-face {
+        font-family: 'Lato Regular';
+        src: url("${fontBase64}");
+      }`);
+      svg.prepend(style);
+    }
+  }
 };
 
 const downloadPNG = async (element: HTMLElement): Promise<Blob> => {
-  const fontBase64 = await downloadFont();
+  const [fontBase64] = await downloadFont();
 
   // Calcular a posição Y do elemento
   const { top } = element.getBoundingClientRect();
@@ -142,19 +166,7 @@ const downloadPNG = async (element: HTMLElement): Promise<Blob> => {
     y: -topOffset,
     foreignObjectRendering: true,
     onclone: (clonedDocument) => {
-      // Adicionar a fonte padrão em todos os SVGs
-      const svgElemens = clonedDocument.getElementsByTagName("svg");
-      for (let i = 0; i < svgElemens.length; i++) {
-        const svg = svgElemens.item(i);
-        if (svg) {
-          const style = clonedDocument.createElement("style");
-          style.append(`@font-face {
-            font-family: 'Lato Regular';
-            src: url("${fontBase64}");
-          }`);
-          svg.prepend(style);
-        }
-      }
+      prepareSVGs(clonedDocument, clonedDocument.body, fontBase64);
 
       const srcDiv = clonedDocument.getElementById("page-source");
       if (srcDiv) {
@@ -183,7 +195,7 @@ const downloadPDF = async (element: HTMLElement): Promise<Blob> => {
   const zoom = width / window.innerWidth;
 
   // Baixar e armazenar fonte dentro do PDF
-  const font = await downloadFont(false);
+  const [fontBase64, font] = await downloadFont();
   jspdf.addFileToVFS("Lato-Regular-normal.ttf", font);
   jspdf.addFont("Lato-Regular-normal.ttf", "Lato Regular", "normal");
 
@@ -196,7 +208,7 @@ const downloadPDF = async (element: HTMLElement): Promise<Blob> => {
   });
 
   // Adicionar SVGs como imagens, 1 por 1
-  const elems = element.getElementsByTagName('svg');
+  const elems = element.getElementsByTagName("svg");
   for (let i = 0; i < elems.length; i++) {
     const svg = elems.item(i);
 
@@ -206,29 +218,33 @@ const downloadPDF = async (element: HTMLElement): Promise<Blob> => {
       const elRect = element.getBoundingClientRect();
 
       // Posição do svg relativa ao elemento sendo convertido para pdf
-      const y = Math.abs(rect.y - elRect.y)*zoom;
-      const x = Math.abs(rect.x - elRect.x)*zoom;
+      const y = Math.abs(rect.y - elRect.y) * zoom;
+      const x = Math.abs(rect.x - elRect.x) * zoom;
 
       // Calcular qual página está a imagem (sendo 0 a primeira página)
-      const page = Math.floor(y/height);
+      const page = Math.floor(y / height);
 
-      // Converter o svg para canvas
+      // Converter o svg para imagem
       const canvas = await html2canvas(svg.parentElement, {
         height: rect.height,
         width: rect.width,
         x: Math.abs(parentRect.x - rect.x),
         y: Math.abs(parentRect.y - rect.y),
+        onclone: (clonedDocument) => {
+          prepareSVGs(clonedDocument, clonedDocument.body, fontBase64);
+        }
       });
+      const png = canvas.toDataURL("image/png");
 
       // Para o jspdf a primeira página é a 1
-      jspdf.setPage(page+1);
-      jspdf.addImage(
-        canvas.toDataURL('image/png', 1.0),
-        x,
-        y - page*height,
-        rect.width*zoom,
-        rect.height*zoom
-      );
+      jspdf.setPage(page + 1);
+      jspdf.addImage(png, x, y - page * height, rect.width * zoom, rect.height * zoom);
+
+      // Se a imagem ocupa mais de uma página, ela tem que ser adicionada outra vez
+      if (y + rect.height * zoom > height) {
+        jspdf.setPage(page + 2);
+        jspdf.addImage(png, x, y - (page + 1) * height, rect.width * zoom, rect.height * zoom);
+      }
     }
   }
 
