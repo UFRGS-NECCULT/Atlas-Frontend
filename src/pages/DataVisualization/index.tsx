@@ -176,28 +176,63 @@ const downloadPNG = async (element: HTMLElement): Promise<Blob> => {
 
 const downloadPDF = async (element: HTMLElement): Promise<Blob> => {
   // Tamanho de folha a4 em milímetros
+  const [width, height] = [210, 297];
   const jspdf = new jsPDF({
-    format: [210, 297]
+    format: [width, height]
   });
+  const zoom = width / window.innerWidth;
 
-  const fontBase64 = await downloadFont(false);
-  jspdf.addFileToVFS("Lato-Regular-normal.ttf", fontBase64);
+  // Baixar e armazenar fonte dentro do PDF
+  const font = await downloadFont(false);
+  jspdf.addFileToVFS("Lato-Regular-normal.ttf", font);
   jspdf.addFont("Lato-Regular-normal.ttf", "Lato Regular", "normal");
 
-  return new Promise((resolve) => {
-    jspdf.html(element, {
-      callback: (doc) => {
-        resolve(doc.output("blob"));
-      },
-      html2canvas: {
-        // foreignObjectRendering: true,
-      },
-      width: 210,
-      windowWidth: window.innerWidth,
-      x: 0,
-      y: 0
-    });
+  // Renderizar elementos (exceto SVGs)
+  await jspdf.html(element, {
+    width: width,
+    windowWidth: window.innerWidth,
+    x: 0,
+    y: 0
   });
+
+  // Adicionar SVGs como imagens, 1 por 1
+  const elems = element.getElementsByTagName('svg');
+  for (let i = 0; i < elems.length; i++) {
+    const svg = elems.item(i);
+
+    if (svg && svg.parentElement) {
+      const rect = svg.getBoundingClientRect();
+      const parentRect = svg.parentElement.getBoundingClientRect();
+      const elRect = element.getBoundingClientRect();
+
+      // Posição do svg relativa ao elemento sendo convertido para pdf
+      const y = Math.abs(rect.y - elRect.y)*zoom;
+      const x = Math.abs(rect.x - elRect.x)*zoom;
+
+      // Calcular qual página está a imagem (sendo 0 a primeira página)
+      const page = Math.floor(y/height);
+
+      // Converter o svg para canvas
+      const canvas = await html2canvas(svg.parentElement, {
+        height: rect.height,
+        width: rect.width,
+        x: Math.abs(parentRect.x - rect.x),
+        y: Math.abs(parentRect.y - rect.y),
+      });
+
+      // Para o jspdf a primeira página é a 1
+      jspdf.setPage(page+1);
+      jspdf.addImage(
+        canvas.toDataURL('image/png', 1.0),
+        x,
+        y - page*height,
+        rect.width*zoom,
+        rect.height*zoom
+      );
+    }
+  }
+
+  return jspdf.output("blob");
 };
 
 export default DataVisualization;
