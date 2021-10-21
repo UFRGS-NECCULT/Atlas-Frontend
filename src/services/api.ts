@@ -43,6 +43,14 @@ export const getInfo = async (eixo = 1, params) => {
   return await api.get(`/eixo/${eixo}/info?${qs.stringify(params)}`);
 };
 
+export const getCsv = async (params) => {
+  return await api.get(`csv?${qs.stringify(params)}`, { responseType: "arraybuffer" });
+};
+
+export const getCsvFiles = async (params) => {
+  return await api.get(`csv/files?${qs.stringify(params)}`);
+};
+
 export const getVisualization = async (eixo = 1, params) => {
   return await api.get(`/eixo/${eixo}/visualization?${qs.stringify(params)}`);
 };

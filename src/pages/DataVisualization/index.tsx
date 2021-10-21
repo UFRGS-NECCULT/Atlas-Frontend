@@ -11,23 +11,60 @@ import {
   Viewboxes,
   ChartContainer,
   Loading,
-  Source
+  Source,
+  CsvOption,
+  Popover
 } from "./styles";
 import Breadcrumbs from "components/Breadcrumbs";
 import Box from "components/Box";
 import VarDescription from "components/Charts/VarDescription";
 import DataInfo from "components/Charts/DataInfo";
 import { Viewbox } from "./Viewbox";
+import { getCsv, getCsvFiles } from "services/api";
 import { useSelection } from "hooks/SelectionContext";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 
+interface ICsvFileOption {
+  id: number;
+  variable: number;
+  label: string;
+  file: string;
+}
+
 const DataVisualization = () => {
-  const { config } = useSelection();
+  const { config, eixo, num } = useSelection();
   const [loading, setLoading] = useState<boolean>(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const handleDownload = async (format: "png" | "pdf") => {
+  const referenceEl = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState<boolean>(false);
+  const [csvFiles, setCsvFiles] = useState<ICsvFileOption[]>([]);
+
+  const handleGetCsvFiles = () => {
+    getCsvFiles({ ex: eixo, var: num }).then((res) => {
+      setCsvFiles(res.data);
+      setOpen(true);
+    });
+  };
+
+  const handleDownloadCsv = (csv: ICsvFileOption) => {
+    getCsv({ id: csv.id })
+      .then((res) => {
+        const blob = new Blob([res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+        const link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = `${csv.file}.xlsx`;
+
+        link.click();
+        setOpen(false);
+      })
+      .catch((e) => console.log(e));
+  };
+
+  const handleDownload = async (format) => {
     setLoading(true);
 
     const saveElement = (el: HTMLElement) => {
@@ -99,7 +136,39 @@ const DataVisualization = () => {
                 <Button style={{ backgroundColor: config.primaryColor }} onClick={() => handleDownload("png")}>
                   PNG
                 </Button>
-                <Button style={{ backgroundColor: config.primaryColor }}>CSV</Button>
+                <Button
+                  style={{ backgroundColor: config.primaryColor }}
+                  aria-describedby={`simple-popover`}
+                  ref={referenceEl}
+                  onClick={() => {
+                    handleGetCsvFiles();
+                  }}
+                >
+                  CSV
+                </Button>
+                <Popover
+                  id={`simple-popover`}
+                  open={open}
+                  anchorEl={referenceEl.current}
+                  onClose={() => setOpen(false)}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "left"
+                  }}
+                >
+                  {csvFiles.map((file) => (
+                    <CsvOption
+                      key={file.id}
+                      style={{ backgroundColor: config.primaryColor }}
+                      onClick={() => handleDownloadCsv(file)}
+                    >
+                      {file.label}
+                    </CsvOption>
+                  ))}
+                  <CsvOption style={{ backgroundColor: `red` }} onClick={() => setOpen(false)}>
+                    Fechar
+                  </CsvOption>
+                </Popover>
                 <Button style={{ backgroundColor: config.primaryColor }} onClick={() => handleDownload("pdf")}>
                   PDF
                 </Button>
