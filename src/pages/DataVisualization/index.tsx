@@ -97,18 +97,18 @@ const DataVisualization = () => {
           <Viewboxes>
             <div className="row">
               <div className="col">
-                <Box id="box-1" className="box expand" title="Mapa do Brasil">
+                <Box id="box-1" className="box expand">
                   <Viewbox id={1} />
                 </Box>
-                <Box id="box-3" className="box" title="Descrição da variável">
+                <Box id="box-3" className="box">
                   <VarDescription />
                 </Box>
               </div>
               <div className="col">
-                <Box id="box-2" className="box" title="Dados">
+                <Box id="box-2" className="box">
                   <DataInfo />
                 </Box>
-                <Box id="box-4" className="box expand" title="Série histórica">
+                <Box id="box-4" className="box expand">
                   <ChartContainer>
                     <Viewbox id={2} />
                   </ChartContainer>
@@ -116,7 +116,7 @@ const DataVisualization = () => {
               </div>
             </div>
             <div className="row">
-              <Box id={"box-5"} title="Treemap - Setores Culturais Criativos">
+              <Box id={"box-5"}>
                 <ChartContainer>
                   <Viewbox id={3} />
                 </ChartContainer>
