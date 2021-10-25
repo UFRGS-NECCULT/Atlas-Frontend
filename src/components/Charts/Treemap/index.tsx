@@ -5,7 +5,7 @@ import * as debounce from "debounce";
 import { useSelection } from "hooks/SelectionContext";
 import { getTreemapCad, getTreemapUF } from "services/api";
 import Legend, { ILegendData } from "../Legend";
-import { TreemapContainer } from "./styles";
+import { TreemapContainer, TreemapSVG } from "./styles";
 import SVGTooltip from "components/SVGTooltip";
 import { format } from "utils";
 import { useAsyncState, useAsyncUndefinedState } from "hooks/useAsyncState";
@@ -372,7 +372,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
 
   return (
     <TreemapContainer>
-      <svg ref={d3Container} width={"100%"} height={"100%"} />
+      <TreemapSVG ref={d3Container} width={"100%"} height={"100%"} />
       <Legend selector={legendSelectors[group]} title={legendTitles[group]} data={legendData} />
     </TreemapContainer>
   );

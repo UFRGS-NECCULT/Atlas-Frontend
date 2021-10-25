@@ -5,4 +5,5 @@ export const Bars = styled.svg`
   width: 100%;
   margin: 0;
   padding: 0;
+  flex-grow: 1;
 `;
