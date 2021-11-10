@@ -6,6 +6,7 @@ export const Container = styled.div`
 
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
 `;
 
 export const ChartButtons = styled.div`
@@ -43,6 +44,7 @@ export const ChartButtons = styled.div`
 export const ChartContainer = styled.div`
   display: flex;
   flex: 1 1 auto;
+  flex-direction: column;
 `;
 
 export const Title = styled.div`

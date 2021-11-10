@@ -210,7 +210,9 @@ export const CsvOption = styled.div`
 `;
 
 export const ChartContainer = styled.div`
+  display: flex;
   flex: 1 1 auto;
+  flex-direction: column;
   height: 100%;
   width: 100%;
   padding: 15px;

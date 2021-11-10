@@ -17,3 +17,7 @@ export const TreemapContainer = styled.div`
     width: 100%;
   }
 `;
+
+export const TreemapSVG = styled.svg`
+  flex-grow: 1;
+`;
