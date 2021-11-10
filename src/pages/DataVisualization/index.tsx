@@ -20,7 +20,7 @@ import Box from "components/Box";
 import VarDescription from "components/Charts/VarDescription";
 import DataInfo from "components/Charts/DataInfo";
 import { Viewbox } from "./Viewbox";
-import { getCsv, getCsvFiles } from "services/api";
+import { getCsv, getSQL, getCsvFiles } from "services/api";
 import { useSelection } from "hooks/SelectionContext";
 import html2canvas from "html2canvas";
 
@@ -45,6 +45,21 @@ const DataVisualization = () => {
       setCsvFiles(res.data);
       setOpen(true);
     });
+  };
+
+  const handleDownloadSQL = () => {
+    getSQL()
+      .then((res) => {
+        const blob = new Blob([res.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+        const link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = `ATLAS.sql`;
+
+        link.click();
+      })
+      .catch((e) => console.log(e));
   };
 
   const handleDownloadCsv = (csv: ICsvFileOption) => {
@@ -170,6 +185,7 @@ const DataVisualization = () => {
                   </CsvOption>
                 </Popover>
                 <Button style={{ backgroundColor: config.primaryColor }} onClick={() => handleDownload("pdf")}>
+                  {/* <Button style={{ backgroundColor: config.primaryColor }} onClick={() => handleDownloadSQL()}> */}
                   PDF
                 </Button>
               </>

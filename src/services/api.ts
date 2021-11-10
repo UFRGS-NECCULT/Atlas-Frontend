@@ -47,6 +47,10 @@ export const getCsv = async (params) => {
   return await api.get(`csv?${qs.stringify(params)}`, { responseType: "arraybuffer" });
 };
 
+export const getSQL = async () => {
+  return await api.get(`sql`, { responseType: "arraybuffer" });
+};
+
 export const getCsvFiles = async (params) => {
   return await api.get(`csv/files?${qs.stringify(params)}`);
 };
