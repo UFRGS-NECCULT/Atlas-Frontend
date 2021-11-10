@@ -9,7 +9,7 @@ const LibrasDisabler = lazy(() => import("./components/LibrasDisabler"));
 const Routes = () => {
   return (
     <BrowserRouter>
-      <Suspense fallback={<h1>loading</h1>}>
+      <Suspense fallback={""}>
         <Switch>
           <Route path="/" exact component={LandingPage} />
           <AppProvider>
