@@ -88,13 +88,17 @@ export const Page = styled.div`
 
         img {
           width: 75%;
+          margin-bottom: 12.5%; // 25% dividido em 2, uma parte em cima e outra em baixo
+          margin-top: 12.5%;
           cursor: pointer;
 
-          transition: width 0.4s;
+          transition: all 0.4s;
         }
 
         img: hover {
           width: 100%;
+          margin-bottom: 0%;
+          margin-top: 0%;
           max-height: 100%;
         }
       }
@@ -111,7 +115,6 @@ export const Page = styled.div`
       background-position-x: right;
       background-position-y: bottom;
       height: 920px;
-      margin-top: 65px;
       padding: 0;
 
       .question-title {
