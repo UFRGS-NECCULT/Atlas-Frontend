@@ -92,8 +92,8 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
   }, [eixo, ano, num, cad, uf, deg, ocp, prc, cns, tpo, mec, pfj, config]);
 
   const tabs = (data: Data) => {
-    // Só eixos do Mercado, Fomento e Comércio Internacional têm abas
-    if (![2, 3, 4].includes(data.selection.eixo)) {
+    // Só eixos do Mercado e Fomento têm abas
+    if (![2, 3].includes(data.selection.eixo)) {
       return false;
     }
 
@@ -101,7 +101,7 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
       [undefined, undefined], // Eixo 1 não tem abas
       ["Setor", "Ocupação"],
       ["Recebedor", "Trabalhador"],
-      ["Bens", "Serviços"]
+      [undefined, undefined]
     ][data.selection.eixo - 1];
 
     return (
