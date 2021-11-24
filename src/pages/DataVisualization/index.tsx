@@ -225,7 +225,7 @@ const downloadFont = async (): Promise<[string, string]> => {
 };
 
 // Embarca a fonte dentro dos svgs de um elemento
-const prepareSVGs = (document: HTMLDocument, element: HTMLElement, fontBase64: string) => {
+const prepareSVGs = (document: Document, element: HTMLElement, fontBase64: string) => {
   const svgElemens = element.getElementsByTagName("svg");
   for (let i = 0; i < svgElemens.length; i++) {
     const svg = svgElemens.item(i);
@@ -240,6 +240,25 @@ const prepareSVGs = (document: HTMLDocument, element: HTMLElement, fontBase64: s
   }
 };
 
+// Ajusta o tamanho da fonte da descrição da variável
+const prepareDescription = (document: Document) => {
+  const varDescEl = document.getElementById("var-description");
+  const varDescContainer = document.getElementById("box-3");
+  if (varDescEl && varDescContainer) {
+    // Calcular a altura interior do container
+    const style = getComputedStyle(varDescContainer);
+    const height = varDescContainer.clientHeight - (parseInt(style.paddingTop) + parseInt(style.paddingBottom));
+
+    // Enquanto o texto for mais alto que container, diminua a fonte
+    const fontSizes = ['small', 'smaller', 'x-small', 'xx-smal'];
+    let i = 0;
+    while (varDescEl.clientHeight > height && i < fontSizes.length) {
+      varDescEl.style.fontSize = fontSizes[i];
+      i += 1;
+    }
+  }
+}
+
 const downloadPNG = async (element: HTMLElement): Promise<Blob> => {
   const [fontBase64] = await downloadFont();
 
@@ -252,6 +271,7 @@ const downloadPNG = async (element: HTMLElement): Promise<Blob> => {
     foreignObjectRendering: true,
     onclone: (clonedDocument) => {
       prepareSVGs(clonedDocument, clonedDocument.body, fontBase64);
+      prepareDescription(clonedDocument);
 
       const srcDiv = clonedDocument.getElementById("page-source");
       if (srcDiv) {
