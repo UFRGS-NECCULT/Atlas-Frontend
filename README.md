@@ -40,6 +40,7 @@ Adicionando Novos Pacotes ao Projeto
 
 *Requisito(s): Docker Engine e Docker Compose*
 
+* Criar uma cópia do arquivo `.env.example` e renomear para `.env` com as informações de host e ambiente.
 * Criar uma cópia do arquivo `docker-compose.example.yml` e renomear para `docker-compose.yml`
 * Adicionar na seção *enviroments* do arquivo criado, caso necessário, as variáveis de ambiente (por exemplo, host do backend)
 * Rodar o comando `docker-compose up` na pasta raiz do projeto
