@@ -73,7 +73,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
   // que a janela muda de tamanho, temos que redesenhar o svg
   const [size, setSize] = useState<[number, number]>([0, 0]);
 
-  const { eixo, uf, num, ano, cad, tpo, prc, cns, deg, config, changeSelection } = useSelection();
+  const { eixo, uf, num, ano, cad, tpo, prc, cns, deg, mec, mod, pfj, config, rot, changeSelection } = useSelection();
 
   const debouncedResize = useCallback(
     debounce(() => {
@@ -117,7 +117,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
     const getData = async () => {
       const endpoint = endpoints[group];
 
-      const { data } = await endpoint(eixo, { var: num, uf, cad, ano, tpo, prc, cns, deg, ...constants });
+      const { data } = await endpoint(eixo, { var: num, uf, cad, ano, tpo, prc, cns, deg, mec, mod, pfj, rot, ...constants });
       if (data.length) {
         setDataFormat(data[0].formato);
       }
@@ -125,7 +125,7 @@ const Treemap: React.FC<ChartProps> = ({ constants, group }) => {
     };
 
     getData();
-  }, [eixo, uf, num, ano, cad, tpo, prc, cns, deg, group]);
+  }, [eixo, uf, num, ano, cad, tpo, prc, cns, deg, mec, mod, pfj, rot,  group]);
 
   const parseData = useCallback((data): IParsedData => {
     const groups = {};

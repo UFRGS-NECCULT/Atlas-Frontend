@@ -39,6 +39,7 @@ export const TabButton = styled.div`
   width: 50%;
   color: white;
   opacity: 0.75;
+  cursor: pointer;
 
   &.active {
     opacity: 1;
@@ -84,3 +85,4 @@ export const Source = styled.div`
   color: gray;
   font-size: 0.8em;
 `;
+

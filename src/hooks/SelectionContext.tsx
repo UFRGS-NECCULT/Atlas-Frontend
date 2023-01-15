@@ -18,6 +18,8 @@ interface SelectionContextData {
   ocp: number;
   mec: number;
   pfj: number;
+  mod: number;
+  rot: number;
 }
 
 export interface IEixoConfig {
@@ -65,6 +67,8 @@ const SelectionProvider: React.FC = ({ children }) => {
   let _ocp = 0;
   let _mec = 0;
   let _pfj = 0;
+  let _mod = 0;
+  let _rot = 0;
 
   // Verificar se não há valores iniciais já informados na url
   if (window.location.search) {
@@ -103,8 +107,14 @@ const SelectionProvider: React.FC = ({ children }) => {
     if (parsed.mec) {
       _mec = Number(parsed.mec);
     }
+    if (parsed.mod) {
+      _mod = Number(parsed.mod);
+    }
     if (parsed.pfj) {
       _pfj = Number(parsed.pfj);
+    }
+    if (parsed.rot) {
+      _rot = Number(parsed.rot);
     }
   }
 
@@ -120,6 +130,8 @@ const SelectionProvider: React.FC = ({ children }) => {
   const [ocp, setOcp] = useState<number>(_ocp);
   const [mec, setMec] = useState<number>(_mec);
   const [pfj, setPfj] = useState<number>(_pfj);
+  const [mod, setMod] = useState<number>(_mod);
+  const [rot, setRot] = useState<number>(_rot);
 
   const [config, setConfig] = useState<IEixoConfig>({
     primaryColor: "transparent",
@@ -150,7 +162,9 @@ const SelectionProvider: React.FC = ({ children }) => {
         ["eixo", eixo],
         ["ocp", ocp],
         ["mec", mec],
-        ["pfj", pfj]
+        ["pfj", pfj],
+        ["mod", mod],
+        ["rot", rot]
       ];
 
       for (const v of variables) {
@@ -210,6 +224,12 @@ const SelectionProvider: React.FC = ({ children }) => {
       case "pfj":
         setPfj(value);
         break;
+      case "mod":
+        setMod(value);
+        break;
+      case "rot":
+        setRot(value);
+        break;
       default:
         console.error("Seletor não existe");
         break;
@@ -238,6 +258,8 @@ const SelectionProvider: React.FC = ({ children }) => {
         ocp,
         mec,
         pfj,
+        mod,
+        rot,
         changeSelection
       }}
     >

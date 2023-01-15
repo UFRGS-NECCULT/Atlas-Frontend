@@ -20,6 +20,8 @@ interface Data {
     cns: number;
     mec: number;
     pfj: number;
+    mod: number;
+    rot: number;
     config: IEixoConfig;
   };
   data: DataPoint[];
@@ -48,6 +50,13 @@ interface DataPoint {
   nome_tipo?: string;
   display_subdeg?: string;
 
+  id_mecanismo?: number;
+  nome_mecanismo?: string;
+  id_modalidade?: number;
+  nome_modalidade?: string;
+  id_pessoa?: number;
+  nome_pessoa?: string;
+
   // Valor que indica se um valor deve ser mostrado de maneira absoluta
   // ou como porcentagem do valor principal (padrão: porcentagem)
   display_absolute?: boolean;
@@ -65,7 +74,10 @@ interface ChartProps {
 }
 
 const DataInfo: React.FC<ChartProps> = ({ constants }) => {
-  const { eixo, ano, num, cad, uf, deg, prc, cns, tpo, ocp, mec, pfj, config } = { ...useSelection(), ...constants };
+  const { changeSelection, eixo, ano, num, cad, uf, deg, prc, cns, tpo, ocp, mec, mod, pfj, rot, config } = {
+    ...useSelection(),
+    ...constants
+  };
   const { desc } = useData();
 
   const [data, setData] = useState<Data | null>(null);
@@ -77,8 +89,12 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
     tab = 2;
   }
 
+  if (eixo === 3 && rot === 0) {
+    tab = 1;
+  }
+
   useEffect(() => {
-    const selectionClone = { eixo, ano, num, cad, uf, deg, ocp, prc, cns, tpo, mec, pfj, config };
+    const selectionClone = { eixo, ano, num, cad, uf, deg, ocp, prc, cns, tpo, mec, mod, pfj, config, rot };
     const getData = async () => {
       const { data } = await getInfo(selectionClone.eixo, {
         ...selectionClone,
@@ -89,13 +105,15 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
     };
 
     getData();
-  }, [eixo, ano, num, cad, uf, deg, ocp, prc, cns, tpo, mec, pfj, config]);
+  }, [eixo, ano, num, cad, uf, deg, ocp, prc, cns, tpo, mec, mod, pfj, rot, config]);
 
-  const tabs = (data: Data) => {
+  const tabs = (data: Data, changeSelector?: (selector: string, value: number) => void) => {
     // Só eixos do Mercado e Fomento têm abas
     if (![2, 3].includes(data.selection.eixo)) {
       return false;
     }
+
+    if (data.selection.eixo === 3 && !(data.selection.num === 18 || data.selection.num === 19)) return false;
 
     const [leftButtonText, rightButtonText] = [
       [undefined, undefined], // Eixo 1 não tem abas
@@ -106,10 +124,26 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
 
     return (
       <Flex>
-        <TabButton className={tab === 1 ? "active" : ""} style={{ backgroundColor: config.primaryColor }}>
+        <TabButton
+          className={
+            (data.selection.eixo === 2 && tab === 1) || (data.selection.eixo === 3 && data.selection.rot === 0)
+              ? "active"
+              : ""
+          }
+          style={{ backgroundColor: config.primaryColor }}
+          onClick={() => changeSelector && changeSelector("rot", 0)}
+        >
           {leftButtonText}
         </TabButton>
-        <TabButton className={tab === 2 ? "active" : ""} style={{ backgroundColor: config.primaryColor }}>
+        <TabButton
+          className={
+            (data.selection.eixo === 2 && tab === 2) || (data.selection.eixo === 3 && data.selection.rot === 1)
+              ? "active"
+              : ""
+          }
+          style={{ backgroundColor: config.primaryColor }}
+          onClick={() => changeSelector && changeSelector("rot", 1)}
+        >
           {rightButtonText}
         </TabButton>
       </Flex>
@@ -160,9 +194,13 @@ const DataInfo: React.FC<ChartProps> = ({ constants }) => {
     return <></>;
   }
 
+  const handleSelectTab = (selector: string, value: number) => {
+    changeSelection(selector, value);
+  };
+
   return (
     <>
-      {tabs(data)}
+      {tabs(data, handleSelectTab)}
       <Container>{displayValues(data)}</Container>
       <Source>Fonte: {data.data[0].fonte ? data.data[0].fonte : "Sem fonte"}</Source>
     </>
@@ -175,6 +213,7 @@ export default DataInfo;
 function getValue(desc: IDescriptions, tab: 1 | 2, data: Data, val: 1 | 2 | 3) {
   // Se não há definição para esses valores, não mostre nada
   const tabs = desc[data.selection.eixo - 1][data.selection.num.toString()];
+
   const descriptions = tabs ? tabs[tab - 1] : null;
   if (!descriptions || !descriptions[val - 1]) {
     return null;
@@ -185,6 +224,7 @@ function getValue(desc: IDescriptions, tab: 1 | 2, data: Data, val: 1 | 2 | 3) {
 
 function findData(description: string, tab: 1 | 2, val: 1 | 2 | 3, data: Data) {
   const rich = richString(description, data.selection);
+
   // Verificar se há um dado que deve ser obrigatóriamente mostrado
   let dataPoint = data.data.find((d) => d.display_at === val);
 
@@ -221,6 +261,9 @@ function findCorrectData(filters: string[], data: Data) {
       d.id_cad === (i("cad") ? data.selection.cad : 0) &&
       (d.id_subdeg !== undefined ? d.id_subdeg === (i("deg") ? data.selection.deg : 0) : true) &&
       (d.id_ocupacao !== undefined ? d.id_ocupacao === (i("ocp") ? data.selection.ocp : 0) : true) &&
+      (d.id_mecanismo !== undefined ? d.id_mecanismo === (i("mec") ? data.selection.mec : 0) : true) &&
+      (d.id_modalidade !== undefined ? d.id_modalidade === (i("mod") ? data.selection.mod : 0) : true) &&
+      (d.id_pessoa !== undefined ? d.id_pessoa === (i("pfj") ? data.selection.pfj : 0) : true) &&
       (d.id_parceiro !== undefined ? d.id_parceiro === (i("prc") ? data.selection.prc : 0) : true) &&
       (d.id_consumo !== undefined ? d.id_consumo === (i("cns") ? data.selection.cns : 0) : true) &&
       (d.id_tipo !== undefined && i("tpo") ? d.id_tipo === data.selection.tpo : true) // Tipo não tem um "filtro total"
@@ -238,6 +281,9 @@ function findSelectedData(data: Data) {
       d.id_cad === data.selection.cad &&
       (d.id_subdeg !== undefined ? d.id_subdeg === data.selection.deg : true) &&
       (d.id_ocupacao !== undefined ? d.id_ocupacao === data.selection.ocp : true) &&
+      (d.id_mecanismo !== undefined ? d.id_mecanismo === data.selection.mec : true) &&
+      (d.id_modalidade !== undefined ? d.id_modalidade === data.selection.mod : true) &&
+      (d.id_pessoa !== undefined ? d.id_pessoa === data.selection.pfj : true) &&
       (d.id_parceiro !== undefined ? d.id_parceiro === data.selection.prc : true) &&
       (d.id_tipo !== undefined ? d.id_tipo === data.selection.tpo : true) &&
       (d.id_consumo !== undefined ? d.id_consumo === data.selection.cns : true)

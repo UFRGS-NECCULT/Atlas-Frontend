@@ -40,7 +40,7 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
   const [data, setData] = useAsyncState<DataProps[]>([]);
 
   const [size, setSize] = useState<[number, number]>([0, 0]);
-  const { eixo, uf, cad, ano, num, deg, prc, tpo, config, changeSelection } = useSelection();
+  const { eixo, uf, cad, ano, num, deg, prc, tpo, mec, mod, pfj, config, rot, changeSelection } = useSelection();
 
   const debouncedResize = useCallback(
     debounce(() => {
@@ -61,12 +61,12 @@ const BrazilMap: React.FC<ChartProps> = ({ constants }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getMap(eixo, { var: num, uf, cad, ano, deg, prc, tpo, ...constants });
+      const { data } = await getMap(eixo, { var: num, uf, cad, ano, deg, prc, tpo, mec, mod, pfj, rot, ...constants });
       setData(data);
     };
 
     getData();
-  }, [eixo, cad, ano, num, deg, prc, tpo]);
+  }, [eixo, cad, ano, num, deg, prc, tpo, mec, mod, rot, pfj]);
 
   const getValueByUf = useCallback(
     (uf: number) => {

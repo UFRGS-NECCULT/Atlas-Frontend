@@ -34,7 +34,7 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
   // que a janela muda de tamanho, temos que redesenhar o svg
   const [size, setSize] = useState<[number, number]>([0, 0]);
 
-  const { eixo, num, uf, cad, deg, config } = useSelection();
+  const { eixo, num, uf, cad, deg, mec, config } = useSelection();
 
   const debouncedResize = useCallback(
     debounce(() => {
@@ -51,12 +51,12 @@ const LineChart: React.FC<ChartProps> = ({ constants }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getLines(eixo, { var: num, uf, cad, deg, ...constants });
+      const { data } = await getLines(eixo, { var: num, uf, cad, mec, deg, ...constants });
       setData(data);
     };
 
     getData();
-  }, [eixo, num, uf, cad, deg]);
+  }, [eixo, num, uf, cad, deg, mec]);
 
   const draw = () => {
     const marginLeft = 50;
