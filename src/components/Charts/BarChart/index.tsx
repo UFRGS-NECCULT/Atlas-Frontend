@@ -45,7 +45,7 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
   // que a janela muda de tamanho, temos que redesenhar o svg
   const [size, setSize] = useState<[number, number]>([0, 0]);
 
-  const { eixo, deg, uf, cad, num, ano, config, changeSelection } = useSelection();
+  const { eixo, deg, uf, cad, num, ano, config, mod, pfj, mec, rot, changeSelection } = useSelection();
 
   const debouncedResize = useCallback(
     debounce(() => {
@@ -62,12 +62,12 @@ const BarChart: React.FC<BarChartProps> = ({ stacked, constants }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getBars(eixo, { var: num, uf, cad, deg, ...constants });
+      const { data } = await getBars(eixo, { var: num, uf, cad, deg, mod, pfj, mec, rot, ...constants });
       setRawData(data);
     };
 
     getData();
-  }, [eixo, deg, uf, cad, num, constants, stacked]);
+  }, [eixo, deg, uf, cad, num, constants, stacked, mod, pfj, rot, mec]);
 
   const parseBarsData = useCallback((data): ParsedData[] => {
     const groupedData = data.reduce((r, c) => {

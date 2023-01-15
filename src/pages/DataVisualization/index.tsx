@@ -20,7 +20,7 @@ import Box from "components/Box";
 import VarDescription from "components/Charts/VarDescription";
 import DataInfo from "components/Charts/DataInfo";
 import { Viewbox } from "./Viewbox";
-import { getCsv, getSQL, getCsvFiles } from "services/api";
+import { getCsv, getCsvFiles } from "services/api";
 import { useSelection } from "hooks/SelectionContext";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
@@ -48,20 +48,20 @@ const DataVisualization = () => {
     });
   };
 
-  const handleDownloadSQL = () => {
-    getSQL()
-      .then((res) => {
-        const blob = new Blob([res.data], {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        });
-        const link = document.createElement("a");
-        link.href = window.URL.createObjectURL(blob);
-        link.download = `ATLAS.sql`;
+  //   const handleDownloadSQL = () => {
+  //     getSQL()
+  //       .then((res) => {
+  //         const blob = new Blob([res.data], {
+  //           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  //         });
+  //         const link = document.createElement("a");
+  //         link.href = window.URL.createObjectURL(blob);
+  //         link.download = `ATLAS.sql`;
 
-        link.click();
-      })
-      .catch((e) => console.log(e));
-  };
+  //         link.click();
+  //       })
+  //       .catch((e) => console.log(e));
+  //   };
 
   const handleDownloadCsv = (csv: ICsvFileOption) => {
     getCsv({ id: csv.id })
@@ -250,14 +250,14 @@ const prepareDescription = (document: Document) => {
     const height = varDescContainer.clientHeight - (parseInt(style.paddingTop) + parseInt(style.paddingBottom));
 
     // Enquanto o texto for mais alto que container, diminua a fonte
-    const fontSizes = ['small', 'smaller', 'x-small', 'xx-smal'];
+    const fontSizes = ["small", "smaller", "x-small", "xx-smal"];
     let i = 0;
     while (varDescEl.clientHeight > height && i < fontSizes.length) {
       varDescEl.style.fontSize = fontSizes[i];
       i += 1;
     }
   }
-}
+};
 
 const downloadPNG = async (element: HTMLElement): Promise<Blob> => {
   const [fontBase64] = await downloadFont();

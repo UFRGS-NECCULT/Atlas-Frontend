@@ -68,6 +68,9 @@ interface Selection {
   tpo: number;
   deg: number;
   ocp: number;
+  mec: number;
+  mod: number;
+  pfj: number;
 }
 
 /**
@@ -77,7 +80,7 @@ interface Selection {
  * @example richString("Dados {{ uf if uf else 'do Brasil' }}")
  */
 export function richString(template: string, selection: Selection) {
-  const { config, uf, cad, ano, deg, prc, tpo, ocp } = selection;
+  const { config, uf, cad, ano, deg, prc, tpo, mec, mod, pfj, ocp } = selection;
 
   // Mapa de variáveis no formato "nomeVar" => valorVar
   const variables = {
@@ -87,7 +90,10 @@ export function richString(template: string, selection: Selection) {
     deg,
     prc,
     ocp,
-    tpo
+    tpo,
+    mec,
+    mod,
+    pfj
   };
 
   // Pegar os dados das variáveis selecionadas para construir o contexto
@@ -178,3 +184,4 @@ export function richString(template: string, selection: Selection) {
 
   return res;
 }
+

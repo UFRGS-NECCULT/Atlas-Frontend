@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import styled from "styled-components";
 
 export const TreemapContainer = styled.div`
@@ -21,3 +22,4 @@ export const TreemapContainer = styled.div`
 export const TreemapSVG = styled.svg`
   flex-grow: 1;
 `;
+

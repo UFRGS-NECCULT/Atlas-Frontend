@@ -34,7 +34,7 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
 
   const [size, setSize] = useState<[number, number]>([0, 0]);
 
-  const { eixo, uf, deg, num, ano, cad, prc, cns, tpo, changeSelection } = useSelection();
+  const { eixo, uf, deg, num, ano, cad, prc, cns, tpo, mec, mod, pfj, changeSelection } = useSelection();
 
   const debouncedResize = useCallback(
     debounce(() => {
@@ -65,12 +65,25 @@ const DonutChart: React.FC<IProps> = ({ constants }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await getDonut(eixo, { var: num, uf, deg, ano, prc, cns, tpo, cad, ...constants });
+      const { data } = await getDonut(eixo, {
+        var: num,
+        uf,
+        deg,
+        ano,
+        prc,
+        cns,
+        tpo,
+        cad,
+        mec,
+        mod,
+        pfj,
+        ...constants
+      });
       setData(data);
     };
 
     getData();
-  }, [uf, deg, num, ano, cad, prc, cns, tpo, eixo]);
+  }, [uf, deg, num, ano, cad, prc, cns, tpo, mec, mod, pfj, eixo]);
 
   const draw = () => {
     if (d3Container.current && data && data.length) {
