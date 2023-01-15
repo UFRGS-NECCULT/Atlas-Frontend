@@ -194,7 +194,7 @@ export const descriptions: IDescriptions = [
     7: [["DE APOIO PRIVADO NO TOTAL APOIADO VIA MECENATO {{ uf or 'NO BRASIL' }}"]],
     8: [
       [
-        "RAZÃO ENTRE FINANCIAMENTO {{ mec }} {{ uf or 'NO BRASIL' }} {{ 'PARA O SETOR ' + uf if (uf and cad) }} E VALOR ADICIONADO {{ 'PELO SETOR ' + cad else 'PELOS SETORES CULTURAIS E CRIATIVOS' }} {{ uf or 'NO BRASIL' }}"
+        "RAZÃO ENTRE FINANCIAMENTO {{ mec }} {{ uf or 'NO BRASIL' }} {{ 'PARA O SETOR ' + cad if cad }} E VALOR ADICIONADO {{ 'PELO SETOR ' + cad if cad  else 'PELOS SETORES CULTURAIS E CRIATIVOS' }} {{ uf or 'NO BRASIL' }}"
         // "RAZÃO ENTRE FINANCIAMENTO {{ mec }} {{ uf or 'NO BRASIL' }} {{ 'PARA O SETOR ' + uf if (uf and mec and cad) }} E VALOR ADICIONADO {{ 'PELO SETOR ' + cad else 'PELOS SETORES CULTURAIS E CRIATIVOS' }} {{ uf or 'NO BRASIL' }}"
       ]
     ],
